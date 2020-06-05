@@ -30,4 +30,4 @@ trainer.train('resources/taggers/trec',
               mini_batch_size=32,
               anneal_factor=0.5,
               patience=5,
-              max_epochs=150)
+              max_epochs=10)
