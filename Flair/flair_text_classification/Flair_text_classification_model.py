@@ -1,16 +1,17 @@
 from flair.data import Corpus
-from flair.datasets import TREC_6
+from Dataset_class import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, DocumentRNNEmbeddings
 from flair.models import TextClassifier
 from flair.trainers import ModelTrainer
 
+col_name_map = {0: "label", 1: "text"}
 
 # 1. get the corpus
-corpus: Corpus = TREC_6()
+corpus: Corpus = CSVClassificationCorpus('data/', col_name_map)
+print(Corpus)
 
 # 2. create the label dictionary
 label_dict = corpus.make_label_dictionary()
-
 # 3. make a list of word embeddings
 word_embeddings = [WordEmbeddings('glove')]
 
