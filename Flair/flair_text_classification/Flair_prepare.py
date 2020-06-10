@@ -10,7 +10,7 @@ allPrep = []
 # Go thorugh all files
 for file in os.scandir(rootdir):
     file = str(file)[11:-2]
-    print(file)
+    #print(file)
     root = ET.parse(rootdir+str(file)).getroot()
 
     # Go through the file
@@ -41,6 +41,10 @@ for file in os.scandir(rootdir):
         newString = newString[9:-13].strip()
         contentRaw = content.text
         contentStriped = contentRaw.strip()
+        if not (newString.__contains__("head") and newString.__contains__("/head")):
+            instance_id = answer.get("instance")
+            print("ALARM -- INSANCE ID:",instance_id)
+            continue;
         element.append(newString)
 
         allPrep.append(element)
@@ -50,14 +54,6 @@ for file in os.scandir(rootdir):
 train_data = allPrep[0:int(len(allPrep)*0.8)]
 test_data = allPrep[int(len(allPrep)*0.8):int(len(allPrep)*0.9)]
 dev_data = allPrep[int(len(allPrep)*0.9):]
-
-for e in train_data:
-    if not(e[1].__contains__("head") and e[1].__contains__("/head")):
-        print("alarm")
-
-for e in allPrep:
-    if not(e[1].__contains__("head") and e[1].__contains__("/head")):
-        print("Du stinkst")
 
 # Write all data in one file
 with open('data/train_data.csv', 'wt') as csv_file:
