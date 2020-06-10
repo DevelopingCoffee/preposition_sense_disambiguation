@@ -46,15 +46,44 @@ for file in os.scandir(rootdir):
         allPrep.append(element)
 
 # Write all data into a single csv file
+
+train_data = allPrep[0:int(len(allPrep)*0.8)]
+test_data = allPrep[int(len(allPrep)*0.8):int(len(allPrep)*0.9)]
+dev_data = allPrep[int(len(allPrep)*0.9):]
+
+for e in train_data:
+    if not(e[1].__contains__("head") and e[1].__contains__("/head")):
+        print("alarm")
+
+for e in allPrep:
+    if not(e[1].__contains__("head") and e[1].__contains__("/head")):
+        print("Du stinkst")
+
+# Write all data in one file
 with open('data/train_data.csv', 'wt') as csv_file:
     writer = csv.writer(csv_file)
     writer.writerows(allPrep)
 
-data = pd.read_csv("./data/train_data.csv", encoding='latin-1').sample(frac=1).drop_duplicates()
+# Write 80% of data in a train file
+with open('data/train.csv', 'wt') as train_file:
+    writer = csv.writer(train_file)
+    writer.writerows(train_data)
 
-#data = data[['v1', 'v2']].rename(columns={"v1": "label", "v2": "text"})
-#data['label'] = '__label__' + data['label'].astype(str)
+# Write 10% of data in a test file
+with open('data/test.csv', 'wt') as test_file:
+    writer = csv.writer(test_file)
+    writer.writerows(test_data)
 
-data.iloc[0:int(len(data) * 0.8)].to_csv('data/train.csv', sep='\t', index=False, header=False)
-data.iloc[int(len(data) * 0.8):int(len(data) * 0.9)].to_csv('data/test.csv', sep='\t', index=False, header=False)
-data.iloc[int(len(data) * 0.9):].to_csv('data/dev.csv', sep='\t', index=False, header=False);
+# Write 10% of data in a dev file
+with open('data/dev.csv', 'wt') as dev_file:
+    writer = csv.writer(dev_file)
+    writer.writerows(dev_data)
+
+# data = pd.read_csv("./data/train_data.csv", encoding='latin-1').sample(frac=1).drop_duplicates()
+#
+# #data = data[['v1', 'v2']].rename(columns={"v1": "label", "v2": "text"})
+# #data['label'] = '__label__' + data['label'].astype(str)
+#
+# data.iloc[0:int(len(data) * 0.8)].to_csv('data/train.csv', sep='\t', index=False, header=False)
+# data.iloc[int(len(data) * 0.8):int(len(data) * 0.9)].to_csv('data/test.csv', sep='\t', index=False, header=False)
+# data.iloc[int(len(data) * 0.9):].to_csv('data/dev.csv', sep='\t', index=False, header=False);
