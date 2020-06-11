@@ -43,7 +43,7 @@ for file in os.scandir(rootdir):
         contentStriped = contentRaw.strip()
         if not (newString.__contains__("head") and newString.__contains__("/head")):
             instance_id = answer.get("instance")
-            print("ALARM -- INSANCE ID:",instance_id)
+            print("ALARM -- INSTANCE ID:",instance_id)
             continue;
         element.append(newString)
 

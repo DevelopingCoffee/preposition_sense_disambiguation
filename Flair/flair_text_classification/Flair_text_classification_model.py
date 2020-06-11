@@ -20,6 +20,7 @@ word_embeddings = [WordEmbeddings('glove')]
 document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=256)
 
 # 5. create the text classifier
+# classifier = TextClassifier(document_embeddings, label_dictionary=label_dict)
 classifier = TextClassifier.load('resources/taggers/trec/best-model.pt')
 
 # 6. initialize the text classifier trainer
@@ -31,4 +32,4 @@ trainer.train('resources/taggers/trec',
               mini_batch_size=32,
               anneal_factor=0.5,
               patience=5,
-              max_epochs=10)
+              max_epochs=5)
