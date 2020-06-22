@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 import csv
-import pandas as pd
 import os
+import random
 
 rootdir = '../../SemEval/Train/Source/'
 
@@ -49,8 +49,9 @@ for file in os.scandir(rootdir):
 
         allPrep.append(element)
 
-# Write all data into a single csv file
+random.shuffle(allPrep)
 
+# Split data for training, testing and dev
 train_data = allPrep[0:int(len(allPrep)*0.8)]
 test_data = allPrep[int(len(allPrep)*0.8):int(len(allPrep)*0.9)]
 dev_data = allPrep[int(len(allPrep)*0.9):]
@@ -74,12 +75,3 @@ with open('data/test.csv', 'wt') as test_file:
 with open('data/dev.csv', 'wt') as dev_file:
     writer = csv.writer(dev_file)
     writer.writerows(dev_data)
-
-# data = pd.read_csv("./data/train_data.csv", encoding='latin-1').sample(frac=1).drop_duplicates()
-#
-# #data = data[['v1', 'v2']].rename(columns={"v1": "label", "v2": "text"})
-# #data['label'] = '__label__' + data['label'].astype(str)
-#
-# data.iloc[0:int(len(data) * 0.8)].to_csv('data/train.csv', sep='\t', index=False, header=False)
-# data.iloc[int(len(data) * 0.8):int(len(data) * 0.9)].to_csv('data/test.csv', sep='\t', index=False, header=False)
-# data.iloc[int(len(data) * 0.9):].to_csv('data/dev.csv', sep='\t', index=False, header=False);
