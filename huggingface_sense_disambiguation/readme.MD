@@ -4,8 +4,9 @@
 1. 	git clone https://github.com/DevelopingCoffee/preposition_sense_disambiguation.git  
 	cd huggingface_sense_disambiguation
 	
-Option:	virtualenv venv  
-	source venv/bin/activate
+Optionial: Virtuelle-Environment (ist besser, manchmal spielen dependencies verrückt)  
+	virtualenv venv  
+	source venv/bin/activate  
 
 2.	git clone git@github.com:kaushaltrivedi/fast-bert.git  
  	cd fast-bert  
