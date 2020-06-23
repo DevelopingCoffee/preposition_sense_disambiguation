@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b64dcc31-8792-4aae-83b4-e326a2f87d11" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectId" id="1clNM25z8NjtSTLIEg6rakkKcSA" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../flair_text_classification" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager" selected="Python.Flair_text_classification_model">
+    <configuration name="Flair_prepare" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="flair_text_classification" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Flair_prepare.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Flair_text_classification_model" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="flair_text_classification" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Flair_text_classification_model.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="predict" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="flair_text_classification" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/predict.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.Flair_text_classification_model" />
+        <item itemvalue="Python.Flair_prepare" />
+        <item itemvalue="Python.predict" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b64dcc31-8792-4aae-83b4-e326a2f87d11" name="Default Changelist" comment="" />
+      <created>1591099168605</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1591099168605</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="419" y="170" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1591099322097">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state x="419" y="170" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1024@0.0.1920.1024" timestamp="1591099322097" />
+    <state x="743" y="270" width="432" height="487" key="FileChooserDialogImpl" timestamp="1592933519262">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state x="743" y="270" width="432" height="487" key="FileChooserDialogImpl/0.0.1920.1024@0.0.1920.1024" timestamp="1592933519262" />
+    <state width="1897" height="269" key="GridCell.Tab.0.bottom" timestamp="1592933239938">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state width="1897" height="269" key="GridCell.Tab.0.bottom/0.0.1920.1024@0.0.1920.1024" timestamp="1592933239938" />
+    <state width="1897" height="269" key="GridCell.Tab.0.center" timestamp="1592933239936">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state width="1897" height="269" key="GridCell.Tab.0.center/0.0.1920.1024@0.0.1920.1024" timestamp="1592933239936" />
+    <state width="1897" height="269" key="GridCell.Tab.0.left" timestamp="1592933239936">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state width="1897" height="269" key="GridCell.Tab.0.left/0.0.1920.1024@0.0.1920.1024" timestamp="1592933239936" />
+    <state width="1897" height="269" key="GridCell.Tab.0.right" timestamp="1592933239937">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state width="1897" height="269" key="GridCell.Tab.0.right/0.0.1920.1024@0.0.1920.1024" timestamp="1592933239937" />
+    <state width="1897" height="332" key="GridCell.Tab.1.bottom" timestamp="1591374743385">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state width="1897" height="332" key="GridCell.Tab.1.bottom/0.0.1920.1024@0.0.1920.1024" timestamp="1591374743385" />
+    <state width="1897" height="332" key="GridCell.Tab.1.center" timestamp="1591374743384">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state width="1897" height="332" key="GridCell.Tab.1.center/0.0.1920.1024@0.0.1920.1024" timestamp="1591374743384" />
+    <state width="1897" height="332" key="GridCell.Tab.1.left" timestamp="1591374743384">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state width="1897" height="332" key="GridCell.Tab.1.left/0.0.1920.1024@0.0.1920.1024" timestamp="1591374743384" />
+    <state width="1897" height="332" key="GridCell.Tab.1.right" timestamp="1591374743385">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state width="1897" height="332" key="GridCell.Tab.1.right/0.0.1920.1024@0.0.1920.1024" timestamp="1591374743385" />
+    <state x="457" y="147" width="1332" height="733" key="SettingsEditor" timestamp="1592746168516">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state x="457" y="147" width="1332" height="733" key="SettingsEditor/0.0.1920.1024@0.0.1920.1024" timestamp="1592746168516" />
+    <state x="623" y="226" width="672" height="678" key="search.everywhere.popup" timestamp="1591099336640">
+      <screen x="0" y="0" width="1920" height="1024" />
+    </state>
+    <state x="623" y="226" width="672" height="678" key="search.everywhere.popup/0.0.1920.1024@0.0.1920.1024" timestamp="1591099336640" />
+  </component>
+</project>
