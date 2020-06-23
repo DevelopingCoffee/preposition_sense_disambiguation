@@ -7,7 +7,7 @@ import torch
 
 
 print("Reading trainings data ...")
-databunch = BertDataBunch('test/', 'test/',
+databunch = BertDataBunch('data/', 'data/',
                           tokenizer='bert-base-uncased',
                           train_file='train.csv',
                           val_file='val.csv',
@@ -23,7 +23,7 @@ databunch = BertDataBunch('test/', 'test/',
 print("Start training ...")
 
 logger = logging.getLogger()
-device_cuda = torch.device("cpu")
+device_cuda = torch.device("cuda")
 metrics = [{'name': 'accuracy', 'function': accuracy}]
 
 learner = BertLearner.from_pretrained_model(	databunch,
