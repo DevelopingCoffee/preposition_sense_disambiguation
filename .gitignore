@@ -1,6 +1,4 @@
 venv
-*.csv
-*.tsv
 trec
 *.pt
 *.log
