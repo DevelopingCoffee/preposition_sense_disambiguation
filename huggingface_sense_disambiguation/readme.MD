@@ -4,7 +4,7 @@
 1. 	git clone https://github.com/DevelopingCoffee/preposition_sense_disambiguation.git  
 	cd huggingface_sense_disambiguation
 	
-Optional:	virtualenv venv  
+Option:	virtualenv venv  
 	source venv/bin/activate
 
 2.	git clone git@github.com:kaushaltrivedi/fast-bert.git  
@@ -13,7 +13,7 @@ Optional:	virtualenv venv
 	pip install -r requirements.txt  
 	cd ..  
 
-ONLY if 2 didn't work:  
+	ONLY if step 2 didn't work:  
 	pip install git+https://github.com/kaushaltrivedi/fast-bert.git  
 
 ONLY if apex not installed: check via: pip3 list  
