@@ -16,7 +16,7 @@ Option:	virtualenv venv
 	ONLY if step 2 didn't work:  
 	pip install git+https://github.com/kaushaltrivedi/fast-bert.git  
 
-ONLY if apex not installed: check via: pip3 list  
+Step 3 ONLY if apex not installed: check ob apex auftaucht in "pip3 list"  
 
 3. 	git clone https://github.com/NVIDIA/apex  
 	cd apex  
