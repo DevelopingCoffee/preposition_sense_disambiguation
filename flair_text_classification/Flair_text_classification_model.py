@@ -1,3 +1,4 @@
+import flair, torch
 from flair.data import Corpus
 from Dataset_class import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, DocumentRNNEmbeddings
@@ -22,6 +23,8 @@ document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=256)
 # 5. create the text classifier
 classifier = TextClassifier(document_embeddings, label_dictionary=label_dict)
 # classifier = TextClassifier.load('resources/taggers/trec/best-model.pt')
+
+flair.device = torch.device('cuda:0')
 
 # 6. initialize the text classifier trainer
 trainer = ModelTrainer(classifier, corpus)
