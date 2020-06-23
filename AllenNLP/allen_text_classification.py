@@ -1,58 +1,46 @@
+from typing import Dict, Iterable, List, Tuple
 
-
-from typing import Iterator, List, Dict
-
+import allennlp
 import torch
-import torch.optim as optim
-import numpy as np
-
-from allennlp.data import Instance
-from allennlp.data.fields import TextField, SequenceLabelField
-
-from allennlp.data.dataset_readers import DatasetReader
-
-from allennlp.common.file_utils import cached_path
-
+from allennlp.data import DataLoader, DatasetReader, Instance, Vocabulary
+from allennlp.data.fields import LabelField, TextField
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
-from allennlp.data.tokenizers import Token
-
-from allennlp.data.vocabulary import Vocabulary
-
+from allennlp.data.tokenizers import Token, Tokenizer, WhitespaceTokenizer
 from allennlp.models import Model
-
-from allennlp.modules.text_field_embedders import TextFieldEmbedder, BasicTextFieldEmbedder
+from allennlp.modules import TextFieldEmbedder, Seq2VecEncoder
+from allennlp.modules.seq2vec_encoders import BagOfEmbeddingsEncoder
 from allennlp.modules.token_embedders import Embedding
-from allennlp.modules.seq2vec_encoders import Seq2VecEncoder
-from allennlp.modules.seq2seq_encoders import PytorchSeq2SeqWrapper
-from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits
-
+from allennlp.modules.text_field_embedders import BasicTextFieldEmbedder
+from allennlp.nn import util
+from allennlp.training.trainer import GradientDescentTrainer, Trainer
+from allennlp.training.optimizers import AdamOptimizer
 from allennlp.training.metrics import CategoricalAccuracy
 
-from allennlp.data.iterators import BucketIterator
 
-from allennlp.training.trainer import Trainer
-
-from allennlp.predictors import SentenceTaggerPredictor
-
-torch.manual_seed(1)
-
-@DatasetReader.register('classification-tsv')
 class ClassificationTsvReader(DatasetReader):
-    def __init__(self):
-        self.tokenizer = SpacyTokenizer()
-        self.token_indexers = {'tokens': SingleIdTokenIndexer()}
+    def __init__(self,
+                 lazy: bool = False,
+                 tokenizer: Tokenizer = None,
+                 token_indexers: Dict[str, TokenIndexer] = None,
+                 max_tokens: int = None):
+        super().__init__(lazy)
+        self.tokenizer = tokenizer or WhitespaceTokenizer()
+        self.token_indexers = token_indexers or {'tokens': SingleIdTokenIndexer()}
+        self.max_tokens = max_tokens
 
     def _read(self, file_path: str) -> Iterable[Instance]:
         with open(file_path, 'r') as lines:
             for line in lines:
-                text, label = line.strip().split('\t')
-                text_field = TextField(self.tokenizer.tokenize(text),
-                                       self.token_indexers)
-                label_field = LabelField(label)
+                text, sentiment = line.strip().split('\t')
+                tokens = self.tokenizer.tokenize(text)
+                if self.max_tokens:
+                    tokens = tokens[:self.max_tokens]
+                text_field = TextField(tokens, self.token_indexers)
+                label_field = LabelField(sentiment)
                 fields = {'text': text_field, 'label': label_field}
                 yield Instance(fields)
 
-@Model.register('simple_classifier')
+
 class SimpleClassifier(Model):
     def __init__(self,
                  vocab: Vocabulary,
@@ -64,80 +52,115 @@ class SimpleClassifier(Model):
         num_labels = vocab.get_vocab_size("labels")
         self.classifier = torch.nn.Linear(encoder.get_output_dim(), num_labels)
 
-reader = ClassificationTsvReader()
-
-train_dataset = reader.read(cached_path(
-    'https://raw.githubusercontent.com/allenai/allennlp'
-    '/master/tutorials/tagger/training.txt'))
-validation_dataset = reader.read(cached_path(
-    'https://raw.githubusercontent.com/allenai/allennlp'
-    '/master/tutorials/tagger/validation.txt'))
-
-vocab = Vocabulary.from_instances(train_dataset + validation_dataset)
-
-EMBEDDING_DIM = 6
-HIDDEN_DIM = 6
-
-token_embedding = Embedding(num_embeddings=vocab.get_vocab_size('tokens'),
-                            embedding_dim=EMBEDDING_DIM)
-word_embeddings = BasicTextFieldEmbedder({"tokens": token_embedding})
-
-lstm = PytorchSeq2SeqWrapper(torch.nn.LSTM(EMBEDDING_DIM, HIDDEN_DIM, batch_first=True))
-
-model = SimpleClassifier(word_embeddings, lstm, vocab)
-
-if torch.cuda.is_available():
-    cuda_device = 0
-
-    model = model.cuda(cuda_device)
-else:
-
-    cuda_device = -1
-
-optimizer = optim.SGD(model.parameters(), lr=0.1)
-
-iterator = BucketIterator(batch_size=2, sorting_keys=[("sentence", "num_tokens")])
-
-iterator.index_with(vocab)
-
-trainer = Trainer(model=model,
-                  optimizer=optimizer,
-                  iterator=iterator,
-                  train_dataset=train_dataset,
-                  validation_dataset=validation_dataset,
-                  patience=10,
-                  num_epochs=1000,
-                  cuda_device=cuda_device)
-
-trainer.train()
-
-predictor = SentenceTaggerPredictor(model, dataset_reader=reader)
-
-tag_logits = predictor.predict("The dog ate the apple")['tag_logits']
-
-tag_ids = np.argmax(tag_logits, axis=-1)
-
-print([model.vocab.get_token_from_index(i, 'labels') for i in tag_ids])
-
-# Here's how to save the model.
-with open("/tmp/model.th", 'wb') as f:
-    torch.save(model.state_dict(), f)
-
-vocab.save_to_files("/tmp/vocabulary")
-
-# And here's how to reload the model.
-vocab2 = Vocabulary.from_files("/tmp/vocabulary")
-
-model2 = LstmTagger(word_embeddings, lstm, vocab2)
-
-with open("/tmp/model.th", 'rb') as f:
-    model2.load_state_dict(torch.load(f))
-
-if cuda_device > -1:
-    model2.cuda(cuda_device)
-
-predictor2 = SentenceTaggerPredictor(model2, dataset_reader=reader)
-tag_logits2 = predictor2.predict("The dog ate the apple")['tag_logits']
-np.testing.assert_array_almost_equal(tag_logits2, tag_logits)
+    def forward(self,
+                text: Dict[str, torch.Tensor],
+                label: torch.Tensor) -> Dict[str, torch.Tensor]:
+        print("In model.forward(); printing here just because binder is so slow")
+        # Shape: (batch_size, num_tokens, embedding_dim)
+        embedded_text = self.embedder(text)
+        # Shape: (batch_size, num_tokens)
+        mask = util.get_text_field_mask(text)
+        # Shape: (batch_size, encoding_dim)
+        encoded_text = self.encoder(embedded_text, mask)
+        # Shape: (batch_size, num_labels)
+        logits = self.classifier(encoded_text)
+        # Shape: (batch_size, num_labels)
+        probs = torch.nn.functional.softmax(logits, dim=-1)
+        # Shape: (1,)
+        loss = torch.nn.functional.cross_entropy(logits, label)
+        return {'loss': loss, 'probs': probs}
 
 
+def build_dataset_reader() -> DatasetReader:
+    return ClassificationTsvReader()
+
+def read_data(
+    reader: DatasetReader
+) -> Tuple[Iterable[Instance], Iterable[Instance]]:
+    print("Reading data")
+    training_data = reader.read("data/train.tsv")
+    validation_data = reader.read("data/dev.tsv")
+    return training_data, validation_data
+
+def build_vocab(instances: Iterable[Instance]) -> Vocabulary:
+    print("Building the vocabulary")
+    return Vocabulary.from_instances(instances)
+
+def build_model(vocab: Vocabulary) -> Model:
+    print("Building the model")
+    vocab_size = vocab.get_vocab_size("tokens")
+    embedder = BasicTextFieldEmbedder(
+        {"tokens": Embedding(embedding_dim=10, num_embeddings=vocab_size)})
+    encoder = BagOfEmbeddingsEncoder(embedding_dim=10)
+    return SimpleClassifier(vocab, embedder, encoder)
+
+def run_training_loop():
+    dataset_reader = build_dataset_reader()
+
+    # These are a subclass of pytorch Datasets, with some allennlp-specific
+    # functionality added.
+    train_data, dev_data = read_data(dataset_reader)
+
+    vocab = build_vocab(train_data + dev_data)
+    model = build_model(vocab)
+
+    # This is the allennlp-specific functionality in the Dataset object;
+    # we need to be able convert strings in the data to integers, and this
+    # is how we do it.
+    train_data.index_with(vocab)
+    dev_data.index_with(vocab)
+
+    # These are again a subclass of pytorch DataLoaders, with an
+    # allennlp-specific collate function, that runs our indexing and
+    # batching code.
+    train_loader, dev_loader = build_data_loaders(train_data, dev_data)
+
+    # You obviously won't want to create a temporary file for your training
+    # results, but for execution in binder for this guide, we need to do this.
+    with tempfile.TemporaryDirectory() as serialization_dir:
+        trainer = build_trainer(
+            model,
+            serialization_dir,
+            train_loader,
+            dev_loader
+        )
+        print("Starting training")
+        trainer.train()
+        print("Finished training")
+
+# The other `build_*` methods are things we've seen before, so they are
+# in the setup section above.
+def build_data_loaders(
+    train_data: torch.utils.data.Dataset,
+    dev_data: torch.utils.data.Dataset,
+) -> Tuple[allennlp.data.DataLoader, allennlp.data.DataLoader]:
+    # Note that DataLoader is imported from allennlp above, *not* torch.
+    # We need to get the allennlp-specific collate function, which is
+    # what actually does indexing and batching.
+    train_loader = DataLoader(train_data, batch_size=8, shuffle=True)
+    dev_loader = DataLoader(dev_data, batch_size=8, shuffle=False)
+    return train_loader, dev_loader
+
+def build_trainer(
+    model: Model,
+    serialization_dir: str,
+    train_loader: DataLoader,
+    dev_loader: DataLoader
+) -> Trainer:
+    parameters = [
+        [n, p]
+        for n, p in model.named_parameters() if p.requires_grad
+    ]
+    optimizer = AdamOptimizer(parameters)
+    trainer = GradientDescentTrainer(
+        model=model,
+        serialization_dir=serialization_dir,
+        data_loader=train_loader,
+        validation_data_loader=dev_loader,
+        num_epochs=5,
+        optimizer=optimizer,
+    )
+    return trainer
+
+
+run_training_loop()
