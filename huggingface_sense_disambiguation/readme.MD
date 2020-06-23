@@ -1,7 +1,7 @@
 (Details verfügbar auf https://github.com/kaushaltrivedi/fast-bert)
 
 
-1. 	git clone https://github.com/DevelopingCoffee/preposition_sense_disambiguation.git
+1. 	git clone https://github.com/DevelopingCoffee/preposition_sense_disambiguation.git  
 	cd huggingface_sense_disambiguation
 	
 Opt:	virtualenv venv
