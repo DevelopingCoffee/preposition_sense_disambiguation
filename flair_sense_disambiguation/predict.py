@@ -1,14 +1,12 @@
 from flair.data import Sentence
 from flair.models import TextClassifier
 
-# make a sentence
-sentence = Sentence('I love Berlin .')
-
-# load the NER tagger
 classifier = TextClassifier.load('resources/taggers/trec/final-model.pt')
 
-# run NER over sentence
+# create example sentence
+sentence = Sentence('Peter ambled <head>after</head> them and joined other fathers who would doubtless have to help with bootlaces .')
+
+# predict class and print
 classifier.predict(sentence)
 
 print(sentence.labels)
-
