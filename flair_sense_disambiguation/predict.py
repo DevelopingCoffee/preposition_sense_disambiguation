@@ -9,4 +9,4 @@ sentence = Sentence('Peter ambled <head>after</head> them and joined other fathe
 # predict class and print
 classifier.predict(sentence)
 
-print(sentence.labels)
+print(sentence.labels) # 5(2)
