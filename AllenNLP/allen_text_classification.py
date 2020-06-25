@@ -164,6 +164,7 @@ def build_trainer(
         validation_data_loader=dev_loader,
         num_epochs=5,
         optimizer=optimizer,
+        cuda_device=0,
     )
     return trainer
 
