@@ -41,6 +41,7 @@ for file in os.scandir(rootdir):
         newString = newString[9:-13].strip()
         contentRaw = content.text
         contentStriped = contentRaw.strip()
+        # Filter corrupt data
         if not (newString.__contains__("head") and newString.__contains__("/head")):
             instance_id = answer.get("instance")
             print("ALARM -- INSTANCE ID:",instance_id)
@@ -49,6 +50,7 @@ for file in os.scandir(rootdir):
 
         allPrep.append(element)
 
+# Randomize data (for split)
 random.shuffle(allPrep)
 
 # Split data for training, testing and dev
