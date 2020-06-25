@@ -1,10 +1,15 @@
 from flair.data import Sentence
 from flair.models import TextClassifier
+import sys
 
-classifier = TextClassifier.load('resources/taggers/trec/final-model.pt')
+classifier = TextClassifier.load('resources/taggers/trec/best-model.pt')
 
 # create example sentence
-sentence = Sentence('Peter ambled <head>after</head> them and joined other fathers who would doubtless have to help with bootlaces .')
+# sentence = Sentence('Peter ambled <head>after</head> them and joined other fathers who would doubtless have to help with bootlaces .')
+if(len(sys.argv) < 2):
+    sentence = Sentence('Peter ambled <head>after</head> them and joined other fathers who would doubtless have to help with bootlaces .')
+else:
+    sentence = Sentence(sys.argv[1])
 
 # predict class and print
 classifier.predict(sentence)
