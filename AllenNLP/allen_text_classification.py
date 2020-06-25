@@ -1,4 +1,5 @@
 from typing import Dict, Iterable, List, Tuple
+import tempfile
 
 import allennlp
 import torch
@@ -55,7 +56,6 @@ class SimpleClassifier(Model):
     def forward(self,
                 text: Dict[str, torch.Tensor],
                 label: torch.Tensor) -> Dict[str, torch.Tensor]:
-        print("In model.forward(); printing here just because binder is so slow")
         # Shape: (batch_size, num_tokens, embedding_dim)
         embedded_text = self.embedder(text)
         # Shape: (batch_size, num_tokens)
@@ -127,6 +127,11 @@ def run_training_loop():
         print("Starting training")
         trainer.train()
         print("Finished training")
+        # Here's how to save the model.
+        with open("/resources/model.th", 'wb') as f:
+            torch.save(model.state_dict(), f)
+
+        vocab.save_to_files("/resources/vocabulary")
 
 # The other `build_*` methods are things we've seen before, so they are
 # in the setup section above.
@@ -161,6 +166,5 @@ def build_trainer(
         optimizer=optimizer,
     )
     return trainer
-
 
 run_training_loop()
