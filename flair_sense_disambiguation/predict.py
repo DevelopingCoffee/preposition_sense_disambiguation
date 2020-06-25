@@ -9,6 +9,7 @@ classifier = TextClassifier.load('resources/taggers/trec/best-model.pt')
 if(len(sys.argv) < 2):
     sentence = Sentence('Peter ambled <head>after</head> them and joined other fathers who would doubtless have to help with bootlaces .')
 else:
+    print(sys.argv[1])
     sentence = Sentence(sys.argv[1])
 
 # predict class and print
