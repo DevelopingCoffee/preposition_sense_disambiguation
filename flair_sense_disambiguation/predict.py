@@ -2,7 +2,7 @@ from flair.data import Sentence
 from flair.models import TextClassifier
 import sys
 
-classifier = TextClassifier.load('resources/taggers/trec/best-model.pt')
+classifier = TextClassifier.load('resources/best-model.pt')
 
 # create example sentence
 # sentence = Sentence('Peter ambled <head>after</head> them and joined other fathers who would doubtless have to help with bootlaces .')
