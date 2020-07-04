@@ -1,5 +1,6 @@
 from typing import Dict, Iterable, List, Tuple
 import tempfile
+import os
 
 import allennlp
 import torch
@@ -117,21 +118,24 @@ def run_training_loop():
 
     # You obviously won't want to create a temporary file for your training
     # results, but for execution in binder for this guide, we need to do this.
-    with tempfile.TemporaryDirectory() as serialization_dir:
-        trainer = build_trainer(
-            model,
-            serialization_dir,
-            train_loader,
-            dev_loader
-        )
-        print("Starting training")
-        trainer.train()
-        print("Finished training")
-        # Here's how to save the model.
-        with open("/resources/model.th", 'wb') as f:
-            torch.save(model.state_dict(), f)
+    trainer = build_trainer(
+        model,
+        'resources/tmp',
+        train_loader,
+        dev_loader
+    )
+    print("Starting training")
+    trainer.train()
+    print("Finished training")
+    # Save model
+    #config_file = os.path.join('resources', 'config.json')
+    vocabulary_dir = os.path.join('resources', 'vocabulary')
+    weights_file = os.path.join('resources', 'final_model.th')
 
-        vocab.save_to_files("/resources/vocabulary")
+    os.makedirs('resources', exist_ok=True)
+    #params.to_file(config_file)
+    vocab.save_to_files(vocabulary_dir)
+    torch.save(model.state_dict(), weights_file)
 
 # The other `build_*` methods are things we've seen before, so they are
 # in the setup section above.
@@ -162,9 +166,9 @@ def build_trainer(
         serialization_dir=serialization_dir,
         data_loader=train_loader,
         validation_data_loader=dev_loader,
-        num_epochs=5,
+        num_epochs=200,
         optimizer=optimizer,
-        cuda_device=0,
+        cuda_device=1,
     )
     return trainer
 
