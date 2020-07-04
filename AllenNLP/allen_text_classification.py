@@ -102,8 +102,13 @@ def run_training_loop():
     # functionality added.
     train_data, dev_data = read_data(dataset_reader)
 
-    vocab = build_vocab(train_data + dev_data)
-    model = build_model(vocab)
+    # Create new model
+    #vocab = build_vocab(train_data + dev_data)
+    #model = build_model(vocab)
+
+    # Load existing model
+    model = Model.load('resources/final_model.th')
+    vocab = model.vocab
 
     # This is the allennlp-specific functionality in the Dataset object;
     # we need to be able convert strings in the data to integers, and this
@@ -115,6 +120,8 @@ def run_training_loop():
     # allennlp-specific collate function, that runs our indexing and
     # batching code.
     train_loader, dev_loader = build_data_loaders(train_data, dev_data)
+
+    model = model.to(torch.device('cuda:1'))
 
     # You obviously won't want to create a temporary file for your training
     # results, but for execution in binder for this guide, we need to do this.
@@ -163,10 +170,11 @@ def build_trainer(
     optimizer = AdamOptimizer(parameters)
     trainer = GradientDescentTrainer(
         model=model,
+        patience=10,
         serialization_dir=serialization_dir,
         data_loader=train_loader,
         validation_data_loader=dev_loader,
-        num_epochs=200,
+        num_epochs=2000,
         optimizer=optimizer,
         cuda_device=1,
     )
