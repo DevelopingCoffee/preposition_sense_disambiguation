@@ -5,6 +5,7 @@ import torch
 
 import allennlp
 from allennlp.common import JsonDict
+from allennlp.common.params import Params
 from allennlp.data import DataLoader, DatasetReader, Instance
 from allennlp.data import Vocabulary
 from allennlp.data.fields import LabelField, TextField
@@ -82,7 +83,9 @@ class SentenceClassifierPredictor(Predictor):
 
 # Main method
 def main():
-    loaded_model = Model.load('resources/final_model.th')
+    # Load Model
+    loaded_params = Params.from_file('resources/config.json')
+    loaded_model = Model.load(loaded_params, 'resources', 'final_model.th')
     loaded_vocab = loaded_model.vocab
 
     dataset_reader = build_dataset_reader()
