@@ -18,6 +18,11 @@ from allennlp.training.trainer import GradientDescentTrainer, Trainer
 from allennlp.training.optimizers import AdamOptimizer
 from allennlp.training.metrics import CategoricalAccuracy
 
+from allennlp.common import JsonDict
+from allennlp.common.params import Params
+from allennlp.predictors import Predictor
+from overrides import overrides
+
 
 class ClassificationTsvReader(DatasetReader):
     def __init__(self,
@@ -144,6 +149,9 @@ def run_training_loop():
     vocab.save_to_files(vocabulary_dir)
     torch.save(model.state_dict(), weights_file)
 
+    # Test classifier:
+    make_predictions(model, vocab, dataset_reader)
+
 # The other `build_*` methods are things we've seen before, so they are
 # in the setup section above.
 def build_data_loaders(
@@ -179,5 +187,31 @@ def build_trainer(
         cuda_device=1,
     )
     return trainer
+
+
+# Predictor
+def make_predictions(model: Model, vocab: Vocabulary, dataset_reader: DatasetReader) \
+        -> List[Dict[str, float]]:
+    """Make predictions using the given model and dataset reader."""
+    predictions = []
+    predictor = SentenceClassifierPredictor(model, dataset_reader)
+    output = predictor.predict('Peter ambled <head>after</head> them and joined other fathers who would doubtless have to help with bootlaces .') # 5(2)
+    predictions.append({vocab.get_token_from_index(label_id, 'labels'): prob
+                        for label_id, prob in enumerate(output['probs'])})
+    output = predictor.predict('Willie rose and clattered <head>down</head> the hallway .') # 3(1b)
+    predictions.append({vocab.get_token_from_index(label_id, 'labels'): prob
+                        for label_id, prob in enumerate(output['probs'])})
+    return predictions
+
+@Predictor.register("sentence_classifier")
+class SentenceClassifierPredictor(Predictor):
+    def predict(self, sentence: str) -> JsonDict:
+        return self.predict_json({"sentence": sentence})
+
+    @overrides
+    def _json_to_instance(self, json_dict: JsonDict) -> Instance:
+        sentence = json_dict["sentence"]
+        return self._dataset_reader.text_to_instance(sentence)
+
 
 run_training_loop()
