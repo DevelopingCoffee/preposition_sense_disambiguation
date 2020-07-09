@@ -31,7 +31,9 @@ if(len(sys.argv) < 2):
         classifier.predict(data[1])
 
         print("Prediction:"+str(data[1].labels)+"; Correct label: "+str(data[0]))
-        only_label, waste = str(data[1].labels).split(" ")
+        only_label, waste = str(data[1].labels).split(" (")
+        if(str(only_label).__contains__(" ")):
+            only_label, waste = only_label.split(" ")
         waste, only_label = only_label.split("label__")
         if(str(data[0]).__contains__(" ")):
             label1, label2 = str(data[0]).split(" ")
