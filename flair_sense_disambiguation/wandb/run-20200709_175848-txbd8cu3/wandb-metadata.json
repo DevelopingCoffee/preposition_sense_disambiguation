@@ -1,0 +1,24 @@
+{
+    "root": "/home/tim/Studium/Semester4/Text2Scene/preposition_sense_disambiguation",
+    "program": "/home/tim/Studium/Semester4/Text2Scene/preposition_sense_disambiguation/flair_sense_disambiguation/Flair_text_classification_model.py",
+    "git": {
+        "remote": "git@github.com:DevelopingCoffee/preposition_sense_disambiguation.git",
+        "commit": "ee794274ce11a2de2b607001fd6b7d6deead7319"
+    },
+    "email": "tim.rosenkranz1@t-online.de",
+    "startedAt": "2020-07-09T17:58:48.734063",
+    "host": "timorius",
+    "username": "tim",
+    "executable": "/home/tim/Studium/Semester4/Text2Scene/preposition_sense_disambiguation/flair_sense_disambiguation/venv/bin/python",
+    "os": "Linux-5.3.0-62-generic-x86_64-with-Ubuntu-18.04-bionic",
+    "python": "3.7.5",
+    "gpu": "GeForce 930MX",
+    "gpu_count": 1,
+    "cpu_count": 8,
+    "args": [],
+    "state": "running",
+    "jobType": null,
+    "mode": "run",
+    "project": "gpt-3",
+    "heartbeatAt": "2020-07-09T18:08:42.310978"
+}

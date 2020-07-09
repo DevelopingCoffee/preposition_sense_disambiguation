@@ -1,21 +1,40 @@
 from flair.data import Sentence
 from flair.models import TextClassifier
 import sys
+import csv
+from random import shuffle
 
 classifier = TextClassifier.load('resources/best-model.pt')
 
 # create example sentence
 if(len(sys.argv) < 2):
-    sentence = Sentence('Peter ambled <head>after</head> them and joined other fathers who would doubtless have to help with bootlaces .') # 5(2)
-    sentence2 = Sentence('The queen smiled and tweaked me gently <head>by</head> the cheek .') # 5(2)
-    sentence3 = Sentence('Gingerly I squeezed a bit <head>on</head> my fingertip .') # 3(1b)
+    predict_data = []
+
+    with open("data/test.csv") as csvdatei:
+        csv_reader_object = csv.reader(csvdatei)
+
+        for row in csv_reader_object:
+            element = []
+
+            labels = row[0]
+            sentence = Sentence(row[1])
+
+            element.append(labels)
+            element.append(sentence)
+            predict_data.append(element)
+
+    shuffle(predict_data)
+
+    for data in predict_data:
+        classifier.predict(data[1])
+
+        print("Prediction:"+str(data[1].labels)+"; Correct label: "+str(data[0]))
+
 else:
     print(sys.argv[1])
     sentence = Sentence(sys.argv[1])
 
-# predict class and print
-classifier.predict(sentence)
-classifier.predict(sentence2)
-classifier.predict(sentence3)
+    # predict class and print
+    classifier.predict(sentence)
 
-print(sentence.labels +", "+ sentence2.labels +", "+ sentence3.labels)
+    print(sentence.labels)
