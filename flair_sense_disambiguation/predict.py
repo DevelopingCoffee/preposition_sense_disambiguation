@@ -25,10 +25,18 @@ if(len(sys.argv) < 2):
 
     shuffle(predict_data)
 
+    total = 0
+    correct = 0
     for data in predict_data:
         classifier.predict(data[1])
 
         print("Prediction:"+str(data[1].labels)+"; Correct label: "+str(data[0]))
+        if(data[1].labels == data[0]):
+            correct += 1
+        total += 1
+
+    accuracy = correct / total
+    print("Total sentences: "+str(total)+"; Correct: "+str(correct)+"; % correct: "+str(accuracy))
 
 else:
     print(sys.argv[1])
