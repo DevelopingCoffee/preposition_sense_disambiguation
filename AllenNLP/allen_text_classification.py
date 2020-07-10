@@ -1,4 +1,6 @@
 from typing import Dict, Iterable, List, Tuple
+import tempfile
+import os
 
 import allennlp
 import torch
@@ -15,6 +17,11 @@ from allennlp.nn import util
 from allennlp.training.trainer import GradientDescentTrainer, Trainer
 from allennlp.training.optimizers import AdamOptimizer
 from allennlp.training.metrics import CategoricalAccuracy
+
+from allennlp.common import JsonDict
+from allennlp.common.params import Params
+from allennlp.predictors import Predictor
+from overrides import overrides
 
 
 class ClassificationTsvReader(DatasetReader):
@@ -55,7 +62,6 @@ class SimpleClassifier(Model):
     def forward(self,
                 text: Dict[str, torch.Tensor],
                 label: torch.Tensor) -> Dict[str, torch.Tensor]:
-        print("In model.forward(); printing here just because binder is so slow")
         # Shape: (batch_size, num_tokens, embedding_dim)
         embedded_text = self.embedder(text)
         # Shape: (batch_size, num_tokens)
@@ -101,8 +107,13 @@ def run_training_loop():
     # functionality added.
     train_data, dev_data = read_data(dataset_reader)
 
-    vocab = build_vocab(train_data + dev_data)
-    model = build_model(vocab)
+    # Create new model
+    #vocab = build_vocab(train_data + dev_data)
+    #model = build_model(vocab)
+
+    # Load existing model
+    model = Model.load('resources/final_model.th')
+    vocab = model.vocab
 
     # This is the allennlp-specific functionality in the Dataset object;
     # we need to be able convert strings in the data to integers, and this
@@ -115,18 +126,31 @@ def run_training_loop():
     # batching code.
     train_loader, dev_loader = build_data_loaders(train_data, dev_data)
 
+    model = model.to(torch.device('cuda:1'))
+
     # You obviously won't want to create a temporary file for your training
     # results, but for execution in binder for this guide, we need to do this.
-    with tempfile.TemporaryDirectory() as serialization_dir:
-        trainer = build_trainer(
-            model,
-            serialization_dir,
-            train_loader,
-            dev_loader
-        )
-        print("Starting training")
-        trainer.train()
-        print("Finished training")
+    trainer = build_trainer(
+        model,
+        'resources/tmp',
+        train_loader,
+        dev_loader
+    )
+    print("Starting training")
+    trainer.train()
+    print("Finished training")
+    # Save model
+    #config_file = os.path.join('resources', 'config.json')
+    vocabulary_dir = os.path.join('resources', 'vocabulary')
+    weights_file = os.path.join('resources', 'final_model.th')
+
+    os.makedirs('resources', exist_ok=True)
+    #params.to_file(config_file)
+    vocab.save_to_files(vocabulary_dir)
+    torch.save(model.state_dict(), weights_file)
+
+    # Test classifier:
+    make_predictions(model, vocab, dataset_reader)
 
 # The other `build_*` methods are things we've seen before, so they are
 # in the setup section above.
@@ -154,13 +178,40 @@ def build_trainer(
     optimizer = AdamOptimizer(parameters)
     trainer = GradientDescentTrainer(
         model=model,
+        patience=10,
         serialization_dir=serialization_dir,
         data_loader=train_loader,
         validation_data_loader=dev_loader,
-        num_epochs=5,
+        num_epochs=2000,
         optimizer=optimizer,
+        cuda_device=1,
     )
     return trainer
+
+
+# Predictor
+def make_predictions(model: Model, vocab: Vocabulary, dataset_reader: DatasetReader) \
+        -> List[Dict[str, float]]:
+    """Make predictions using the given model and dataset reader."""
+    predictions = []
+    predictor = SentenceClassifierPredictor(model, dataset_reader)
+    output = predictor.predict('Peter ambled <head>after</head> them and joined other fathers who would doubtless have to help with bootlaces .') # 5(2)
+    predictions.append({vocab.get_token_from_index(label_id, 'labels'): prob
+                        for label_id, prob in enumerate(output['probs'])})
+    output = predictor.predict('Willie rose and clattered <head>down</head> the hallway .') # 3(1b)
+    predictions.append({vocab.get_token_from_index(label_id, 'labels'): prob
+                        for label_id, prob in enumerate(output['probs'])})
+    return predictions
+
+@Predictor.register("sentence_classifier")
+class SentenceClassifierPredictor(Predictor):
+    def predict(self, sentence: str) -> JsonDict:
+        return self.predict_json({"sentence": sentence})
+
+    @overrides
+    def _json_to_instance(self, json_dict: JsonDict) -> Instance:
+        sentence = json_dict["sentence"]
+        return self._dataset_reader.text_to_instance(sentence)
 
 
 run_training_loop()

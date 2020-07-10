@@ -28,16 +28,23 @@ for file in os.scandir(rootdir):
         newString = newString[9:-13].strip()
         contentRaw = content.text
         contentStriped = contentRaw.strip()
+
+        # Filter corrupt data
         if not (newString.__contains__("head") and newString.__contains__("/head")):
             instance_id = answer.get("instance")
             print("ALARM -- INSTANCE ID:",instance_id)
-            continue;
+            continue
+        if sense_id=="":
+            instance_id = answer.get("instance")
+            print("NO ID -- INSTANCE ID:",instance_id)
+            continue
 
         element.append(newString)
         element.append(sense_id)
 
         allPrep.append(element)
 
+# Randomize data
 random.shuffle(allPrep)
 
 # Split data for training, testing and dev
