@@ -42,12 +42,8 @@ flair_embedding_forward = FlairEmbeddings('news-forward')
 flair_embedding_backward = FlairEmbeddings('news-backward')
 
 # create a StackedEmbedding object that combines glove and forward/backward flair embeddings
-stacked_embeddings = StackedEmbeddings([
-                                        glove_embedding,
-                                        flair_embedding_forward,
-                                        flair_embedding_backward,
-                                        hot_embedding
-                                       ])
+#stacked_embeddings = StackedEmbeddings([glove_embedding,flair_embedding_forward,flair_embedding_backward])
+stacked_embeddings = DocumentPoolEmbeddings([glove_embedding,flair_embedding_forward,flair_embedding_backward])
 
 # document pool embeddings
 document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
@@ -70,7 +66,7 @@ flair.device = torch.device('cuda:0')
 trainer = ModelTrainer(classifier, corpus)
 
 # 7. start the training
-trainer.train('resources/flair_embed/',
+trainer.train('resources/alt_embed/',
               learning_rate=0.1,
               mini_batch_size=32,
               anneal_factor=0.5,
