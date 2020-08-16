@@ -42,8 +42,8 @@ flair_embedding_forward = FlairEmbeddings('news-forward')
 flair_embedding_backward = FlairEmbeddings('news-backward')
 
 # create a StackedEmbedding object that combines glove and forward/backward flair embeddings
-stacked_embeddings = StackedEmbeddings(embeddings = [glove_embedding,flair_embedding_forward,flair_embedding_backward])
-#stacked_embeddings = DocumentPoolEmbeddings(embeddings = [glove_embedding,flair_embedding_forward,flair_embedding_backward])
+#stacked_embeddings = StackedEmbeddings(embeddings = [glove_embedding,flair_embedding_forward,flair_embedding_backward])
+stacked_embeddings = DocumentPoolEmbeddings(embeddings = [glove_embedding,flair_embedding_forward,flair_embedding_backward])
 
 # document pool embeddings
 document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
