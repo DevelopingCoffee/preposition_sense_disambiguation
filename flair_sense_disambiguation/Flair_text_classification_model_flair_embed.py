@@ -4,14 +4,6 @@ from Dataset_class import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, DocumentRNNEmbeddings, DocumentPoolEmbeddings, OneHotEmbeddings, StackedEmbeddings
 from flair.models import TextClassifier
 from flair.trainers import ModelTrainer
-# import wandb
-#
-# # weights and biases init
-# wandb.init(project="gpt-3")
-#
-# # 2. Save model inputs and hyperparameters
-# config = wandb.config
-# config.learning_rate = 0.01
 
 col_name_map = {0: "label", 1: "text"}
 
@@ -43,7 +35,7 @@ flair_embedding_backward = FlairEmbeddings('news-backward')
 
 # create a StackedEmbedding object that combines glove and forward/backward flair embeddings
 #stacked_embeddings = StackedEmbeddings(embeddings = [glove_embedding,flair_embedding_forward,flair_embedding_backward])
-stacked_embeddings = DocumentPoolEmbeddings(embeddings = [glove_embedding,flair_embedding_forward,flair_embedding_backward])
+stacked_embeddings = DocumentPoolEmbeddings(embeddings = [hot_embedding,glove_embedding,flair_embedding_forward,flair_embedding_backward])
 
 # document pool embeddings
 document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
@@ -51,14 +43,6 @@ document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], f
 # 5. create the text classifier
 classifier = TextClassifier(stacked_embeddings, label_dictionary=label_dict)
 #classifier = TextClassifier.load('resources/best-model.pt')
-
-# 3. Log gradients and model parameters
-#wandb.watch(classifier)
-# for batch_idx, (data, target) in enumerate(train_loader):
-#   ...
-#   if batch_idx % args.log_interval == 0:
-#     # 4. Log metrics to visualize performance
-#     wandb.log({"loss": loss})
 
 flair.device = torch.device('cuda:0')
 
