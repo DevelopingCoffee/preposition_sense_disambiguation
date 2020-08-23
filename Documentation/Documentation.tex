@@ -103,9 +103,44 @@ Damit eine Eingabe verarbeitet werden kann, muss diese zunächst vorbereitet wer
 Nachdem die Daten im csv-Format vorliegen, wird daraus ein Korpus erstellt. Dazu wird ein \textit{Dictionary} und die entsprechenden Embeddings erstellt. Anschließend wird der \textit{Classifier} erstellt und das Training beginnt.
 \end{flushleft}
 
-\subsection{Programm}
+\subsection{Anwendung}
 \begin{flushleft}
-Das Flair-Projekt umfasst vier Dateien:
+Für eine reibungslose Anwendung des Programmes müssen einige Dinge beachtet werden, denn es kann immer nur eine Präposition gleichzeitig klassifiziert werden. Deshalb wird ein \textit{Sequence Tagger} benötigt, der die Präposition markiert, die klassifiziert werden soll. Dieser ist im \hyperlink{SeqTag}{Abschnitt 2.3} erklärt.
+\end{flushleft}
+
+\subsubsection{Satz predicten}
+\begin{flushleft}
+Um einen Satz zu predicten wird das script \textit{predict.py} benötigt. Beim Aufrufen kann der Satz, der predictet werden soll mit übergeben werden. Wichtig dabei ist, dass der Satz zuvor mit dem \textit{Sequence Tagger} (\hyperlink{SeqTag}{$\uparrow$}) präpariert wurde. Sollte dies nicht geschehen sein, kann ein fehlerhaftes Ergebnis ausgegeben werden.
+\end{flushleft}
+
+\subsection{Sequence Tagger}
+\begin{flushleft}
+\hypertarget{SeqTag}{Der} \textit{Sequence Tagger} ist notwenidg, um in einem Satz die Präposition zu markieren, die klassifiziert werden soll, v.a. in Sätzen, in denen mehrere vorhanden sind.
+\end{flushleft}
+
+\subsubsection{Anwendung}
+\begin{flushleft}
+Der \textit{Sequence Tagger} ist ganz simpel zu benutzen. Zunächst muss wie gewöhnlich ein Objekt der Klassen erzeugt werden. Anschließend ist mit der Methode set\_input() die Eingabe zu setzen. Die Eingabe muss eine Liste von \textit{Strings} sein. Ist dies getan, kann mit do\_tagging() das taggen gestartet werden. Diese Methode gibt dann eine Liste mit den reultierenden \textit{Strings} zurück. Hierbei ist zu beachten, dass bei Eingabe eines Satzes mit zwei Präpositionen \textbf{zwei} Sätze zurückgegeben werden!
+\end{flushleft}
+
+\subsubsection{Funktionsweise}
+\begin{flushleft}
+FlairNLP bietet mehrere bereits vortrainierte \textit{Sequence Tagger}. Wir nutzen für unser Projekt den \textit{Part-of-Speech Tagger}. Mit diesem wird der Satz zunächst predictet, wodurch jedem Wort der entsprechende Tag zugeordnet wird. Da wir uns aber nur für Präpositionen interessieren, löschen wir alle anderen Tags. Zeitgleich werden die Präpositionen aus dem Satz extrahiert, um sie später gezielt wieder einzusetzen und dabei jede Preposition in einem individuellen Satz markieren zu können.
+\end{flushleft}
+
+\subsubsection{Programm}
+\begin{flushleft}
+DEr \textit{Sequence Tagger} ist in dem script \textit{flair\_sequence\_tagger.py} enthalten. Er ist so konstruiert, dass er in anderen scripts leicht importiert und verwendet werden kann. Weiterhin beinhaltet das script auch eine beispielhafte Anwendung.
+\end{flushleft}
+\begin{itemize}
+\item \_\_init\_\_: In der Initialisierungs-Methode Wird lediglich der zuvor beschriebene Tagger von Flair geladen.
+\item set\_input: Diese Methode dient dazu, eine Liste an \textit{Strings} zu übergeben, die getaggt werden sollen.
+\item do\_tagging: Diese Methode taggt die zuvor in der set\_input Methode übergeben Sätze. Rückgabeparameter ist eine Liste an \textit{Strings}. Diese Liste kann u.U. größer sein, als die Liste der Eingaben.
+\end{itemize}
+
+\subsection{Projektdateien}
+\begin{flushleft}
+Das Flair-Projekt umfasst hauptsächlich vier Dateien:
 \end{flushleft}
 \begin{itemize}
 \item[•] Flair\_prepare.py - Diese Datei dient der Vorbereitung der Daten.
@@ -113,6 +148,11 @@ Das Flair-Projekt umfasst vier Dateien:
 \item[•] flair\_test\_classification\_model.py - Diese Datei dient zum erstellen des \textit{text classifiers} und des Trainings dessen
 \item[•] predict.py - Diese Datei enthält den \textit{predictor}, bzw. dient zum testen des Endproduktes.
 \end{itemize}
+\begin{flushleft}
+Zusätzlich zu diesen vier Dateien gibt es noch weitere Dateien, darunter der eine Datei zum \textit{Sequence Tagger}, der in \hyperlink{SeqTag}{Abschnitt 2.3} erklärt ist.
+
+Daneben existieren noch weitere Dateien, die ähnlich zu den vier genannten Dateien sind. Dateien, die ein "\textit{predict}" enthalten, funktionieren wie \textit{predict.py}, Dateien, die ein "\textit{text\_classification\_model}" enthalten, funktionieren wie \textit{flair\_test\_classification\_model.py}, benutzen aber z.B. andere Embeddings.
+\end{flushleft}
 
 \subsubsection{Flair\_prepare.py}
 \begin{flushleft}
@@ -132,23 +172,23 @@ Die Datei \textit{Dataset\_class.py} enthält die Klassen zum Erstellen des Korp
 \begin{flushleft}
 Diese datei beinhaltet alle Einstellungen und Bauteile für den \textit{Text classifier}.
 
-\pythonexternal[language=Python, linerange={16-23}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
+\pythonexternal[language=Python, linerange={8-15}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
 
 Als erstes wird der Korpus auf Basis der zuvor erstellten csv-Dateien und der angegebnen \textit{col\_name\_map} erzeugt, sowie ein Dictionary des Korpus errichtet. Flair bietet neben einem csv-Korpus auch andere Formate, wir haben uns aber für csv entschieden, da es ein gängiges Format ist und auch für andere Teilprojekte verwendet werden kann.
 
-\pythonexternal[language=Python, linerange={34-41}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
+\pythonexternal[language=Python, linerange={26-33}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
 
-Nachdem der Korpus erzeugt wurde, werden die Embeddings erzeugt. Hierbei können mehrere Embeddings durch sog. \textit{pool-embeddings} zusammen genutzt werden. Wir haben uns für OneHotEmbeddings und WordEmbeddings (Typ \textit{glove)} entschieden.
+Nachdem der Korpus erzeugt wurde, werden die Embeddings erzeugt. Hierbei können mehrere Embeddings durch sog. \textit{pool-embeddings} zusammen genutzt werden. Wir haben uns (hier) für OneHotEmbeddings und WordEmbeddings (Typ \textit{glove)} entschieden\footnote{In anderen Dateien haben wir auch andere Embeddings getestet, aber mit diesen die besten Ergebnisse erzielt.}.
 
-\pythonexternal[language=Python, linerange={43-45}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
+\pythonexternal[language=Python, linerange={35-37}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
 
 Nachdem die Embeddings erstellt wurden, kann der Classifier erzeugt werden. Alternativ kann natürlicha uch ein bestehender Classifier geladen werden. Wichtig ist nur, dass dieser Classifier auch die Daten lesen kann, also dem selben Grundaufbau folgt.
 
-\pythonexternal[language=Python, linerange={55-66}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
+\pythonexternal[language=Python, linerange={39-50}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
 
 Bevor das Training startet, wählen wir noch, dass auf einer GPU trainiert werden soll. Da Flair über Torch läuft, kann dies einfach über troch gewählt werden.
 
-Anschließend erstellen wir den Trainer auf Basis des zuvor erzeugten oder geladenen Classifier und Korpus und beginnen das Training. Hierbei können verschiedene Einstellungen vorgenommen werden. Zunächst wird das \textit{output-directory} angegeben., welches wir mit \textit{resources} angegeben haben. In diesem Verzeichnis werden dann logs und die Models abgespeichert. Die \textit{learning rate} haben wir auf dem Sdandartwert belassen, ebenso die beiden weiteren Parameter. Die \textit{patience} kann variabel angepasst werden. Sie verursacht, dass das Training bei zu vielen Epochen ohne Verbesserung \textbf{hintereinander} das Training abgebrochen wird. Je höher die patience, desto mehr Epochen ohne Verbesserung können vorkommen, ohne dass das Training abgebrochen wird. Der letzte Parameter ist die maximale Anzahl an Epochen. Wir haben einige Tausend Epochen trainiert. Dieses Trainign kann aber auch dauern - je Epoche bis zu 40 Sekunden oder mehr, je nach Hardware.
+Anschließend erstellen wir den Trainer auf Basis des zuvor erzeugten oder geladenen Classifier und Korpus und beginnen das Training. Hierbei können verschiedene Einstellungen vorgenommen werden. Zunächst wird das \textit{output-directory} angegeben., welches wir mit \textit{resources} angegeben haben. In diesem Verzeichnis werden dann logs und die Models abgespeichert. Die \textit{learning rate} haben wir auf dem Sdandartwert belassen, ebenso die beiden weiteren Parameter. Die \textit{patience} kann variabel angepasst werden. Sie verursacht, dass das Training bei zu vielen Epochen ohne Verbesserung \textbf{hintereinander} die Lernrate verringert oder das Training abgebrochen wird. Je höher die patience, desto mehr Epochen ohne Verbesserung können vorkommen. Der letzte Parameter ist die maximale Anzahl an Epochen. Wir haben einige Tausend Epochen trainiert. Dieses Training kann aber auch dauern; Auswirkungen auf die tRainingszeit haben u.a. auch die verwedeten Embeddings.
 \end{flushleft}
 
 \subsubsection{predict.py}
@@ -158,11 +198,15 @@ Der Predictor dient dazu, die Fertige KI anzuwenden. Das Programm kann dafür au
 Alternativ kann das Programm auch ohne Übergabeparameter ausgeführt werden. In diesem Fall wird eine Reihe an Testdaten predictet.
 \end{flushleft}
 
+\newpage
+
 \section{AllenNLP}
 
 \subsection{Vorgehen}
 
 \subsection{Programm}
+
+\newpage
 
 \section{Blabla}
 
