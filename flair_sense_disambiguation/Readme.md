@@ -7,15 +7,17 @@ FlairNLP is a framework for NLP tasks. We use a flair text classifier to classif
 ###Files
 
 This project consists of four main scripts. These are
-* Flair_text_classification_model.py which is the training script for the classifier,
+
+* Flair\_text\_classification\_model.py which is the training script for the classifier,
 * predict.py which is the script to use the trained model, namely the predictor,
-* Dataset_class.py - the script to hold the needed classes to create the Corpus and
-* Flair_prepare.py which is used to prepare our training data from SemEval07.
-Furthermore there is a script, flair_sequence_tagger.py, which holds the sequence tagger and two other scripts which are a copy of other scripts. These two are used to experiment with other embeddings.
+* Dataset\_class.py - the script to hold the needed classes to create the Corpus and
+* Flair\_prepare.py which is used to prepare our training data from SemEval07.
+
+Furthermore there is a script, flair\_sequence\_tagger.py, which holds the sequence tagger and two other scripts which are a copy of other scripts. These two are used to experiment with other embeddings.
 
 ###Training
 
-The train data has to comply with the standard flair format (__label__<label>) and has to be saved in a csv file. To change the data for training you only need to change the driectroy for the files in the training script. By default the training data will be used from the _data_ directory
+The train data has to comply with the standard flair format (\_\_label\_\_<label>) and has to be saved in a csv file. To change the data for training you only need to change the driectroy for the files in the training script. By default the training data will be used from the _data_ directory
 
 ###Predicting
 
