@@ -29,12 +29,20 @@ hot_embedding = OneHotEmbeddings(corpus)
 # init standard GloVe embedding
 glove_embedding = WordEmbeddings('glove')
 
+# init Flair forward and backwards embeddings
+flair_embedding_forward = FlairEmbeddings('news-forward')
+flair_embedding_backward = FlairEmbeddings('news-backward')
+
+# create a StackedEmbedding object that combines glove and forward/backward flair embeddings
+#stacked_embeddings = StackedEmbeddings(embeddings = [glove_embedding,flair_embedding_forward,flair_embedding_backward])
+stacked_embeddings = DocumentPoolEmbeddings(embeddings = [hot_embedding,glove_embedding,flair_embedding_forward,flair_embedding_backward])
+
 # document pool embeddings
 document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
 
 # 5. create the text classifier
-#classifier = TextClassifier(document_embeddings, label_dictionary=label_dict)
-classifier = TextClassifier.load('resources/best-model.pt')
+classifier = TextClassifier(stacked_embeddings, label_dictionary=label_dict)
+#classifier = TextClassifier.load('resources/best-model.pt')
 
 flair.device = torch.device('cuda:0')
 
@@ -42,7 +50,7 @@ flair.device = torch.device('cuda:0')
 trainer = ModelTrainer(classifier, corpus)
 
 # 7. start the training
-trainer.train('resources/hot_embed/',
+trainer.train('resources/alt_embed/',
               learning_rate=0.1,
               mini_batch_size=32,
               anneal_factor=0.5,
