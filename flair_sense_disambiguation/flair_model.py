@@ -7,7 +7,7 @@ from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings
 from flair.models import TextClassifier, SequenceTagger
 from flair.datasets import SentenceDataset
 from flair.models import SequenceTagger
-from flair.tokenization import SegtokTokenizer, SpacyTokenizer
+from flair.tokenization import SegtokTokenizer, SpacyTokenizer, SpaceTokenizer
 
 from flair.trainers import ModelTrainer
 from flair.data import Sentence
@@ -19,16 +19,22 @@ from random import shuffle
 
 
 class BaseModel:
-    """TBD"""
+    """Base Model for flair"""
 
     def __init__(self,
                  directory: str='resources/',
                  external_tokenizer: bool=False,
                  mini_batch_size=32,
                  verbose: bool=False
-
     ):
-        """TBD"""
+        """Base model for flair classifier to predict sense of prepositions
+
+        :param directory: base directory where files will be stored
+        :param external_tokenizer: bool variable to determine, if the sentences given to this model have already been\
+        tokenized
+        :param mini_batch_size: mini batch size to use
+        :param verbose: set to True to display a progress bar
+        """
 
         self.__directory = directory
         self.__mini_batch_size=mini_batch_size
@@ -38,28 +44,22 @@ class BaseModel:
         self.__classifier = None
         self.__corpus = None
 
-    def load_classifier(self):
-        """TBD"""
+    def _load_classifier(self):
+        """Loading a classifier from file"""
 
         try:
             self.__classifier = TextClassifier.load(self.__directory+'final-model.pt')
         except:
             print("Unable to load classifier")
 
-    def create_classifier(self, data_dir='data/'):
-        """TBD"""
+    def _create_classifier(self, data_dir='data/', tokenizer=None):
+        """Create a new classifier
+           :param data dir: directory where training data is stored (optimal is train, test and dev file)
+           :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
+        """
 
-        col_name_map = {0: "label", 1: "text"}
-
-        if(self.__external_tokenizer):
-            tokenizer = None
-        else:
-            tokenizer = SegtokTokenizer()
-        # Get the corpus
-        self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
-                                                        column_name_map=col_name_map,
-                                                        )#tokenizer="segtok_tokenizer")
-        print(Corpus)
+        if self.__corpus is None:
+            self.__create_corpus(data_dir, tokenizer)
 
         # Create the label dictionary
         label_dict = self.__corpus.make_label_dictionary()
@@ -85,9 +85,38 @@ class BaseModel:
         # Create the text classifier
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict)
 
+    def __create_corpus(self, data_dir="data/", tokenizer=None):
+        """Create a new corpus
+           :param data dir: directory where training data is stored (optimal is train, test and dev file)
+           :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
+        """
 
-    def train(self):
-        """TBD"""
+        col_name_map = {0: "label", 1: "text"}
+
+        if (self.__external_tokenizer):
+            # Already tokenized sentences will be 'tokenized' by spaces only if set to true
+            # Otherwise standard tokenizer is used (SegTok is default by flair)
+            tokenizer = SpaceTokenizer()
+
+        # Create the corpus
+        self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
+                                                        column_name_map=col_name_map,
+                                                        tokenizer=tokenizer)
+        print(Corpus)
+
+
+    def train(self, data_dir="data/"):
+        """Create a new classifier
+           :param data dir: directory where training data is stored (optimal is train, test and dev file)
+        """
+
+        if self.__classifier is None:
+            self._load_classifier()
+            if self.__classifier is None:
+                self._create_classifier(data_dir=data_dir)
+            else:
+                self.__create_corpus(data_dir=data_dir)
+
 
         flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -102,15 +131,20 @@ class BaseModel:
                       patience=5,
                       max_epochs=10)
 
-    def predict(self, sentences):
-        """TBD"""
+    def predict(self, sentences, tokenizer=None):
+        """Create a new classifier
+           :param sentences: list of sentences to predict
+           :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
+        """
 
         tagger = Tagger()
         tagger.set_input(sentences)
         dataset = tagger.do_tagging()
 
-        tokenizer = SegtokTokenizer()
-        dataset = SentenceDataset([Sentence(text, tokenizer) for text in dataset])
+        if(self.__external_tokenizer):
+            tokenizer = SpaceTokenizer()
+
+        dataset = SentenceDataset([Sentence(text, (tokenizer if tokenizer is not None else True)) for text in dataset])
         self.__classifier.predict(
             dataset,
             mini_batch_size=self.__mini_batch_size,
@@ -136,7 +170,9 @@ class Tagger:
         self.__sentences = []
 
     def set_input(self, inputs):
-        """Set input list with type string of sentences to tag and mark"""
+        """Set input list with type string of sentences to tag and mark
+           :param inputs: list of strings
+        """
 
         for i in range(len(inputs)):
             # Convert String inputs to flair Sentences
@@ -144,7 +180,9 @@ class Tagger:
         self.__sentences = inputs
 
     def do_tagging(self):
-        """Tagging of prepositions. Input has to be set with the *set_input* method."""
+        """Tagging of prepositions. Input has to be set with the *set_input* method.
+           Returns a list of strings with tagged prepositions.
+        """
 
         predict_sentences = []
 
@@ -200,3 +238,11 @@ class Tagger:
 
         # Returns the list of sentences with marked prepositions
         return predict_sentences
+
+
+def main():
+    model = BaseModel()
+    model.train()
+
+if __name__ == "__main__":
+    main()

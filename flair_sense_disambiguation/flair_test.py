@@ -26,9 +26,12 @@ else:
         for row in csv_reader_object:
             element = []
 
+            # Labels
             labels = row[0]
-            sentence = Sentence(row[1])
+            # Text
+            sentence = row[1]
 
+            # Combine in list
             element.append(labels)
             element.append(sentence)
             predict_data.append(element)
@@ -38,8 +41,11 @@ else:
     total = 0
     correct = 0
     for data in predict_data:
-        data[1] = model.predict(data[1])
+        # Data = [label, text]
+        # Predict text with the trained model
+        data[1] = model.predict([data[1]])[0]
 
+        # Compare the prediction and given (correct) label
         print("Prediction:" + str(data[1].labels) + "; Correct label: " + str(data[0]))
         only_label, waste = str(data[1].labels).split(" (")
         if (str(only_label).__contains__(" ")):
