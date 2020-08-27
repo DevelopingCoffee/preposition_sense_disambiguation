@@ -44,7 +44,7 @@ class BaseModel:
         self.__classifier = None
         self.__corpus = None
 
-    def load_classifier(self):
+    def _load_classifier(self):
         """Loading a classifier from file"""
 
         try:
@@ -52,7 +52,7 @@ class BaseModel:
         except:
             print("Unable to load classifier")
 
-    def create_classifier(self, data_dir='data/', tokenizer=None):
+    def _create_classifier(self, data_dir='data/', tokenizer=None):
         """Create a new classifier
            :param data dir: directory where training data is stored (optimal is train, test and dev file)
            :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
@@ -111,9 +111,9 @@ class BaseModel:
         """
 
         if self.__classifier is None:
-            self.load_classifier()
+            self._load_classifier()
             if self.__classifier is None:
-                self.create_classifier(data_dir=data_dir)
+                self._create_classifier(data_dir=data_dir)
             else:
                 self.__create_corpus(data_dir=data_dir)
 
