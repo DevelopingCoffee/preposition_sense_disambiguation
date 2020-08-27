@@ -3,3 +3,4 @@ resources
 *.pt
 *.log
 __pycache__
+todo.txt
