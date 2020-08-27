@@ -2,3 +2,4 @@ venv
 resources
 *.pt
 *.log
+__pycache__
