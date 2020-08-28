@@ -1,17 +1,17 @@
 \BOOKMARK [1][-]{section.1}{Einleitung}{}% 1
 \BOOKMARK [1][-]{section.2}{FlairNLP}{}% 2
-\BOOKMARK [2][-]{subsection.2.1}{Vorgehen}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.1}{Vorgehen [Training]}{section.2}% 3
 \BOOKMARK [2][-]{subsection.2.2}{Anwendung}{section.2}% 4
-\BOOKMARK [3][-]{subsubsection.2.2.1}{Satz predicten}{subsection.2.2}% 5
-\BOOKMARK [2][-]{subsection.2.3}{Sequence Tagger}{section.2}% 6
-\BOOKMARK [3][-]{subsubsection.2.3.1}{Anwendung}{subsection.2.3}% 7
-\BOOKMARK [3][-]{subsubsection.2.3.2}{Funktionsweise}{subsection.2.3}% 8
-\BOOKMARK [3][-]{subsubsection.2.3.3}{Programm}{subsection.2.3}% 9
-\BOOKMARK [2][-]{subsection.2.4}{Projektdateien}{section.2}% 10
-\BOOKMARK [3][-]{subsubsection.2.4.1}{Flair\137prepare.py}{subsection.2.4}% 11
-\BOOKMARK [3][-]{subsubsection.2.4.2}{Dataset\137class.py}{subsection.2.4}% 12
-\BOOKMARK [3][-]{subsubsection.2.4.3}{Flair\137text\137classification\137model.py}{subsection.2.4}% 13
-\BOOKMARK [3][-]{subsubsection.2.4.4}{predict.py}{subsection.2.4}% 14
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Trainieren}{subsection.2.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.2.2}{Satz predicten}{subsection.2.2}% 6
+\BOOKMARK [2][-]{subsection.2.3}{Sequence Tagger - Pr\344positionen markieren}{section.2}% 7
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Anwendung}{subsection.2.3}% 8
+\BOOKMARK [3][-]{subsubsection.2.3.2}{Funktionsweise}{subsection.2.3}% 9
+\BOOKMARK [3][-]{subsubsection.2.3.3}{Programm}{subsection.2.3}% 10
+\BOOKMARK [2][-]{subsection.2.4}{Projektaufbau}{section.2}% 11
+\BOOKMARK [3][-]{subsubsection.2.4.1}{Aufbau des Classifiers und Korpus}{subsection.2.4}% 12
+\BOOKMARK [3][-]{subsubsection.2.4.2}{Aufbau des Trainings}{subsection.2.4}% 13
+\BOOKMARK [3][-]{subsubsection.2.4.3}{Aufbau des Predictors}{subsection.2.4}% 14
 \BOOKMARK [1][-]{section.3}{AllenNLP}{}% 15
 \BOOKMARK [2][-]{subsection.3.1}{Vorgehen}{section.3}% 16
 \BOOKMARK [2][-]{subsection.3.2}{Programm}{section.3}% 17

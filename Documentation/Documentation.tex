@@ -94,28 +94,37 @@ Im Praktikum \textit{Text2Sene} geht es darum, aus Textbeschreibungen Szenen zu 
 FlairNLP ist ein Framework, das speziell für NLP-Aufgaben konzipiert ist. Für unsere Aufgabe nutzen wir einen \textit{text classifier}, der wie der Name sagt, eine Eingabe klassifiziert und dadurch die Präposition dem zugehörigen Sinn zuordnet.
 \end{flushleft}
 
-\subsection{Vorgehen}
+\subsection{Vorgehen [Training]}
 \begin{flushleft}
 Damit einer Präposition ein Sinn zugeordnet werden kann, passieren einige Dinge. Der Hauptteil des Projekts besteht aus einer NLP-KI mit dem Flair-framework.
 
 Damit eine Eingabe verarbeitet werden kann, muss diese zunächst vorbereitet werden. Dazu werden die Daten aus den xml-Dateien gelsen und in einer csv-Datei mit dem entsprechenden Format für Flair abgespeichert. Hierbei wird das standard-Format (\_\_label\_\_$<$label$>$) verwendet. Die Trainingsdaten werden in drei Dateien aufgeteilt, dabei werden 80\% Training, 10\% Dev und weitere 10\% Test zugeschrieben.
 
-Nachdem die Daten im csv-Format vorliegen, wird daraus ein Korpus erstellt. Dazu wird ein \textit{Dictionary} und die entsprechenden Embeddings erstellt. Anschließend wird der \textit{Classifier} erstellt und das Training beginnt.
+Nachdem die Daten im csv-Format vorliegen, wird daraus ein Korpus erstellt. Dazu wird ein \textit{Dictionary} und die entsprechenden Embeddings erstellt. Anschließend wird der \textit{Classifier} erstellt und das Training beginnt.\footnote{Für eine genauere Erklärung bzgl. des Classifiers, des Korpus und des Dictionary verweisen wir auf die offizielle FlairNLP-Dokumentation.}
 \end{flushleft}
 
 \subsection{Anwendung}
 \begin{flushleft}
-Für eine reibungslose Anwendung des Programmes müssen einige Dinge beachtet werden, denn es kann immer nur eine Präposition gleichzeitig klassifiziert werden. Deshalb wird ein \textit{Sequence Tagger} benötigt, der die Präposition markiert, die klassifiziert werden soll. Dieser ist im \hyperlink{SeqTag}{Abschnitt 2.3} erklärt.
+
+\end{flushleft}
+
+\subsubsection{Trainieren}
+\begin{flushleft}
+
 \end{flushleft}
 
 \subsubsection{Satz predicten}
 \begin{flushleft}
-Um einen Satz zu predicten wird das script \textit{predict.py} benötigt. Beim Aufrufen kann der Satz, der predictet werden soll mit übergeben werden. Wichtig dabei ist, dass der Satz zuvor mit dem \textit{Sequence Tagger} (\hyperlink{SeqTag}{$\uparrow$}) präpariert wurde. Sollte dies nicht geschehen sein, kann ein fehlerhaftes Ergebnis ausgegeben werden.
+Um einen Satz zu predicten, ist nicht viel erforderlich. Beim Aufrufen muss eine Liste von \textit{Strings} übergeben werden und optional dazu ein tokenizer, der genutzt werden soll. Wurde beim erstellen des Objektes angegeben, dass nicht tokenisiert werden soll, so wird das tokenizer-argument ignoriert. Die übergebenen Sätze dürfen dabei aber noch nicht markiert sein - die \textbf{Markierung der Präpositionen wird automatisch} mit dem \textit{Sequence Tagger} (\hyperlink{SeqTag}{$\uparrow$}) \textbf{vollzogen}.
+
+Bevor predictet wird, wird zuerst geprüft, ob ein \textit{classifier} vorhanden ist. Wenn nicht, wird wenn möglich einer importiert, ansonsten ein neuer erstellt - jedoch wird \textbf{immer} erst versucht, einen existierenden zu importieren. Hierbei ist wichtig, dass das bei der Erstellung des Objekts angegebene Verzeichnis als Quelle für Imports und Exports herangezogen wird. 
 \end{flushleft}
 
-\subsection{Sequence Tagger}
+\subsection{Sequence Tagger - Präpositionen markieren}
 \begin{flushleft}
 \hypertarget{SeqTag}{Der} \textit{Sequence Tagger} ist notwenidg, um in einem Satz die Präposition zu markieren, die klassifiziert werden soll, v.a. in Sätzen, in denen mehrere vorhanden sind.
+
+Hierbei ist zu beachten, dass für eine einfache Anwendung des Flair Projekts zum predicten der Präposition in einem Satz das Verstehen und / oder Anwenden dieses Taggers \textbf{nicht} notwendig ist.
 \end{flushleft}
 
 \subsubsection{Anwendung}
@@ -130,7 +139,7 @@ FlairNLP bietet mehrere bereits vortrainierte \textit{Sequence Tagger}. Wir nutz
 
 \subsubsection{Programm}
 \begin{flushleft}
-DEr \textit{Sequence Tagger} ist in dem script \textit{flair\_sequence\_tagger.py} enthalten. Er ist so konstruiert, dass er in anderen scripts leicht importiert und verwendet werden kann. Weiterhin beinhaltet das script auch eine beispielhafte Anwendung.
+Der \textit{(Sequence) Tagger} ist in dem script \textit{model\_flair.py} enthalten.
 \end{flushleft}
 \begin{itemize}
 \item \_\_init\_\_: In der Initialisierungs-Methode Wird lediglich der zuvor beschriebene Tagger von Flair geladen.
@@ -138,38 +147,19 @@ DEr \textit{Sequence Tagger} ist in dem script \textit{flair\_sequence\_tagger.p
 \item do\_tagging: Diese Methode taggt die zuvor in der set\_input Methode übergeben Sätze. Rückgabeparameter ist eine Liste an \textit{Strings}. Diese Liste kann u.U. größer sein, als die Liste der Eingaben.
 \end{itemize}
 
-\subsection{Projektdateien}
+\subsection{Projektaufbau}
 \begin{flushleft}
-Das Flair-Projekt umfasst hauptsächlich vier Dateien:
+Das Flair-Projekt umfasst hauptsächlich zwei Dateien:
 \end{flushleft}
 \begin{itemize}
-\item[•] Flair\_prepare.py - Diese Datei dient der Vorbereitung der Daten.
-\item[•] Dataset\_class.py - Diese Datei enthält wichtige Klassen auf Basis des FlairNLP-Frameworks zum ertsellen des Korpus.
-\item[•] flair\_test\_classification\_model.py - Diese Datei dient zum erstellen des \textit{text classifiers} und des Trainings dessen
-\item[•] predict.py - Diese Datei enthält den \textit{predictor}, bzw. dient zum testen des Endproduktes.
+\item[•] model\_flair.py - Diese Datei enthält die Basisklasse(n) für das Projekt. Dabei sind nur die beiden Methoden \textit{train} und \textit{predict} der Klasse \textit{BaseModel} für den einfachen Gebrauch notwendig. Erstere vollzieht das Training mit den der Methode angegebenen Daten (Übergabeparameter ist ein Verzeichnis) und zweitere predictet eine Liste an Sätzen (\textit{Strings}), die übergeben werden.
+\item[•] flair\_test.py - Dieses script dient dazu, einen simplen test des Flair-Models durchzuführen. Es nimmt \textit{command line arguments} entgegen, um zwischen Training und Testen, sowie ob ein Tokenizer verwendet werden soll, zu entscheiden. Das erste Argument muss dabei ein \textbf{boolean} sein und bezeichnet die Wahl für (Argument = \textit{False}) oder gegen (Argument = \textit{True}) einen Tokenizer. Das zweite Argument ist hingegen die Wahl für Training oder Test. Um ein Training zu starten muss "train" (\textit{String}) eingegeben werden; Jede andere Eingabe wählt das Testen.
 \end{itemize}
+
+\subsubsection{Aufbau des Classifiers und Korpus}
 \begin{flushleft}
-Zusätzlich zu diesen vier Dateien gibt es noch weitere Dateien, darunter der eine Datei zum \textit{Sequence Tagger}, der in \hyperlink{SeqTag}{Abschnitt 2.3} erklärt ist.
+\textbf{\textcolor{red}{NOT YET UPDATED - OLD DESCRIPTION}}
 
-Daneben existieren noch weitere Dateien, die ähnlich zu den vier genannten Dateien sind. Dateien, die ein "\textit{predict}" enthalten, funktionieren wie \textit{predict.py}, Dateien, die ein "\textit{text\_classification\_model}" enthalten, funktionieren wie \textit{flair\_test\_classification\_model.py}, benutzen aber z.B. andere Embeddings.
-\end{flushleft}
-
-\subsubsection{Flair\_prepare.py}
-\begin{flushleft}
-Der erste Schritt befasst sich mit der Vorbereitung der Daten. Wir benutzen für unser Training die Daten des \textbf{SemEval 2007}, die Rund 16.000 Sätze beinhalten zu 34 verschiedenen Prepositionen. Diese Daten sind in xml-Format gegeben, weshalb sie in csv-Format geändert werden müssen.
-
-Als erstes werden die xml-Dateien mit Hilfe der Python-library \textit{xml.etree.ElementTree} ausgelesen. Dabei speichern wir die \textit{senseid} und den Satz in einer Liste. Die \textit{senseid} wird zeitgleich mit dem von Flair benötigten Zusatz \textit{\_\_label\_\_} versehen. Fehlerhafte Einträge - solche, bei denen entweder der Sinn oder der Satz fehlt bzw. fehlerhaft ist - werden zudem aussortiert und deren \textit{instanceid} zur Überprüfung ausgegeben.
-
-Nachdem alle Einträge in die Liste eingefügt wurden, wird diese gemischt und anschließend in \textit{Training}, \textit{Dev} sowie \textit{Test} Dateien \textbf{disjunkt} aufgeteilt (80\% - 10\% - 10\%).
-\end{flushleft}
-
-\subsubsection{Dataset\_class.py}
-\begin{flushleft}
-Die Datei \textit{Dataset\_class.py} enthält die Klassen zum Erstellen des Korpus. Diese sind unverändert aus dem \textbf{GitHub Repository} von Flair übernommen. Für eine genaue Dokumentation dieser beiden Klassen verweisen wir auf die Dokumentation von FlairNLP. Sie sind auf csv-Dateien angepasst.
-\end{flushleft}
-
-\subsubsection{Flair\_text\_classification\_model.py}
-\begin{flushleft}
 Diese datei beinhaltet alle Einstellungen und Bauteile für den \textit{Text classifier}.
 
 \pythonexternal[language=Python, linerange={8-15}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
@@ -191,11 +181,14 @@ Bevor das Training startet, wählen wir noch, dass auf einer GPU trainiert werde
 Anschließend erstellen wir den Trainer auf Basis des zuvor erzeugten oder geladenen Classifier und Korpus und beginnen das Training. Hierbei können verschiedene Einstellungen vorgenommen werden. Zunächst wird das \textit{output-directory} angegeben., welches wir mit \textit{resources} angegeben haben. In diesem Verzeichnis werden dann logs und die Models abgespeichert. Die \textit{learning rate} haben wir auf dem Sdandartwert belassen, ebenso die beiden weiteren Parameter. Die \textit{patience} kann variabel angepasst werden. Sie verursacht, dass das Training bei zu vielen Epochen ohne Verbesserung \textbf{hintereinander} die Lernrate verringert oder das Training abgebrochen wird. Je höher die patience, desto mehr Epochen ohne Verbesserung können vorkommen. Der letzte Parameter ist die maximale Anzahl an Epochen. Wir haben einige Tausend Epochen trainiert. Dieses Training kann aber auch dauern; Auswirkungen auf die tRainingszeit haben u.a. auch die verwedeten Embeddings.
 \end{flushleft}
 
-\subsubsection{predict.py}
+\subsubsection{Aufbau des Trainings}
 \begin{flushleft}
-Der Predictor dient dazu, die Fertige KI anzuwenden. Das Programm kann dafür auch aus der Konsole mit Übergabeparameter verwendet werden. Der Übergabeparameter muss dabei ein String sein.
 
-Alternativ kann das Programm auch ohne Übergabeparameter ausgeführt werden. In diesem Fall wird eine Reihe an Testdaten predictet.
+\end{flushleft}
+
+\subsubsection{Aufbau des Predictors}
+\begin{flushleft}
+Der Predictor dient dazu, die Fertige KI anzuwenden. Um einen Satz korrekt zu predicten, muss in diesem die Präposition markiert werden. Diese Markierung ist ein html-Tag, $<$head$>$, bzw. $<$\textbackslash head$>$ und wird mit Hilfe des zuvor beschriebenen Taggers eingefügt. Diese Sätze werden dann mit der vom \textit{flair-classifier} bereitgestellten Methode predictet.
 \end{flushleft}
 
 \newpage
