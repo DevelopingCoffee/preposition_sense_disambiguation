@@ -7,3 +7,4 @@ resources
 huggingface_sense_disambiguation/tf-test/output/*
 huggingface_sense_disambiguation/tf-test/output-example/*
 todo.txt
+__pycache__
