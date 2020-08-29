@@ -18,7 +18,7 @@ print("---------------------------------")
 print("---------reading data------------")
 print("---------------------------------")
 
-data = pd.read_csv('data/training_data_labels.tsv',engine='python', encoding='utf-8', error_bad_lines=False,sep="\t")
+data = pd.read_csv('data/training_data.tsv',engine='python', encoding='utf-8', error_bad_lines=False,sep="\t")
 # Select required columns
 print(data)
 data = data[['sentence', 'label_id']]
