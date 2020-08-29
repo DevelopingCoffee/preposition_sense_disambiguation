@@ -1,6 +1,6 @@
 import flair, torch
 from flair.data import Corpus
-from Dataset_class import CSVClassificationCorpus
+from flair.datasets import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, DocumentRNNEmbeddings, DocumentPoolEmbeddings, OneHotEmbeddings, StackedEmbeddings
 from flair.models import TextClassifier
 from flair.trainers import ModelTrainer

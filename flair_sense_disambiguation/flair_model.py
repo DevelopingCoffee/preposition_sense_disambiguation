@@ -59,7 +59,7 @@ class BaseModel:
         """
 
         if self.__corpus is None:
-            self.__create_corpus(data_dir, tokenizer)
+            self.__create_corpus(data_dir, tokenizer=tokenizer)
 
         # Create the label dictionary
         label_dict = self.__corpus.make_label_dictionary()
@@ -100,8 +100,8 @@ class BaseModel:
 
         # Create the corpus
         self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
-                                                        column_name_map=col_name_map,
-                                                        tokenizer=tokenizer)
+                                                        column_name_map=col_name_map)#,
+                                                        #tokenizer=tokenizer)
         print(Corpus)
 
 
@@ -131,7 +131,7 @@ class BaseModel:
                       patience=5,
                       max_epochs=10)
 
-    def predict(self, sentences, tokenizer=None):
+    def predict(self, sentences):
         """Create a new classifier
            :param sentences: list of sentences to predict
            :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
@@ -141,10 +141,7 @@ class BaseModel:
         tagger.set_input(sentences)
         dataset = tagger.do_tagging()
 
-        if(self.__external_tokenizer):
-            tokenizer = SpaceTokenizer()
-
-        dataset = SentenceDataset([Sentence(text, (tokenizer if tokenizer is not None else True)) for text in dataset])
+        dataset = SentenceDataset([Sentence(text, use_tokenizer=not(self.__external_tokenizer)) for text in dataset])
         self.__classifier.predict(
             dataset,
             mini_batch_size=self.__mini_batch_size,
@@ -241,7 +238,7 @@ class Tagger:
 
 
 def main():
-    model = BaseModel()
+    model = BaseModel(directory="resources/test0/")
     model.train()
 
 if __name__ == "__main__":
