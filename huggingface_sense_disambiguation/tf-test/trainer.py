@@ -18,8 +18,9 @@ print("---------------------------------")
 print("---------reading data------------")
 print("---------------------------------")
 
-data = pd.read_csv('data/training_data.tsv',engine='python', encoding='utf-8', error_bad_lines=False)
+data = pd.read_csv('data/training_data.tsv',engine='python', encoding='utf-8', error_bad_lines=False,sep="\t")
 # Select required columns
+print(data)
 data = data[['sentence', 'label_id']]
 # Remove a row if any of the three remaining columns are missing
 data = data.dropna()
@@ -91,11 +92,10 @@ model.compile(
     metrics = metric)
 # Ready output data for the model
 y_label_id = to_categorical(data['label_id'])
-j
 # Tokenize the input (takes some time)
 print("tokenize data...")
 x = tokenizer(
-    text=data['Consumer complaint narrative'].to_list(),
+    text=data['sentence'].to_list(),
     add_special_tokens=True,
     max_length=max_length,
     truncation=True,
@@ -113,5 +113,7 @@ history = model.fit(
     validation_split=0.2,
     batch_size=64,
     epochs=10)
+
+# todo shapes dont fit -> print tokenized words and check
 
 model.save('output/model2')
