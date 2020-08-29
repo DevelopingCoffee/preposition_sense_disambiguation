@@ -18,7 +18,7 @@ print("---------------------------------")
 print("---------reading data------------")
 print("---------------------------------")
 
-data = pd.read_csv('data/training_data.tsv',engine='python', encoding='utf-8', error_bad_lines=False,sep="\t")
+data = pd.read_csv('data/training_data_labels.tsv',engine='python', encoding='utf-8', error_bad_lines=False,sep="\t")
 # Select required columns
 print(data)
 data = data[['sentence', 'label_id']]
@@ -26,10 +26,13 @@ data = data[['sentence', 'label_id']]
 data = data.dropna()
 # Remove rows, where the label is present only ones (can't be split)
 data = data.groupby('label_id').filter(lambda x : len(x) > 1)
+data['cat_label'] = pd.Categorical(data['label_id'])
+data['training_label'] = data['cat_label'].cat.codes
 # Set your model output as categorical and save in new label col
-data, data_test = train_test_split(data, test_size = 0.2, stratify = data[['label_id']])
+data, data_test = train_test_split(data, test_size = 0.2, stratify = data[['training_label']])
 
-
+print(len(data.label_id.unique())) # 224 labels to predict :)
+print(len(data.label_id.value_counts()))
 print(data)
 
 print("---------------------------------")
@@ -61,13 +64,15 @@ bert_model = bert(inputs)[1]
 dropout = Dropout(config.hidden_dropout_prob, name='pooled_output')
 pooled_output = dropout(bert_model, training=False)
 # Then build your model output
-label_id = Dense(units=len(data.label_id.value_counts()), kernel_initializer=TruncatedNormal(stddev=config.initializer_range), name='label_id')(pooled_output)
+training_label = Dense(units=len(data.training_label.value_counts()), kernel_initializer=TruncatedNormal(stddev=config.initializer_range), name='training_label')(pooled_output)
 #product = Dense(units=len(data.Product_label.value_counts()), kernel_initializer=TruncatedNormal(stddev=config.initializer_range), name='product')(pooled_output)
-outputs = {'label_id': label_id}
+outputs = {'training_label': training_label}
 # And combine it all in a model object
 model = Model(inputs=inputs, outputs=outputs, name='BERT_MultiLabel_MultiClass')
 # Take a look at the model
 model.summary()
+
+
 
 
 print("---------------------------------")
@@ -81,8 +86,8 @@ optimizer = Adam(
     decay=0.01,
     clipnorm=1.0)
 # Set loss and metrics
-loss = {'label_id': CategoricalCrossentropy(from_logits = True)}
-metric = {'label_id': CategoricalAccuracy('accuracy')}
+loss = {'training_label': CategoricalCrossentropy(from_logits = True)}
+metric = {'training_label': CategoricalAccuracy('accuracy')}
 
 # Compile the model
 print("compiling model...")
@@ -91,7 +96,7 @@ model.compile(
     loss = loss, 
     metrics = metric)
 # Ready output data for the model
-y_label_id = to_categorical(data['label_id'])
+y_training_label = to_categorical(data['training_label']) # produces out of 224 unique labels 314 labels ?????
 # Tokenize the input (takes some time)
 print("tokenize data...")
 x = tokenizer(
@@ -109,10 +114,10 @@ x = tokenizer(
 print("fit model...")
 history = model.fit(
     x={'input_ids': x['input_ids']},
-    y={'label_id': y_label_id},
+    y={'training_label': y_training_label},
     validation_split=0.2,
     batch_size=64,
-    epochs=10)
+    epochs=1)
 
 # todo shapes dont fit -> print tokenized words and check
 
