@@ -71,20 +71,21 @@ class BaseModel:
         # Can choose between many RNN types (GRU by default, to change use rnn_type parameter)
         # document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=256)
         #############################################################################
+
         # Instantiate one-hot encoded word embeddings with your corpus
-        # hot_embedding = OneHotEmbeddings(self.__corpus)
-        #
-        # # Init standard GloVe embedding
-        # glove_embedding = WordEmbeddings('glove')
-        #
-        # # Document pool embeddings
-        # document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
+        hot_embedding = OneHotEmbeddings(self.__corpus)
 
-        word_embeddings = [WordEmbeddings('glove'), FlairEmbeddings('news-forward-fast'),
-                           FlairEmbeddings('news-backward-fast')]
+        # Init standard GloVe embedding
+        glove_embedding = WordEmbeddings('glove')
 
-        document_embeddings = DocumentLSTMEmbeddings(word_embeddings, hidden_size=512, reproject_words=True,
-                                                     reproject_words_dimension=256)
+        # Document pool embeddings
+        document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
+
+        # word_embeddings = [WordEmbeddings('glove'), FlairEmbeddings('news-forward-fast'),
+        #                    FlairEmbeddings('news-backward-fast')]
+        #
+        # document_embeddings = DocumentLSTMEmbeddings(word_embeddings, hidden_size=512, reproject_words=True,
+        #                                              reproject_words_dimension=256)
 
         # Create the text classifier
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
@@ -250,7 +251,7 @@ class Tagger:
 
 
 def main():
-    model = BaseModel(directory="resources/test1/")
+    model = BaseModel(directory="resources/test0/")
     model.train()
 
 if __name__ == "__main__":
