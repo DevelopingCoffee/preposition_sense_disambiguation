@@ -23,15 +23,14 @@ class BaseModel:
 
     def __init__(self,
                  directory: str='resources/',
-                 external_tokenizer: bool=False,
+                 use_tokenizer: bool=True,
                  mini_batch_size=32,
                  verbose: bool=False
     ):
         """Base model for flair classifier to predict sense of prepositions
 
         :param directory: base directory where files will be stored
-        :param external_tokenizer: bool variable to determine, if the sentences given to this model have already been\
-        tokenized
+        :param use_tokenizer: bool variable to select if the sentecnes should be tokenized
         :param mini_batch_size: mini batch size to use
         :param verbose: set to True to display a progress bar
         """
@@ -40,7 +39,7 @@ class BaseModel:
         self.__mini_batch_size=mini_batch_size
         self.__verbose = verbose
 
-        self.__external_tokenizer = external_tokenizer
+        self.use_tokenizer = use_tokenizer
         self.__classifier = None
         self.__corpus = None
 
@@ -93,15 +92,17 @@ class BaseModel:
 
         col_name_map = {0: "label", 1: "text"}
 
-        if (self.__external_tokenizer):
+        if (not(self.use_tokenizer)):
             # Already tokenized sentences will be 'tokenized' by spaces only if set to true
             # Otherwise standard tokenizer is used (SegTok is default by flair)
             tokenizer = SpaceTokenizer()
+        else:
+            tokenizer = SegtokTokenizer()
 
         # Create the corpus
         self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
-                                                        column_name_map=col_name_map)#,
-                                                        #tokenizer=tokenizer)
+                                                        column_name_map=col_name_map,
+                                                        tokenizer=tokenizer)
         print(Corpus)
 
 
@@ -116,6 +117,8 @@ class BaseModel:
                 self._create_classifier(data_dir=data_dir)
             else:
                 self.__create_corpus(data_dir=data_dir)
+        elif self.__corpus is None:
+            self.__create_corpus(data_dir=data_dir)
 
 
         flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -134,14 +137,13 @@ class BaseModel:
     def predict(self, sentences):
         """Create a new classifier
            :param sentences: list of sentences to predict
-           :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
         """
 
         tagger = Tagger()
         tagger.set_input(sentences)
         dataset = tagger.do_tagging()
 
-        dataset = SentenceDataset([Sentence(text, use_tokenizer=not(self.__external_tokenizer)) for text in dataset])
+        dataset = SentenceDataset([Sentence(text, use_tokenizer=self.use_tokenizer) for text in dataset])
         self.__classifier.predict(
             dataset,
             mini_batch_size=self.__mini_batch_size,
