@@ -14,7 +14,7 @@ The base model contains several methods to load an existing classifier or create
 
 The trainer can be started with the train-method. As parameter this method takes the directory for the **csv**-formatted training files. Standard is '_data/_'.
 
-The predictor can be started with the predict-method. As parameter this method takes a list of sentences to predict and a tokenizer to use. If the option to 'use an external tokenizer' is set (see below), then the second argument will be ignored. Standard tokenizer is SegTok (will be used when no tokenizer specified). A list of predictions will be returned.
+The predictor can be started with the predict-method. As parameter this method takes a list of sentences to predict. Standard tokenizer is SegTok. A list of predictions will be returned.
 
 ### Directories
 
@@ -22,4 +22,4 @@ The important parameter for this model are the directory for resources and data.
 
 ### Tokenization
 
-Furthermore the model provides the option to 'skip' flair in-built tokenization - it means, that a sentence will only be tokenized due to spaces in the text. This can be useful, when training / predicting already tokenized sentences. If this option is not selected, the standard tokenizer (SegTok) will be used.
+Furthermore the model provides the option to 'skip' tokenization by setting the _use\_tokenizer_ parameter to _False_ - it means, that a sentence will only be tokenized due to spaces in the text. This can be useful, when training / predicting already tokenized sentences. If this option is not selected, the standard tokenizer (SegTok) will be used.

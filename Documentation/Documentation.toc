@@ -10,6 +10,8 @@
 \contentsline {subsubsection}{\numberline {2.3.3}Programm}{3}{subsubsection.2.3.3}
 \contentsline {subsection}{\numberline {2.4}Projektaufbau}{4}{subsection.2.4}
 \contentsline {subsubsection}{\numberline {2.4.1}Aufbau des Classifiers und Korpus}{4}{subsubsection.2.4.1}
+\contentsline {paragraph}{Korpus}{4}{paragraph*.1}
+\contentsline {paragraph}{Classifier}{5}{paragraph*.2}
 \contentsline {subsubsection}{\numberline {2.4.2}Aufbau des Trainings}{5}{subsubsection.2.4.2}
 \contentsline {subsubsection}{\numberline {2.4.3}Aufbau des Predictors}{6}{subsubsection.2.4.3}
 \contentsline {section}{\numberline {3}AllenNLP}{7}{section.3}
