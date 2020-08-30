@@ -11,7 +11,7 @@ all_labels = set()
 data_dir = 'Train/Source/'
 def_dir = 'Tratz Variations/definitions/'
 
-label_id = 0
+label_id = -1
 sentence_id = 0
 skipped_examples = 0
 
@@ -115,6 +115,9 @@ for file in os.scandir(data_dir):
 
 print("CSV has been created, {} examples were skipped, because no definition available".format(str(skipped_examples)))
 print(skipped)
+
+
+#dataset[2] 
 
 
 with open('training_data.tsv', 'w') as csvfile:
