@@ -3,7 +3,7 @@ import torch
 from flair.data import Corpus
 from flair.datasets import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings, StackedEmbeddings
-from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings
+from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings, DocumentLSTMEmbeddings
 from flair.models import TextClassifier, SequenceTagger
 from flair.datasets import SentenceDataset
 from flair.models import SequenceTagger
@@ -72,16 +72,22 @@ class BaseModel:
         # document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=256)
         #############################################################################
         # Instantiate one-hot encoded word embeddings with your corpus
-        hot_embedding = OneHotEmbeddings(self.__corpus)
+        # hot_embedding = OneHotEmbeddings(self.__corpus)
+        #
+        # # Init standard GloVe embedding
+        # glove_embedding = WordEmbeddings('glove')
+        #
+        # # Document pool embeddings
+        # document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
 
-        # Init standard GloVe embedding
-        glove_embedding = WordEmbeddings('glove')
+        word_embeddings = [WordEmbeddings('glove'), FlairEmbeddings('news-forward-fast'),
+                           FlairEmbeddings('news-backward-fast')]
 
-        # Document pool embeddings
-        document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
+        document_embeddings = DocumentLSTMEmbeddings(word_embeddings, hidden_size=512, reproject_words=True,
+                                                     reproject_words_dimension=256)
 
         # Create the text classifier
-        self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict)
+        self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
 
     def __create_corpus(self, data_dir="data/"):
         """Create a new corpus
