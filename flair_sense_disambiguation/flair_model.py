@@ -51,14 +51,13 @@ class BaseModel:
         except:
             print("Unable to load classifier")
 
-    def _create_classifier(self, data_dir='data/', tokenizer=None):
+    def _create_classifier(self, data_dir='data/'):
         """Create a new classifier
            :param data dir: directory where training data is stored (optimal is train, test and dev file)
-           :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
         """
 
         if self.__corpus is None:
-            self.__create_corpus(data_dir, tokenizer=tokenizer)
+            self.__create_corpus(data_dir)
 
         # Create the label dictionary
         label_dict = self.__corpus.make_label_dictionary()
@@ -84,10 +83,9 @@ class BaseModel:
         # Create the text classifier
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict)
 
-    def __create_corpus(self, data_dir="data/", tokenizer=None):
+    def __create_corpus(self, data_dir="data/"):
         """Create a new corpus
            :param data dir: directory where training data is stored (optimal is train, test and dev file)
-           :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
         """
 
         col_name_map = {0: "label", 1: "text"}
@@ -107,7 +105,7 @@ class BaseModel:
 
 
     def train(self, data_dir="data/"):
-        """Create a new classifier
+        """Train a model
            :param data dir: directory where training data is stored (optimal is train, test and dev file)
         """
 
@@ -121,7 +119,8 @@ class BaseModel:
             self.__create_corpus(data_dir=data_dir)
 
 
-        flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        flair.device = torch.device('cuda:0')
 
         # Initialize the text classifier trainer
         trainer = ModelTrainer(self.__classifier, self.__corpus)
@@ -135,9 +134,15 @@ class BaseModel:
                       max_epochs=10)
 
     def predict(self, sentences):
-        """Create a new classifier
+        """Predict a list of sentences
            :param sentences: list of sentences to predict
         """
+
+        if self.__classifier is None:
+            self._load_classifier()
+            if self.__classifier is None:
+                print("Prediction not possible.")
+                return
 
         tagger = Tagger()
         tagger.set_input(sentences)
