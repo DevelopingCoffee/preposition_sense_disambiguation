@@ -18,7 +18,7 @@ import os
 from random import shuffle
 
 
-class BaseModel:
+class BaseModelOne:
     """Base Model for flair"""
 
     def __init__(self,

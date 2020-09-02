@@ -101,7 +101,7 @@ class BaseModel:
         print(Corpus)
 
 
-    def train(self, data_dir="data/"):
+    def train(self, data_dir="data/", mini_batch_size=32, learning_rate=0.1):
         """Train a model
            :param data dir: directory where training data is stored (optimal is train, test and dev file)
         """
@@ -123,8 +123,8 @@ class BaseModel:
 
         # Start the training
         trainer.train(self.__directory,
-                      learning_rate=0.1,
-                      mini_batch_size=self.__mini_batch_size,
+                      learning_rate=learning_rate,
+                      mini_batch_size=mini_batch_size,
                       anneal_factor=0.5,
                       patience=5,
                       max_epochs=10)
