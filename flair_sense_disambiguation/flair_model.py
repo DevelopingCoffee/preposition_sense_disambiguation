@@ -155,7 +155,7 @@ class BaseModel:
         param_selector = TextClassifierParamSelector(
             self.__corpus,
             False,
-            'resources/optimization/results',
+            'optimization/results',
             'lstm',
             max_epochs=50,
             training_runs=3,
@@ -167,8 +167,8 @@ class BaseModel:
 
 
 def main():
-    model = BaseModel(directory="resources/test1/")
-    model.train()
+    model = BaseModel(directory="resources/")
+    model.optimize()
 
 if __name__ == "__main__":
     main()
