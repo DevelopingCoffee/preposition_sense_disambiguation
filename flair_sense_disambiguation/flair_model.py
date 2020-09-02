@@ -139,6 +139,8 @@ class BaseModel:
         if self.__corpus is None:
             self.__create_corpus()
 
+        flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
         # define your search space
         search_space = SearchSpace()
         search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
