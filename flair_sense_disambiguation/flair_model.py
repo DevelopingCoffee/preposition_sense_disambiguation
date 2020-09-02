@@ -136,6 +136,9 @@ class BaseModel:
 
     def optimize(self):
 
+        if self.__corpus is None:
+            self.__create_corpus()
+
         # define your search space
         search_space = SearchSpace()
         search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[

@@ -1,0 +1,14 @@
+% Encoding: UTF-8
+
+@InProceedings{akbik2018coling,
+  author    = {Akbik, Alan and Blythe, Duncan and Vollgraf, Roland},
+  booktitle = {{COLING} 2018, 27th International Conference on Computational Linguistics},
+  title     = {Contextual String Embeddings for Sequence Labeling},
+  year      = {2018},
+  pages     = {1638--1649},
+}
+
+@InProceedings{,
+}
+
+@Comment{jabref-meta: databaseType:bibtex;}
