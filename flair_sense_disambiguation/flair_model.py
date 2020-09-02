@@ -135,9 +135,12 @@ class BaseModel:
                       max_epochs=epochs)
 
     def optimize(self):
-
+        
         if self.__corpus is None:
             self.__create_corpus()
+        
+        #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        flair.device = torch.device('cuda:0')
 
         # define your search space
         search_space = SearchSpace()
