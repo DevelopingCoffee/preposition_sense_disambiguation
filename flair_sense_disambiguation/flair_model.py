@@ -23,7 +23,6 @@ class BaseModel:
 
     def __init__(self,
                  directory: str='resources/',
-                 use_tokenizer: bool=True,
                  mini_batch_size=32,
                  verbose: bool=False
     ):
@@ -39,7 +38,6 @@ class BaseModel:
         self.__mini_batch_size=mini_batch_size
         self.__verbose = verbose
 
-        self.use_tokenizer = use_tokenizer
         self.__classifier = None
         self.__corpus = None
 
@@ -96,17 +94,10 @@ class BaseModel:
 
         col_name_map = {0: "label", 1: "text"}
 
-        if (not(self.use_tokenizer)):
-            # Already tokenized sentences will be 'tokenized' by spaces only if set to true
-            # Otherwise standard tokenizer is used (SegTok is default by flair)
-            tokenizer = SpaceTokenizer()
-        else:
-            tokenizer = SegtokTokenizer()
-
         # Create the corpus
         self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
                                                         column_name_map=col_name_map,
-                                                        tokenizer=tokenizer)
+                                                        tokenizer=SpaceTokenizer())
         print(Corpus)
 
 
@@ -153,7 +144,7 @@ class BaseModel:
         tagger.set_input(sentences)
         dataset = tagger.do_tagging()
 
-        dataset = SentenceDataset([Sentence(text, use_tokenizer=self.use_tokenizer) for text in dataset])
+        dataset = SentenceDataset([Sentence(text, SpaceTokenizer()) for text in dataset])
         self.__classifier.predict(
             dataset,
             mini_batch_size=self.__mini_batch_size,
@@ -183,9 +174,6 @@ class Tagger:
            :param inputs: list of strings
         """
 
-        for i in range(len(inputs)):
-            # Convert String inputs to flair Sentences
-            inputs[i] = Sentence(inputs[i])
         self.__sentences = inputs
 
     def do_tagging(self):

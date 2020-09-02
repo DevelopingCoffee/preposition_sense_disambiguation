@@ -184,9 +184,6 @@ class Tagger:
            :param inputs: list of strings
         """
 
-        for i in range(len(inputs)):
-            # Convert String inputs to flair Sentences
-            inputs[i] = Sentence(inputs[i])
         self.__sentences = inputs
 
     def do_tagging(self):
