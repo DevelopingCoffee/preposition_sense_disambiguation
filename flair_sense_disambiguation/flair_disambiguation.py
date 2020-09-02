@@ -22,7 +22,7 @@ class BaseModel:
         """
 
         self.__directory = directory
-        self.__mini_batch_size=mini_batch_size
+        self.__mini_batch_size = mini_batch_size
         self.__verbose = verbose
 
         self.__classifier = None
@@ -120,9 +120,9 @@ class Tagger:
                 i = 0
                 for i in prep_count:
                     # Insert Text from previously inserted preposition to next preposition to insert
-                    if(j == count):
+                    if j == count:
                         # ... with head-marker
-                        tmp += tagged_sentence[begin:i]+"<head>"+prepositions[count]+"<\head>"
+                        tmp += tagged_sentence[begin:i]+"<head>"+prepositions[count]+"<\\head>"
                     else:
                         # without head-marker
                         tmp += tagged_sentence[begin:i] + prepositions[count]
