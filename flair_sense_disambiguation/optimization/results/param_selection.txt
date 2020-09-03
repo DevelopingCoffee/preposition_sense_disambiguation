@@ -1,0 +1,55 @@
+evaluation run 1
+	dropout: 0.2442395591868003
+	embeddings: 0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim,1-1-1-one-hot
+	hidden_size: 64
+	learning_rate: 0.1
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.006444444444444475
+variance: 2.819259259259262e-06
+test_score: 0.9994
+----------------------------------------------------------------------------------------------------
+evaluation run 2
+	dropout: 0.2613714041131954
+	embeddings: 0-0-0-/home/stud_homes/s6206220/.flair/embeddings/en-fasttext-news-300d-1M
+	hidden_size: 128
+	learning_rate: 0.2
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.1774888888888889
+variance: 5.601851851851886e-05
+test_score: 0.836
+----------------------------------------------------------------------------------------------------
+evaluation run 3
+	dropout: 0.24143506191166464
+	embeddings: 0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 32
+	learning_rate: 0.1
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.7150333333333334
+variance: 1.0352592592592588e-05
+test_score: 0.314
+----------------------------------------------------------------------------------------------------
+evaluation run 4
+	dropout: 0.22750004963996573
+	embeddings: 0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim,1-1-1-1-1-1-one-hot
+	hidden_size: 32
+	learning_rate: 0.15
+	mini_batch_size: 16
+	rnn_layers: 2
+score: 0.025888888888888902
+variance: 4.218518518518474e-06
+test_score: 0.9756
+----------------------------------------------------------------------------------------------------
+evaluation run 5
+	dropout: 0.14810044718362425
+	embeddings: 0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 128
+	learning_rate: 0.1
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.0006666666666666795
+variance: 2.6666666666670664e-08
+test_score: 0.9994
+----------------------------------------------------------------------------------------------------

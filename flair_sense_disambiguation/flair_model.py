@@ -142,7 +142,7 @@ class BaseModel:
         #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         flair.device = torch.device('cuda:0')
 
-        flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # define your search space
         search_space = SearchSpace()
