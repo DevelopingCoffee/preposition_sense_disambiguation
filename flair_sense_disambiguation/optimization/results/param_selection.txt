@@ -53,3 +53,47 @@ score: 0.0006666666666666795
 variance: 2.6666666666670664e-08
 test_score: 0.9994
 ----------------------------------------------------------------------------------------------------
+evaluation run 6
+	dropout: 0.2951499825689754
+	embeddings: 0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 64
+	learning_rate: 0.2
+	mini_batch_size: 8
+	rnn_layers: 2
+score: 0.22729999999999997
+variance: 0.0001390170370370368
+test_score: 0.8012
+----------------------------------------------------------------------------------------------------
+evaluation run 7
+	dropout: 0.36365801930751
+	embeddings: 0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 64
+	learning_rate: 0.05
+	mini_batch_size: 8
+	rnn_layers: 1
+score: 0.6289222222222223
+variance: 2.596074074074071e-05
+test_score: 0.4159
+----------------------------------------------------------------------------------------------------
+evaluation run 8
+	dropout: 0.18190351826837836
+	embeddings: 0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim,1-1-1-1-1-1-1-1-1-one-hot
+	hidden_size: 64
+	learning_rate: 0.1
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.0017333333333333274
+variance: 1.5999999999999437e-07
+test_score: 1.0
+----------------------------------------------------------------------------------------------------
+evaluation run 9
+	dropout: 0.34925880109364266
+	embeddings: 0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 32
+	learning_rate: 0.2
+	mini_batch_size: 16
+	rnn_layers: 2
+score: 0.724388888888889
+variance: 1.0897037037037041e-05
+test_score: 0.2976
+----------------------------------------------------------------------------------------------------
