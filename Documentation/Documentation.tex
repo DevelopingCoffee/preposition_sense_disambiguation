@@ -115,7 +115,7 @@ Nachdem die Daten im csv-Format vorliegen, wird daraus ein Korpus erstellt. Dazu
 
 \subsubsection{Satz predicten}
 \begin{flushleft}
-Um einen Satz zu predicten, ist nicht viel erforderlich. Beim Aufrufen muss eine Liste von \textit{Strings} übergeben werden und optional dazu ein tokenizer, der genutzt werden soll. Wurde beim erstellen des Objektes angegeben, dass nicht tokenisiert werden soll, so wird das tokenizer-argument ignoriert. Die übergebenen Sätze dürfen dabei aber noch nicht markiert sein - die \textbf{Markierung der Präpositionen wird automatisch} mit dem \textit{Sequence Tagger} (\hyperlink{SeqTag}{$\uparrow$}) \textbf{vollzogen}.
+Um einen Satz zu predicten, ist nicht viel erforderlich. Beim Aufrufen muss lediglich eine Liste von \textit{Strings} übergeben werden. Wurde beim erstellen des Objektes angegeben, dass nicht tokenisiert werden soll, werden die übergebenen Sätze nur mit einem \textit{SpaceTokenizer} tokenisiert. Die übergebenen Sätze dürfen zudem noch nicht markiert sein - die \textbf{Markierung der Präpositionen wird automatisch} mit dem \textit{Sequence Tagger} (\hyperlink{SeqTag}{$\uparrow$}) \textbf{vollzogen}.
 
 Bevor predictet wird, wird zuerst geprüft, ob ein \textit{classifier} vorhanden ist. Wenn nicht, wird wenn möglich einer importiert, ansonsten ein neuer erstellt - jedoch wird \textbf{immer} erst versucht, einen existierenden zu importieren. Hierbei ist wichtig, dass das bei der Erstellung des Objekts angegebene Verzeichnis als Quelle für Imports und Exports herangezogen wird. 
 \end{flushleft}
@@ -158,25 +158,72 @@ Das Flair-Projekt umfasst hauptsächlich zwei Dateien:
 
 \subsubsection{Aufbau des Classifiers und Korpus}
 \begin{flushleft}
-\textbf{\textcolor{red}{NOT YET UPDATED - OLD DESCRIPTION}}
+DEr Classifier ist der Hauptbestandteil dieses Flair-Projekts. Für das Training dieses Classifiers ist aber ein Korpus notwendig, in dem die Trainingsdaten verarbeitet werden.
+\end{flushleft}
 
-Diese datei beinhaltet alle Einstellungen und Bauteile für den \textit{Text classifier}.
+\paragraph{Korpus}
+\begin{flushleft}
+Bevor ein Classifier erstellt werden kann, muss zuerst ein Korpus erstellt werden. Dies geschieht in der Methode \textit{\_create\_corpus}.
 
-\pythonexternal[language=Python, linerange={8-15}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
+\begin{python}
+col_name_map = {0: "label", 1: "text"}
+\end{python}
 
-Als erstes wird der Korpus auf Basis der zuvor erstellten csv-Dateien und der angegebnen \textit{col\_name\_map} erzeugt, sowie ein Dictionary des Korpus errichtet. Flair bietet neben einem csv-Korpus auch andere Formate, wir haben uns aber für csv entschieden, da es ein gängiges Format ist und auch für andere Teilprojekte verwendet werden kann.
+Die column name map (\textit{col\_name\_map}) wird hier angegeben und enthält die Information, wo in der Datei der Daten die label und wo der Text steht.
 
-\pythonexternal[language=Python, linerange={26-33}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
+\begin{python}
+if (not(self.use_tokenizer)):
+	tokenizer = SpaceTokenizer()
+else:
+	tokenizer = SegtokTokenizer()
+\end{python}
+
+Als Tokenizer werden entweder der flair Tokenizer SegTok oder ein SpaceTokenizer verwendet, je nachdem ob angegeben ist, dass ein Tokenizer verwendet werden soll, oder nicht. Die Tokenizer können auch angepasst werden.
+
+\begin{python}
+self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
+    column_name_map=col_name_map,
+    tokenizer=tokenizer)
+\end{python}
+
+Der Korpus wird dann mit der colun name map, den Trainingsdaten und dem Tokenizer erstellt und in der Klassenvariable \textit{\_\_corpus} gespeichert.
+\end{flushleft}
+
+\paragraph{Classifier}
+
+\begin{flushleft}
+Existiert ein Korpus, kann ein Classifier erstellt werden.
+
+\begin{python}
+label_dict = self.__corpus.make_label_dictionary()
+\end{python}
+
+Zuerst wird dazu ein dictionary der label erstellt.
+
+\begin{python}
+word_embeddings = [WordEmbeddings('glove'), FlairEmbeddings('news-forward-fast'),FlairEmbeddings('news-backward-fast')]
+
+document_embeddings = DocumentLSTMEmbeddings(word_embeddings, hidden_size=512,reproject_words=True,reproject_words_dimension=256)
+\end{python}
+
+Anschließend wenden wir Embeddings an. \textbf{\textcolor{red}{WIP}}
+
+\begin{python}
+self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
+\end{python}
+
+Nachdem die Embeddings angewandt wurden, wird der classifier erstellt. \textbf{\textcolor{red}{WIP}}
+
+\end{flushleft}
+
+
+%----------------------
+
+\begin{flushleft}
+
+\textbf{\textcolor{red}{WIP [old description]}}
 
 Nachdem der Korpus erzeugt wurde, werden die Embeddings erzeugt. Hierbei können mehrere Embeddings durch sog. \textit{pool-embeddings} zusammen genutzt werden. Wir haben uns (hier) für OneHotEmbeddings und WordEmbeddings (Typ \textit{glove)} entschieden\footnote{In anderen Dateien haben wir auch andere Embeddings getestet, aber mit diesen die besten Ergebnisse erzielt.}.
-
-\pythonexternal[language=Python, linerange={35-37}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
-
-Nachdem die Embeddings erstellt wurden, kann der Classifier erzeugt werden. Alternativ kann natürlicha uch ein bestehender Classifier geladen werden. Wichtig ist nur, dass dieser Classifier auch die Daten lesen kann, also dem selben Grundaufbau folgt.
-
-\pythonexternal[language=Python, linerange={39-50}]{../flair_sense_disambiguation/Flair_text_classification_model.py}
-
-Bevor das Training startet, wählen wir noch, dass auf einer GPU trainiert werden soll. Da Flair über Torch läuft, kann dies einfach über troch gewählt werden.
 
 Anschließend erstellen wir den Trainer auf Basis des zuvor erzeugten oder geladenen Classifier und Korpus und beginnen das Training. Hierbei können verschiedene Einstellungen vorgenommen werden. Zunächst wird das \textit{output-directory} angegeben., welches wir mit \textit{resources} angegeben haben. In diesem Verzeichnis werden dann logs und die Models abgespeichert. Die \textit{learning rate} haben wir auf dem Sdandartwert belassen, ebenso die beiden weiteren Parameter. Die \textit{patience} kann variabel angepasst werden. Sie verursacht, dass das Training bei zu vielen Epochen ohne Verbesserung \textbf{hintereinander} die Lernrate verringert oder das Training abgebrochen wird. Je höher die patience, desto mehr Epochen ohne Verbesserung können vorkommen. Der letzte Parameter ist die maximale Anzahl an Epochen. Wir haben einige Tausend Epochen trainiert. Dieses Training kann aber auch dauern; Auswirkungen auf die tRainingszeit haben u.a. auch die verwedeten Embeddings.
 \end{flushleft}

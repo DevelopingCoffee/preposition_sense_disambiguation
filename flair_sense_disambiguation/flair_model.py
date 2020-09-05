@@ -3,7 +3,7 @@ import torch
 from flair.data import Corpus
 from flair.datasets import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings, StackedEmbeddings
-from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings
+from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings, DocumentLSTMEmbeddings
 from flair.models import TextClassifier, SequenceTagger
 from flair.datasets import SentenceDataset
 from flair.models import SequenceTagger
@@ -17,21 +17,23 @@ import csv
 import os
 from random import shuffle
 
+from hyperopt import hp
+from flair.hyperparameter.param_selection import SearchSpace, Parameter
+from flair.hyperparameter.param_selection import TextClassifierParamSelector, OptimizationValue
+
 
 class BaseModel:
     """Base Model for flair"""
 
     def __init__(self,
                  directory: str='resources/',
-                 external_tokenizer: bool=False,
                  mini_batch_size=32,
                  verbose: bool=False
     ):
         """Base model for flair classifier to predict sense of prepositions
 
         :param directory: base directory where files will be stored
-        :param external_tokenizer: bool variable to determine, if the sentences given to this model have already been\
-        tokenized
+        :param use_tokenizer: bool variable to select if the sentecnes should be tokenized
         :param mini_batch_size: mini batch size to use
         :param verbose: set to True to display a progress bar
         """
@@ -40,7 +42,6 @@ class BaseModel:
         self.__mini_batch_size=mini_batch_size
         self.__verbose = verbose
 
-        self.__external_tokenizer = external_tokenizer
         self.__classifier = None
         self.__corpus = None
 
@@ -52,14 +53,13 @@ class BaseModel:
         except:
             print("Unable to load classifier")
 
-    def _create_classifier(self, data_dir='data/', tokenizer=None):
+    def _create_classifier(self, data_dir='data/'):
         """Create a new classifier
            :param data dir: directory where training data is stored (optimal is train, test and dev file)
-           :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
         """
 
         if self.__corpus is None:
-            self.__create_corpus(data_dir, tokenizer=tokenizer)
+            self.__create_corpus(data_dir)
 
         # Create the label dictionary
         label_dict = self.__corpus.make_label_dictionary()
@@ -73,6 +73,7 @@ class BaseModel:
         # Can choose between many RNN types (GRU by default, to change use rnn_type parameter)
         # document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=256)
         #############################################################################
+
         # Instantiate one-hot encoded word embeddings with your corpus
         hot_embedding = OneHotEmbeddings(self.__corpus)
 
@@ -82,31 +83,31 @@ class BaseModel:
         # Document pool embeddings
         document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
 
-        # Create the text classifier
-        self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict)
+        # word_embeddings = [WordEmbeddings('glove'), FlairEmbeddings('news-forward-fast'),
+        #                    FlairEmbeddings('news-backward-fast')]
+        #
+        # document_embeddings = DocumentLSTMEmbeddings(word_embeddings, hidden_size=512, reproject_words=True,
+        #                                              reproject_words_dimension=256)
 
-    def __create_corpus(self, data_dir="data/", tokenizer=None):
+        # Create the text classifier
+        self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
+
+    def __create_corpus(self, data_dir="data/"):
         """Create a new corpus
            :param data dir: directory where training data is stored (optimal is train, test and dev file)
-           :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
         """
 
         col_name_map = {0: "label", 1: "text"}
 
-        if (self.__external_tokenizer):
-            # Already tokenized sentences will be 'tokenized' by spaces only if set to true
-            # Otherwise standard tokenizer is used (SegTok is default by flair)
-            tokenizer = SpaceTokenizer()
-
         # Create the corpus
         self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
-                                                        column_name_map=col_name_map)#,
-                                                        #tokenizer=tokenizer)
+                                                        column_name_map=col_name_map,
+                                                        tokenizer=SpaceTokenizer())
         print(Corpus)
 
 
-    def train(self, data_dir="data/"):
-        """Create a new classifier
+    def train(self, data_dir="data/", mini_batch_size=32, learning_rate=0.1, epochs=10):
+        """Train a model
            :param data dir: directory where training data is stored (optimal is train, test and dev file)
         """
 
@@ -116,6 +117,8 @@ class BaseModel:
                 self._create_classifier(data_dir=data_dir)
             else:
                 self.__create_corpus(data_dir=data_dir)
+        elif self.__corpus is None:
+            self.__create_corpus(data_dir=data_dir)
 
 
         flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -125,121 +128,55 @@ class BaseModel:
 
         # Start the training
         trainer.train(self.__directory,
-                      learning_rate=0.1,
-                      mini_batch_size=self.__mini_batch_size,
+                      learning_rate=learning_rate,
+                      mini_batch_size=mini_batch_size,
                       anneal_factor=0.5,
                       patience=5,
-                      max_epochs=10)
+                      max_epochs=epochs)
 
-    def predict(self, sentences):
-        """Create a new classifier
-           :param sentences: list of sentences to predict
-           :param tokenizer: custom tokenizer to use; If None, default (SegTok) will be used
-        """
+    def optimize(self):
+        
+        if self.__corpus is None:
+            self.__create_corpus()
+        
+        #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        flair.device = torch.device('cuda:0')
 
-        tagger = Tagger()
-        tagger.set_input(sentences)
-        dataset = tagger.do_tagging()
+        #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        dataset = SentenceDataset([Sentence(text, use_tokenizer=not(self.__external_tokenizer)) for text in dataset])
-        self.__classifier.predict(
-            dataset,
-            mini_batch_size=self.__mini_batch_size,
-            verbose=self.__verbose
+        # define your search space
+        search_space = SearchSpace()
+        search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
+            [WordEmbeddings('en')],
+            [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')],
+            [WordEmbeddings('glove')],
+            [WordEmbeddings('glove'), OneHotEmbeddings(self.__corpus)],
+            [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward'), OneHotEmbeddings(self.__corpus)]
+        ])
+        search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
+        search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
+        search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
+        search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
+        search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[8, 16, 32])
+
+        # create the parameter selector
+        param_selector = TextClassifierParamSelector(
+            self.__corpus,
+            False,
+            'optimization/results',
+            'lstm',
+            max_epochs=50,
+            training_runs=3,
+            optimization_value=OptimizationValue.DEV_SCORE
         )
-        return [sentence for sentence in dataset]
 
-
-class Tagger:
-    """Class Tagger: Tags the prepositions in a sentence."""
-
-    def __init__(self):
-        """Tags the prepositions in a sentence.
-
-        **Input**: List with strings
-
-        **Output**: List with strings, marked prepositions
-
-        If a sentence contains several prepositions each preposition will be marked in an individual sentence.
-        """
-        # Load model
-        self.__tagger = SequenceTagger.load('pos')
-        self.__sentences = []
-
-    def set_input(self, inputs):
-        """Set input list with type string of sentences to tag and mark
-           :param inputs: list of strings
-        """
-
-        for i in range(len(inputs)):
-            # Convert String inputs to flair Sentences
-            inputs[i] = Sentence(inputs[i])
-        self.__sentences = inputs
-
-    def do_tagging(self):
-        """Tagging of prepositions. Input has to be set with the *set_input* method.
-           Returns a list of strings with tagged prepositions.
-        """
-
-        predict_sentences = []
-
-        for sentence in self.__sentences:
-            # Predict PoS tags
-            self.__tagger.predict(sentence)
-
-            tagged_sentence = str(sentence.to_tagged_string())
-
-            # Extract all prepositions
-            prepositions = []
-            helper = tagged_sentence
-            while helper.__contains__("<IN>"):
-                temp, helper = helper.split("<IN>", 1)
-                temp = temp.rsplit(">", 1)[1]
-                temp = temp.replace(" ", "")
-                prepositions.append(temp)
-
-            # Substitute preposition with marker
-            tagged_sentence = sub('> [^>]+ <IN>', '> _prep_', tagged_sentence)
-            # Delete all other tags (not needed)
-            tagged_sentence = sub(' <[^>]+>', '', tagged_sentence)
-
-            # Extract position (index) of preposition
-            prep_count = []
-            for match in finditer("_prep_", tagged_sentence):
-                match = str(match)
-                match = ((match.split("span=(")[1]).split("),")[0]).split(",")[0]
-                match = int(match)
-                prep_count.append(match)
-
-            # Insert the prepositions back into the sentence; Every preposition will be inserted once with
-            # <head> & <\head> markers (in an individual sentence)
-            for j in range(len(prep_count)):
-                count = 0  # Counter which preposition (1st, 2nd, 3rd, ...) is inserted next
-                begin = 0  # Counter where to continue inserting the next preposition
-                tmp = ""
-                i = 0
-                for i in prep_count:
-                    # Insert Text from previously inserted preposition to next preposition to insert
-                    if(j == count):
-                        # ... with head-marker
-                        tmp += tagged_sentence[begin:i]+"<head>"+prepositions[count]+"<\head>"
-                    else:
-                        # without head-marker
-                        tmp += tagged_sentence[begin:i] + prepositions[count]
-                    count += 1
-                    begin = i+6
-                # Append rest of sentence
-                tmp += tagged_sentence[i+6:]
-                # Add complete sentence to return list
-                predict_sentences.append(tmp)
-
-        # Returns the list of sentences with marked prepositions
-        return predict_sentences
+        # start the optimization
+        param_selector.optimize(search_space, max_evals=100)
 
 
 def main():
-    model = BaseModel(directory="resources/test0/")
-    model.train()
+    model = BaseModel(directory="resources/")
+    model.optimize()
 
 if __name__ == "__main__":
     main()
