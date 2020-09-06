@@ -1,5 +1,3 @@
-### import transformers 
-
 from transformers import BertConfig, BertTokenizerFast, BertForSequenceClassification, AdamW, get_linear_schedule_with_warmup
 import pandas as pd
 import numpy as np
@@ -11,20 +9,29 @@ import datetime
 import random
 import wandb
 
+
+batch_size = 32  # 64, 32
+learning_rate = 5e-5  # 5e-5, 3e-5, 2e-5
+wandb.init(project = 'Torch-Best-Model')
+wandb.config.epochs = 4
+wandb.config.batch_size = batch_size
+wandb.config.learning_rate = learning_rate
+model_name = 'bert-base-uncased'
+max_length = 100
+
+
+
 if torch.cuda.is_available():    
     device = torch.device("cuda")
-    print('There are %d GPU(s) available.' % torch.cuda.device_count())
-    print('We will use the GPU:', torch.cuda.get_device_name(0))
 else:
-    print('No GPU available, using the CPU instead.')
     device = torch.device("cpu")
 
 print("---------------------------------")
-print("--------preparing data-----------")
+print("------1. Preparing data----------")
 print("---------------------------------")
 
-#data = pd.read_csv('/content/gdrive/My Drive/training_data.tsv',engine='python', encoding='utf-8', error_bad_lines=False,sep="\t")
-data = pd.read_csv('data/training_data.tsv',engine='python', encoding='utf-8', error_bad_lines=False,sep="\t")
+print("reading data...")
+data = pd.read_csv('/data/corrected_data.tsv',engine='python', encoding='utf-8', error_bad_lines=False,sep="\t")
 data = data[['sentence', 'label_id']]
 data = data.dropna()
 data = data.groupby('label_id').filter(lambda x : len(x) > 1)
@@ -32,15 +39,8 @@ data['cat_label'] = pd.Categorical(data['label_id'])
 data['training_label'] = data['cat_label'].cat.codes
 data_train, data_val = train_test_split(data, test_size = 0.1, stratify = data[['training_label']])
 
-print("loading pretrained bert/tokenizer...")
-model_name = 'bert-base-uncased'
-max_length = 100
-config = BertConfig.from_pretrained(model_name)
-config.output_hidden_states = False
-tokenizer = BertTokenizerFast.from_pretrained(pretrained_model_name_or_path = model_name, config = config)
-
-
 print("tokenize data...")
+tokenizer = BertTokenizerFast.from_pretrained(pretrained_model_name_or_path = model_name, do_lower_case=True)
 x_train = tokenizer(
     text=data_train['sentence'].to_list(),
     add_special_tokens=True,
@@ -62,17 +62,10 @@ x_val = tokenizer(
     verbose = True)
 
 y_train = torch.tensor(data_train.training_label.values, dtype=torch.long)
-
 y_val = torch.tensor(data_val.training_label.values, dtype=torch.long)
-
-print(y_train)
-print(data)
-
 train_dataset = TensorDataset(x_train['input_ids'], x_train['attention_mask'], y_train)
 val_dataset = TensorDataset(x_val['input_ids'], x_val['attention_mask'], y_val)
-print("done")
 
-batch_size = 32
 train_dataloader = DataLoader(
             train_dataset,  # The training samples.
             sampler = RandomSampler(train_dataset), # Select batches randomly
@@ -87,7 +80,7 @@ validation_dataloader = DataLoader(
 
 
 print("---------------------------------")
-print("-------configure Bert------------")
+print("-------2. Configure bert---------")
 print("---------------------------------")
 
 model = BertForSequenceClassification.from_pretrained(
@@ -97,31 +90,23 @@ model = BertForSequenceClassification.from_pretrained(
     output_hidden_states = False, 
 )
 
-
 model.cuda()
-
 params = list(model.named_parameters())
 
 print('The BERT model has {:} different named parameters.\n'.format(len(params)))
-
 print('==== Embedding Layer ====\n')
-
 for p in params[0:5]:
     print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
-
 print('\n==== First Transformer ====\n')
-
 for p in params[5:21]:
     print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
-
 print('\n==== Output Layer ====\n')
-
 for p in params[-4:]:
     print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
 
 
 optimizer = AdamW(model.parameters(),
-                  lr = 2e-5, # args.learning_rate - default is 5e-5, our notebook had 2e-5
+                  lr = learning_rate, # args.learning_rate - default is 5e-5, our notebook had 2e-5
                   eps = 1e-8 # args.adam_epsilon  - default is 1e-8.
                 )
 epochs = 4
@@ -140,9 +125,9 @@ def format_time(elapsed):
     return str(datetime.timedelta(seconds=elapsed_rounded))
 
 print("---------------------------------")
-print("--------fine-tune bert-----------")
+print("-------3. Fine-tune bert---------")
 print("---------------------------------")
-wandb.init(project = 'Torch-Best-Model')
+
 seed_val = 42
 random.seed(seed_val)
 np.random.seed(seed_val)
@@ -250,7 +235,6 @@ for epoch_i in range(0, epochs):
 
 print("")
 print("Training complete!")
-
 print("Total training took {:} (h:mm:ss)".format(format_time(time.time()-total_t0)))
 print("---------------------------------")
 print("----------saving model-----------")
@@ -259,4 +243,3 @@ print("---------------------------------")
 output_dir = './model_save/'
 model_to_save = model.module if hasattr(model, 'module') else model  # Take care of distributed/parallel training
 model_to_save.save_pretrained(output_dir)
-

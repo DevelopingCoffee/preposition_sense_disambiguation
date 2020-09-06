@@ -20,11 +20,11 @@
   \llap{\contour{white}{#1}}%
 }
 
-\ihead{Flair}
 \chead{Preposition sense disambiguation}
 \ohead{Text2Scene}
 \cfoot{\pagemark}
 \setheadsepline{.5pt}
+\setlength\parindent{0pt}
 
 \definecolor{gray}{rgb}{0.33, 0.33, 0.33}
 \definecolor{greengreen}{rgb}{0.0, 0.56, 0.0}
@@ -63,6 +63,18 @@
     style=python            
 }}
 
+\lstset{
+  language=XML,
+  morekeywords={encoding,
+    xs:schema,xs:element,xs:complexType,xs:sequence,xs:attribute}
+}
+
+\newcommand{\chapterauthor}[1]{%
+	{\parindent0pt\vspace*{-5pt}\hspace*{\fill}%
+  \linespread{1.1}\large\scshape#1%
+  \par\nobreak\vspace*{10pt}}
+}
+
 % Python environment
 \lstnewenvironment{python}[1][]
 {
@@ -81,66 +93,158 @@
 
 
 \begin{document}
+
+\title{Preposition Sense Disambiguation - Dokumentation}
+ 
+\author{
+Dirk Neuhäuser \\ 7094369
+\and
+Tim XYZ \\ 123456789
+\and 
+Tobias XYZ \\ 123456789
+}
+
+\maketitle
 \tableofcontents
-\newpage
 
 \section{Einleitung}
-\begin{flushleft}
-Im Praktikum \textit{Text2Sene} geht es darum, aus Textbeschreibungen Szenen zu erstellen. Dabei wurde die Arbeit unterteilt; wir beschäftigen uns mit der Thematik der \textit{preposition sense disambiguation} (Sinneszuordnung und -erkennung von Präpositionen). Für diese Aufgabe haben wir verschiedene \textit{State-of-the-Art-Verfahren} begutachtet. Schlussendlich haben wir uns dafür entschieden, einerseits einen \textit{Semi-supervised} Ansatz umzusetzen und daneben KIs mit Hilfe der frameworks FlairNLP, AllenNLP und Huggingface zu programmieren.
-\end{flushleft}
+In dem Praktikum \textit{Text2Sene} geht es darum, aus Textbeschreibungen Szenen zu erstellen. Dabei wurde die Arbeit unterteilt. Wir beschäftigen uns mit der Thematik der \textit{preposition sense disambiguation} (Sinneszuordnung und -erkennung von Präpositionen). Für diese Aufgabe haben wir verschiedene \textit{State-of-the-Art-Verfahren} begutachtet. Schlussendlich haben wir uns dafür entschieden, einerseits mit der FlairNLP library(Tim) und der Huggingface-transformers library(Dirk) jeweils ein supervised Modell umzusetzen und andererseits einen \textit{Semi-supervised} Ansatz(Tobias) zu verfolgen.
+
+\section{Datenbeschaffung und -bereinigung}
+\chapterauthor{Tim und Dirk}
+Die Aufage zur Disambigueren von Prepositionen war bereits 2007 eine Aufgabe in der SemEval\footnote{SemEval Aufgaben beschäftigen sich mit der Word Senses und Beziehungen von Wörten in Sätzen}. In mehreren Publikationen bezüglich preposition sense disambiguation wurde dieser Datensatz als Benchmark verwendet, obwohl er im Internet nur schwierig zu finden ist, deshalb ist dieser Abgabe auch der originale Datensatz mit angefügt (TPPCorpora.zip)
+Der Datensatz liegt in mehreren xml Datein vor. Für Jede Preposition gibt es einerseits eine xml Datei mit Trainingsätzen und eine xml Datei mit den verschiedenen Sinn-Bedeutungen der Präposition.
+
+Hier ein Beispiel der Präposition "with": 
+
+\begin{lstlisting}[language=xml]
+  <instance id="with.p.fn.338359" docsrc="FN">
+    <answer instance="with.p.fn.338359" senseid="7(5)"/>
+    <context>
+      She nodded <head>with</head> enthsiasm .
+    </context>
+  </instance>
+\end{lstlisting}
+
+Der Sinn hinter diesem spezifischen "with" ist mit der Senseid 7(5) deklariert worden. In der Definition xml steht dazu folgendes:
+
+\begin{lstlisting}[language=xml]
+  <sense id="6">
+    <definition>indicating the manner or circumstances (but not cause or motivation) of something (e.g., fix with precision)</definition>
+    <majorcluster> MANNER </majorcluster>
+    <pprojmap type="equivalent" targetid="7(5)"/>
+</sense>
+\end{lstlisting}
+
+
+Allerdings ist der Datensatz teilweise etwas inkonsistent und daher mussten die Daten zunächst um NA Einträge, fehlende Sinne, oder fehlende Sinn-Definitionen bereinigt werden. Das Resultat haben wir in einer tsv-Datei zusammengefasst und enthielt insgesamt 16397 Sätze mit Sinneszurordnung. Hier zum Beispiel ein kleiner Ausschnitt der Datei:
+
+\hspace{0.5cm}
+
+\hspace{-1.5cm}\begin{tabular}{l|l|c|c}
+	\bfseries id & \bfseries sentence & \bfseries labelid & \bfseries definition \\
+	\hline
+	8 & \begin{tabular}{@{}c@{}}She knelt $<$head$>$on$<$/head$>$ the \\ cold stone floor and carefully placed \\ some coals on the dying embers \\ in the grate .\end{tabular}& 13 & \begin{tabular}{@{}c@{}}physically in contact \\ with and supported by (a surface) \\ (e.g., the book on the table) \end{tabular} \\ 
+	9 & \begin{tabular}{@{}c@{}}The eleventh commandment : \\ Thou shalt not lean $<$head$>$on$<$/head$>$ \\ the left elbow, or else.\end{tabular}& 3 & \begin{tabular}{@{}c@{}}
+indicating the part(s) \\ of the body supporting the rest \\ of the body (e.g., stood on his feet)
+ \end{tabular} \\ 
+\end{tabular}
+\vspace{0.3cm}
+
+Die tsv Datei der bereinigten Säte ist ebenfalls der Abgabe beigefügt (training\_data.tsv).
+
+
+\section{Huggingface Transformes mit Bert}
+\chapterauthor{Dirk}
+Die Huggingface transformers library stellen einheitliche und allgemeine state-of-the-Art Architekturen bereit. Die unterstützen Modelle sind äußerst gut vortrainiert und gehören im NLU Bereich zu den besten. Z.B. bert, ein von google trainiertes Modell, knackt gleich in mehreren Bereichen die state-of-the-Art. Zum Disambiguieren haben wir uns deshalb für bert entschieden. Da die Aufgabe darin besteht einer Präposition \textbf{eine} der mehr als 200 Sinnklassen zuzuordnen, wurde BertForSequenceClassification gewählt. Ein Modell, welches man nur noch mitgeben muss wieviele Klassen es und man erhält dirket vortrainertes Modell samt gewichten und bereits korrekter Layer - Archtiektur. \footnote{Offiziele Dokumentation: https://huggingface.co/transformers/} \footnote{Offizielles Repository: https://github.com/huggingface/transformers}
+
+\subsection{Trainer}
+Zum Trainieren des Taggers wurde ein Skript hftrainer.py entwickelt, welches auf PyTorch aufbaut.
+
+\vspace{0.25cm}
+\textbf{Das Skript hat insgesamt 3 Phasen:}
+
+\begin{enumerate}
+	\item Einlesen und Tokenisieren der Daten
+	\item Modell initiailisieren und configurieren
+	\item Fine-tunen von Bert
+\end{enumerate}
+
+
+\textbf{Good to know:}
+
+\begin{itemize}
+	\item Im ersten Schritt, wurde ein 90:10 Trainings-Validierungs Split durchgeführt. 
+		
+	\item Der Tokenizierer von der Huggingface transformer library ist. Tokenizer müssen auch trainieret werden und Huggingface liefert für die Bert Modelle die, die Englische Sprache bedienen wollen, schon vortrainierte und sehr gute Tokenizer. Die Tokenizer wandeln Sätze dann in inputIds und attentionMasks, eine Repräsentation der Wörter in Zahlen.
+
+	\item Trainingsschleife ist eine Standard-Pytorch Implementierung\footnote{Orientierung an: https://mccormickml.com/2019/07/22/BERT-fine-tuning/}
+
+	\item Hyperparameter-Optimierung - Das google-Research Team um bert empfiehlt\footnote{https://github.com/google-research/bert}:
+		\begin{itemize}
+			\item 4 epochen
+			\item Adam-Optimizer
+			\item batch sizes mit den Werten 8, 16, 32, 64 oder 128
+			\item learning rates mit den Werten 3e-4, 1e-4, 5e-5, 3e-5
+		\end{itemize}
+		Das beste Ergebnis wurde mit einer batch-size von XYZ und einer learning-rate von XYZ erzielt. Die Validiäts-Accurcy konnte mit diesen Parametern insgesamgt XYZ erreichen.
+\end{itemize}
+
+Zum Selber trainieren müssen die Packages torch, transformers und wandb installiert sein und die \textbf{training\_data.tsv} in einem Ordner namens data eingefügt werden. Da wandb zum loggen und displayen der metrics verwendet wird, muss vor dem Start noch \textbf{wandb login} im Terminal aufgerufen werden (falls nicht vorhanden noch ein Account vorher erstellt werden). Als default Werte wurde eine batch-size von XYZ und eine learning-rate von XYZ gewählt, da diese in der Hyperparameter-Optimierung am Besten abgeschnitten hatten. Am Ende des Trainings erhält man einen einen Ordner names model\_save, welche die Gewichte und die Config in Pytorch Format enthält. Möchte man zu einem spätern Zeitpunkt nochmal retrainen, kann in der torch\_trainer.py Datei das Modell statt von den pretrained Gewichten, von unseren Gewichten geladen werden:
+
+Also der folgende Teil:
+\begin{python}
+model = BertForSequenceClassification.from_pretrained(
+    "bert-base-uncased", 
+    num_labels = len(data_train.training_label.value_counts()), 
+    output_attentions = False, 
+    output_hidden_states = False, 
+)
+\end{python}
+wird zu:
+\begin{python}
+model = BertForSequenceClassification.from_pretrained("model_save")
+\end{python}
+
+
+\subsection{Tagger und Einbindung}
+Der beigefügter hftagger.py ist sehr einfach aufgebaut. In der \textbf{init-Methode} wird das Modell aus dem Ordner model\_save geladen und in der \textbf{tag-Methode} wird für ein mitgegebener Satz eine LabelId returned, die das Modell predicted. In der Einbindung in den \textbf{Text-Imager} wird für jedes Preposition-Token ein \textbf{WordSense} mit dieser LabelId beigefügt. Der Abgabe wurde ebenfalls eine Datei Names definitions.tsv beigefügt, welche eine Map der LabelIds auf ihre Definitionen enthält (falls Interesse daran besteht).
 
 \section{FlairNLP}
-\begin{flushleft}
+\chapterauthor{Tim}
 FlairNLP ist ein Framework, das speziell für NLP-Aufgaben konzipiert ist. Für unsere Aufgabe nutzen wir einen \textit{text classifier}, der wie der Name sagt, eine Eingabe klassifiziert und dadurch die Präposition dem zugehörigen Sinn zuordnet.
-\end{flushleft}
 
 \subsection{Vorgehen [Training]}
-\begin{flushleft}
 Damit einer Präposition ein Sinn zugeordnet werden kann, passieren einige Dinge. Der Hauptteil des Projekts besteht aus einer NLP-KI mit dem Flair-framework.
 
 Damit eine Eingabe verarbeitet werden kann, muss diese zunächst vorbereitet werden. Dazu werden die Daten aus den xml-Dateien gelsen und in einer csv-Datei mit dem entsprechenden Format für Flair abgespeichert. Hierbei wird das standard-Format (\_\_label\_\_$<$label$>$) verwendet. Die Trainingsdaten werden in drei Dateien aufgeteilt, dabei werden 80\% Training, 10\% Dev und weitere 10\% Test zugeschrieben.
 
 Nachdem die Daten im csv-Format vorliegen, wird daraus ein Korpus erstellt. Dazu wird ein \textit{Dictionary} und die entsprechenden Embeddings erstellt. Anschließend wird der \textit{Classifier} erstellt und das Training beginnt.\footnote{Für eine genauere Erklärung bzgl. des Classifiers, des Korpus und des Dictionary verweisen wir auf die offizielle FlairNLP-Dokumentation.}
-\end{flushleft}
 
 \subsection{Anwendung}
-\begin{flushleft}
 
-\end{flushleft}
 
 \subsubsection{Trainieren}
-\begin{flushleft}
 
-\end{flushleft}
 
 \subsubsection{Satz predicten}
-\begin{flushleft}
 Um einen Satz zu predicten, ist nicht viel erforderlich. Beim Aufrufen muss lediglich eine Liste von \textit{Strings} übergeben werden. Wurde beim erstellen des Objektes angegeben, dass nicht tokenisiert werden soll, werden die übergebenen Sätze nur mit einem \textit{SpaceTokenizer} tokenisiert. Die übergebenen Sätze dürfen zudem noch nicht markiert sein - die \textbf{Markierung der Präpositionen wird automatisch} mit dem \textit{Sequence Tagger} (\hyperlink{SeqTag}{$\uparrow$}) \textbf{vollzogen}.
 
 Bevor predictet wird, wird zuerst geprüft, ob ein \textit{classifier} vorhanden ist. Wenn nicht, wird wenn möglich einer importiert, ansonsten ein neuer erstellt - jedoch wird \textbf{immer} erst versucht, einen existierenden zu importieren. Hierbei ist wichtig, dass das bei der Erstellung des Objekts angegebene Verzeichnis als Quelle für Imports und Exports herangezogen wird. 
-\end{flushleft}
 
 \subsection{Sequence Tagger - Präpositionen markieren}
-\begin{flushleft}
 \hypertarget{SeqTag}{Der} \textit{Sequence Tagger} ist notwenidg, um in einem Satz die Präposition zu markieren, die klassifiziert werden soll, v.a. in Sätzen, in denen mehrere vorhanden sind.
 
 Hierbei ist zu beachten, dass für eine einfache Anwendung des Flair Projekts zum predicten der Präposition in einem Satz das Verstehen und / oder Anwenden dieses Taggers \textbf{nicht} notwendig ist.
-\end{flushleft}
 
 \subsubsection{Anwendung}
-\begin{flushleft}
 Der \textit{Sequence Tagger} ist ganz simpel zu benutzen. Zunächst muss wie gewöhnlich ein Objekt der Klassen erzeugt werden. Anschließend ist mit der Methode set\_input() die Eingabe zu setzen. Die Eingabe muss eine Liste von \textit{Strings} sein. Ist dies getan, kann mit do\_tagging() das taggen gestartet werden. Diese Methode gibt dann eine Liste mit den reultierenden \textit{Strings} zurück. Hierbei ist zu beachten, dass bei Eingabe eines Satzes mit zwei Präpositionen \textbf{zwei} Sätze zurückgegeben werden!
-\end{flushleft}
 
 \subsubsection{Funktionsweise}
-\begin{flushleft}
 FlairNLP bietet mehrere bereits vortrainierte \textit{Sequence Tagger}. Wir nutzen für unser Projekt den \textit{Part-of-Speech Tagger}. Mit diesem wird der Satz zunächst predictet, wodurch jedem Wort der entsprechende Tag zugeordnet wird. Da wir uns aber nur für Präpositionen interessieren, löschen wir alle anderen Tags. Zeitgleich werden die Präpositionen aus dem Satz extrahiert, um sie später gezielt wieder einzusetzen und dabei jede Preposition in einem individuellen Satz markieren zu können.
-\end{flushleft}
 
 \subsubsection{Programm}
-\begin{flushleft}
 Der \textit{(Sequence) Tagger} ist in dem script \textit{model\_flair.py} enthalten.
-\end{flushleft}
 \begin{itemize}
 \item \_\_init\_\_: In der Initialisierungs-Methode Wird lediglich der zuvor beschriebene Tagger von Flair geladen.
 \item set\_input: Diese Methode dient dazu, eine Liste an \textit{Strings} zu übergeben, die getaggt werden sollen.
@@ -148,21 +252,16 @@ Der \textit{(Sequence) Tagger} ist in dem script \textit{model\_flair.py} enthal
 \end{itemize}
 
 \subsection{Projektaufbau}
-\begin{flushleft}
 Das Flair-Projekt umfasst hauptsächlich zwei Dateien:
-\end{flushleft}
 \begin{itemize}
 \item[•] model\_flair.py - Diese Datei enthält die Basisklasse(n) für das Projekt. Dabei sind nur die beiden Methoden \textit{train} und \textit{predict} der Klasse \textit{BaseModel} für den einfachen Gebrauch notwendig. Erstere vollzieht das Training mit den der Methode angegebenen Daten (Übergabeparameter ist ein Verzeichnis) und zweitere predictet eine Liste an Sätzen (\textit{Strings}), die übergeben werden.
 \item[•] flair\_test.py - Dieses script dient dazu, einen simplen test des Flair-Models durchzuführen. Es nimmt \textit{command line arguments} entgegen, um zwischen Training und Testen, sowie ob ein Tokenizer verwendet werden soll, zu entscheiden. Das erste Argument muss dabei ein \textbf{boolean} sein und bezeichnet die Wahl für (Argument = \textit{False}) oder gegen (Argument = \textit{True}) einen Tokenizer. Das zweite Argument ist hingegen die Wahl für Training oder Test. Um ein Training zu starten muss "train" (\textit{String}) eingegeben werden; Jede andere Eingabe wählt das Testen.
 \end{itemize}
 
 \subsubsection{Aufbau des Classifiers und Korpus}
-\begin{flushleft}
 DEr Classifier ist der Hauptbestandteil dieses Flair-Projekts. Für das Training dieses Classifiers ist aber ein Korpus notwendig, in dem die Trainingsdaten verarbeitet werden.
-\end{flushleft}
 
 \paragraph{Korpus}
-\begin{flushleft}
 Bevor ein Classifier erstellt werden kann, muss zuerst ein Korpus erstellt werden. Dies geschieht in der Methode \textit{\_create\_corpus}.
 
 \begin{python}
@@ -187,11 +286,9 @@ self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
 \end{python}
 
 Der Korpus wird dann mit der colun name map, den Trainingsdaten und dem Tokenizer erstellt und in der Klassenvariable \textit{\_\_corpus} gespeichert.
-\end{flushleft}
 
 \paragraph{Classifier}
 
-\begin{flushleft}
 Existiert ein Korpus, kann ein Classifier erstellt werden.
 
 \begin{python}
@@ -214,40 +311,28 @@ self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_d
 
 Nachdem die Embeddings angewandt wurden, wird der classifier erstellt. \textbf{\textcolor{red}{WIP}}
 
-\end{flushleft}
 
 
 %----------------------
 
-\begin{flushleft}
 
 \textbf{\textcolor{red}{WIP [old description]}}
 
 Nachdem der Korpus erzeugt wurde, werden die Embeddings erzeugt. Hierbei können mehrere Embeddings durch sog. \textit{pool-embeddings} zusammen genutzt werden. Wir haben uns (hier) für OneHotEmbeddings und WordEmbeddings (Typ \textit{glove)} entschieden\footnote{In anderen Dateien haben wir auch andere Embeddings getestet, aber mit diesen die besten Ergebnisse erzielt.}.
 
 Anschließend erstellen wir den Trainer auf Basis des zuvor erzeugten oder geladenen Classifier und Korpus und beginnen das Training. Hierbei können verschiedene Einstellungen vorgenommen werden. Zunächst wird das \textit{output-directory} angegeben., welches wir mit \textit{resources} angegeben haben. In diesem Verzeichnis werden dann logs und die Models abgespeichert. Die \textit{learning rate} haben wir auf dem Sdandartwert belassen, ebenso die beiden weiteren Parameter. Die \textit{patience} kann variabel angepasst werden. Sie verursacht, dass das Training bei zu vielen Epochen ohne Verbesserung \textbf{hintereinander} die Lernrate verringert oder das Training abgebrochen wird. Je höher die patience, desto mehr Epochen ohne Verbesserung können vorkommen. Der letzte Parameter ist die maximale Anzahl an Epochen. Wir haben einige Tausend Epochen trainiert. Dieses Training kann aber auch dauern; Auswirkungen auf die tRainingszeit haben u.a. auch die verwedeten Embeddings.
-\end{flushleft}
 
 \subsubsection{Aufbau des Trainings}
-\begin{flushleft}
 
-\end{flushleft}
 
 \subsubsection{Aufbau des Predictors}
-\begin{flushleft}
 Der Predictor dient dazu, die Fertige KI anzuwenden. Um einen Satz korrekt zu predicten, muss in diesem die Präposition markiert werden. Diese Markierung ist ein html-Tag, $<$head$>$, bzw. $<$\textbackslash head$>$ und wird mit Hilfe des zuvor beschriebenen Taggers eingefügt. Diese Sätze werden dann mit der vom \textit{flair-classifier} bereitgestellten Methode predictet.
-\end{flushleft}
 
 \newpage
 
-\section{AllenNLP}
-
-\subsection{Vorgehen}
-
-\subsection{Programm}
-
 \newpage
 
-\section{Blabla}
-
+\section{Semi-supervised}
+\chapterauthor{Tobias}
+Tobias war zu faul und hat nichts gemacht.
 \end{document}
