@@ -99,7 +99,7 @@
 \author{
 Dirk Neuhäuser \\ 7094369
 \and
-Tim XYZ \\ 123456789
+Tim Rosenkranz \\ 123456789
 \and 
 Tobias XYZ \\ 123456789
 }
@@ -187,10 +187,10 @@ Zum Trainieren des Taggers wurde ein Skript hftrainer.py entwickelt, welches auf
 			\item batch sizes mit den Werten 8, 16, 32, 64 oder 128
 			\item learning rates mit den Werten 3e-4, 1e-4, 5e-5, 3e-5
 		\end{itemize}
-		Das beste Ergebnis wurde mit einer batch-size von XYZ und einer learning-rate von XYZ erzielt. Die Validiäts-Accurcy konnte mit diesen Parametern insgesamgt XYZ erreichen.
+		Das beste Ergebnis wurde mit einer batch-size von 16 und einer learning-rate von 1e-4 erzielt. Die Val-Accurcy konnte mit diesen Parametern insgesamgt 0.9084 erreichen.
 \end{itemize}
 
-Zum Selber trainieren müssen die Packages torch, transformers und wandb installiert sein und die \textbf{training\_data.tsv} in einem Ordner namens data eingefügt werden. Da wandb zum loggen und displayen der metrics verwendet wird, muss vor dem Start noch \textbf{wandb login} im Terminal aufgerufen werden (falls nicht vorhanden noch ein Account vorher erstellt werden). Als default Werte wurde eine batch-size von XYZ und eine learning-rate von XYZ gewählt, da diese in der Hyperparameter-Optimierung am Besten abgeschnitten hatten. Am Ende des Trainings erhält man einen einen Ordner names model\_save, welche die Gewichte und die Config in Pytorch Format enthält. Möchte man zu einem spätern Zeitpunkt nochmal retrainen, kann in der torch\_trainer.py Datei das Modell statt von den pretrained Gewichten, von unseren Gewichten geladen werden:
+Zum Selber trainieren müssen die Packages torch, transformers und wandb installiert sein und die \textbf{training\_data.tsv} in einem Ordner namens data eingefügt werden. Da wandb zum loggen und displayen der metrics verwendet wird, muss vor dem Start noch \textbf{wandb login} im Terminal aufgerufen werden (falls nicht vorhanden noch ein Account vorher erstellt werden). Als default Werte wurde eine batch-size von 16 und eine learning-rate von 1e-4 gewählt, da diese in der Hyperparameter-Optimierung am Besten abgeschnitten hatten. Am Ende des Trainings erhält man einen einen Ordner names model\_save, welche die Gewichte und die Config in Pytorch Format enthält. Möchte man zu einem spätern Zeitpunkt nochmal retrainen, kann in der torch\_trainer.py Datei das Modell statt von den pretrained Gewichten, von unseren Gewichten geladen werden:
 
 Also der folgende Teil:
 \begin{python}
