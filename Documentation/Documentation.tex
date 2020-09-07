@@ -9,6 +9,9 @@
 \usepackage{hyperref}
 \usepackage{listings}
 
+\usepackage[style=authoryear, backend=biber]{biblatex}
+\addbibresource{bibliography.bib}
+
 \DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
 \DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
 
@@ -99,9 +102,9 @@
 \author{
 Dirk Neuhäuser \\ 7094369
 \and
-Tim Rosenkranz \\ 123456789
+Tim Rosenkranz \\ 6929884
 \and 
-Tobias XYZ \\ 123456789
+Tobias Marzell \\ 123456789
 }
 
 \maketitle
@@ -151,7 +154,7 @@ indicating the part(s) \\ of the body supporting the rest \\ of the body (e.g., 
 \end{tabular}
 \vspace{0.3cm}
 
-Die tsv Datei der bereinigten Säte ist ebenfalls der Abgabe beigefügt (training\_data.tsv).
+Die tsv Datei der bereinigten Sätze ist ebenfalls der Abgabe beigefügt (training\_data.tsv).
 
 
 \section{Huggingface Transformes mit Bert}
@@ -210,129 +213,74 @@ model = BertForSequenceClassification.from_pretrained("model_save")
 \subsection{Tagger und Einbindung}
 Der beigefügter hftagger.py ist sehr einfach aufgebaut. In der \textbf{init-Methode} wird das Modell aus dem Ordner model\_save geladen und in der \textbf{tag-Methode} wird für ein mitgegebener Satz eine LabelId returned, die das Modell predicted. In der Einbindung in den \textbf{Text-Imager} wird für jedes Preposition-Token ein \textbf{WordSense} mit dieser LabelId beigefügt. Der Abgabe wurde ebenfalls eine Datei Names definitions.tsv beigefügt, welche eine Map der LabelIds auf ihre Definitionen enthält (falls Interesse daran besteht).
 
+\newpage
+
 \section{FlairNLP}
 \chapterauthor{Tim}
-FlairNLP ist ein Framework, das speziell für NLP-Aufgaben konzipiert ist. Für unsere Aufgabe nutzen wir einen \textit{text classifier}, der wie der Name sagt, eine Eingabe klassifiziert und dadurch die Präposition dem zugehörigen Sinn zuordnet.
+FlairNLP [\cite{flair}]\footnote{Github: \url{https://github.com/flairNLP/flair}} ist ein Python-Framework, das speziell für NLP-Aufgaben konzipiert ist und auf \textbf{PyTorch} basiert. Für unsere Aufgabe nutzen wir einen \textit{text classifier}, der wie der Name sagt, eine Eingabe klassifiziert und dadurch die Präposition dem zugehörigen Sinn zuordnet.
 
-\subsection{Vorgehen [Training]}
-Damit einer Präposition ein Sinn zugeordnet werden kann, passieren einige Dinge. Der Hauptteil des Projekts besteht aus einer NLP-KI mit dem Flair-framework.
+Für die Verwendung von Flair ist \textbf{PyTorch} vorausgesetzt. Zudem wird \textbf{hyperopt} benötigt, sofern eine Optimierung\footnote{Siehe: \href{https://github.com/flairNLP/flair/blob/master/resources/docs/TUTORIAL_8_MODEL_OPTIMIZATION.md}{Flair Tutorial 8}.} vorgenommen werden soll.
 
-Damit eine Eingabe verarbeitet werden kann, muss diese zunächst vorbereitet werden. Dazu werden die Daten aus den xml-Dateien gelsen und in einer csv-Datei mit dem entsprechenden Format für Flair abgespeichert. Hierbei wird das standard-Format (\_\_label\_\_$<$label$>$) verwendet. Die Trainingsdaten werden in drei Dateien aufgeteilt, dabei werden 80\% Training, 10\% Dev und weitere 10\% Test zugeschrieben.
+\subsection{Trainer}
 
-Nachdem die Daten im csv-Format vorliegen, wird daraus ein Korpus erstellt. Dazu wird ein \textit{Dictionary} und die entsprechenden Embeddings erstellt. Anschließend wird der \textit{Classifier} erstellt und das Training beginnt.\footnote{Für eine genauere Erklärung bzgl. des Classifiers, des Korpus und des Dictionary verweisen wir auf die offizielle FlairNLP-Dokumentation.}
+\begin{flushleft}
+Das Trainieren des Classifiers wird mit dem Skript flair\_model.py vollzogen. Es bietet die Möglichkeiten ein Modell mit wählbaren Hyperparametern zu trainieren oder zu optimieren. Standardmäßig werden bereits optimierte Werte verwendet.
+\end{flushleft}
 
-\subsection{Anwendung}
-
-
-\subsubsection{Trainieren}
-
-
-\subsubsection{Satz predicten}
-Um einen Satz zu predicten, ist nicht viel erforderlich. Beim Aufrufen muss lediglich eine Liste von \textit{Strings} übergeben werden. Wurde beim erstellen des Objektes angegeben, dass nicht tokenisiert werden soll, werden die übergebenen Sätze nur mit einem \textit{SpaceTokenizer} tokenisiert. Die übergebenen Sätze dürfen zudem noch nicht markiert sein - die \textbf{Markierung der Präpositionen wird automatisch} mit dem \textit{Sequence Tagger} (\hyperlink{SeqTag}{$\uparrow$}) \textbf{vollzogen}.
-
-Bevor predictet wird, wird zuerst geprüft, ob ein \textit{classifier} vorhanden ist. Wenn nicht, wird wenn möglich einer importiert, ansonsten ein neuer erstellt - jedoch wird \textbf{immer} erst versucht, einen existierenden zu importieren. Hierbei ist wichtig, dass das bei der Erstellung des Objekts angegebene Verzeichnis als Quelle für Imports und Exports herangezogen wird. 
-
-\subsection{Sequence Tagger - Präpositionen markieren}
-\hypertarget{SeqTag}{Der} \textit{Sequence Tagger} ist notwenidg, um in einem Satz die Präposition zu markieren, die klassifiziert werden soll, v.a. in Sätzen, in denen mehrere vorhanden sind.
-
-Hierbei ist zu beachten, dass für eine einfache Anwendung des Flair Projekts zum predicten der Präposition in einem Satz das Verstehen und / oder Anwenden dieses Taggers \textbf{nicht} notwendig ist.
-
-\subsubsection{Anwendung}
-Der \textit{Sequence Tagger} ist ganz simpel zu benutzen. Zunächst muss wie gewöhnlich ein Objekt der Klassen erzeugt werden. Anschließend ist mit der Methode set\_input() die Eingabe zu setzen. Die Eingabe muss eine Liste von \textit{Strings} sein. Ist dies getan, kann mit do\_tagging() das taggen gestartet werden. Diese Methode gibt dann eine Liste mit den reultierenden \textit{Strings} zurück. Hierbei ist zu beachten, dass bei Eingabe eines Satzes mit zwei Präpositionen \textbf{zwei} Sätze zurückgegeben werden!
-
-\subsubsection{Funktionsweise}
-FlairNLP bietet mehrere bereits vortrainierte \textit{Sequence Tagger}. Wir nutzen für unser Projekt den \textit{Part-of-Speech Tagger}. Mit diesem wird der Satz zunächst predictet, wodurch jedem Wort der entsprechende Tag zugeordnet wird. Da wir uns aber nur für Präpositionen interessieren, löschen wir alle anderen Tags. Zeitgleich werden die Präpositionen aus dem Satz extrahiert, um sie später gezielt wieder einzusetzen und dabei jede Preposition in einem individuellen Satz markieren zu können.
-
-\subsubsection{Programm}
-Der \textit{(Sequence) Tagger} ist in dem script \textit{model\_flair.py} enthalten.
-\begin{itemize}
-\item \_\_init\_\_: In der Initialisierungs-Methode Wird lediglich der zuvor beschriebene Tagger von Flair geladen.
-\item set\_input: Diese Methode dient dazu, eine Liste an \textit{Strings} zu übergeben, die getaggt werden sollen.
-\item do\_tagging: Diese Methode taggt die zuvor in der set\_input Methode übergeben Sätze. Rückgabeparameter ist eine Liste an \textit{Strings}. Diese Liste kann u.U. größer sein, als die Liste der Eingaben.
-\end{itemize}
-
-\subsection{Projektaufbau}
-Das Flair-Projekt umfasst hauptsächlich zwei Dateien:
-\begin{itemize}
-\item[•] model\_flair.py - Diese Datei enthält die Basisklasse(n) für das Projekt. Dabei sind nur die beiden Methoden \textit{train} und \textit{predict} der Klasse \textit{BaseModel} für den einfachen Gebrauch notwendig. Erstere vollzieht das Training mit den der Methode angegebenen Daten (Übergabeparameter ist ein Verzeichnis) und zweitere predictet eine Liste an Sätzen (\textit{Strings}), die übergeben werden.
-\item[•] flair\_test.py - Dieses script dient dazu, einen simplen test des Flair-Models durchzuführen. Es nimmt \textit{command line arguments} entgegen, um zwischen Training und Testen, sowie ob ein Tokenizer verwendet werden soll, zu entscheiden. Das erste Argument muss dabei ein \textbf{boolean} sein und bezeichnet die Wahl für (Argument = \textit{False}) oder gegen (Argument = \textit{True}) einen Tokenizer. Das zweite Argument ist hingegen die Wahl für Training oder Test. Um ein Training zu starten muss "train" (\textit{String}) eingegeben werden; Jede andere Eingabe wählt das Testen.
-\end{itemize}
-
-\subsubsection{Aufbau des Classifiers und Korpus}
-DEr Classifier ist der Hauptbestandteil dieses Flair-Projekts. Für das Training dieses Classifiers ist aber ein Korpus notwendig, in dem die Trainingsdaten verarbeitet werden.
-
-\paragraph{Korpus}
-Bevor ein Classifier erstellt werden kann, muss zuerst ein Korpus erstellt werden. Dies geschieht in der Methode \textit{\_create\_corpus}.
-
-\begin{python}
-col_name_map = {0: "label", 1: "text"}
-\end{python}
+\subsubsection{Aufbau Korpus}
+Der Classifier ist der Hauptbestandteil dieses Flair-Projekts. Für das Training dieses Classifiers ist aber ein Korpus notwendig, in dem die Trainingsdaten verarbeitet werden. Dies geschieht in der Methode \textit{\_create\_corpus}.
 
 Die column name map (\textit{col\_name\_map}) wird hier angegeben und enthält die Information, wo in der Datei der Daten die label und wo der Text steht.
 
-\begin{python}
-if (not(self.use_tokenizer)):
-	tokenizer = SpaceTokenizer()
-else:
-	tokenizer = SegtokTokenizer()
-\end{python}
+Der Korpus wird dann mit der colun name map, den Trainingsdaten und einem Tokenizer erstellt und in der Klassenvariable \textit{\_\_corpus} gespeichert.
 
-Als Tokenizer werden entweder der flair Tokenizer SegTok oder ein SpaceTokenizer verwendet, je nachdem ob angegeben ist, dass ein Tokenizer verwendet werden soll, oder nicht. Die Tokenizer können auch angepasst werden.
+Die Trainingsdaten müssen dabei im csv-Format abgespeichert sein und ggf. in 80\% Train, 10\%Dev und 10\% Test aufgeteilt. Sofern keine Test- und Dev-Datei besteht, wird aus den Trainingsdaten ein Anteil genommen, um Dev- und Test-Datensätze zu erstellen (Flair standard).
 
-\begin{python}
-self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
-    column_name_map=col_name_map,
-    tokenizer=tokenizer)
-\end{python}
+\subsubsection{Aufbau Classifier}
 
-Der Korpus wird dann mit der colun name map, den Trainingsdaten und dem Tokenizer erstellt und in der Klassenvariable \textit{\_\_corpus} gespeichert.
+Existiert ein Korpus, kann ein Classifier (in der Methode \textit{\_create\_classifier}) erstellt werden.
 
-\paragraph{Classifier}
+Zuerst wird dazu ein dictionary der label auf Basis des Korpus erstellt. Anschließend werden die gewünschten Embeddings erstellt. Danach kann mit diesen beiden Daten der Classifier erstellt werden. Hierbei geben wir auch mit an, dass ein Satz keine zwei Klassen besitzen kann (\textit{multi\_label = False}).
 
-Existiert ein Korpus, kann ein Classifier erstellt werden.
+\subsubsection{Embeddings}
+\begin{flushleft}
+FlairNLP liefert einige Embeddings, u.a. auch eigene \textit{FlairEmbeddings}. Die Optimierung durch Hyperparameter hat gezeigt, dass mit diesen ein sehr gutes Ergebnis erzielt werden kann.\footnote{Siehe: \href{https://github.com/flairNLP/flair/blob/master/resources/docs/TUTORIAL_3_WORD_EMBEDDING.md}{Flair Tutorial 3} und \href{https://github.com/flairNLP/flair/blob/master/resources/docs/TUTORIAL_5_WORD_EMBEDDING.md}{Flair Tutorial 5} für mehr Infos.}
+\end{flushleft}
 
-\begin{python}
-label_dict = self.__corpus.make_label_dictionary()
-\end{python}
+\subsection{Anwendung}
+\begin{flushleft}
+Die Anwendungen Trainieren und Predicten sind in zwei Skripte getrennt. Letzteres ist in das \textbf{TextImager}-Projekt eingegliedert.
+\end{flushleft}
 
-Zuerst wird dazu ein dictionary der label erstellt.
+\subsubsection{Trainieren}
+\begin{flushleft}
+Das Trainieren geschieht mit dem Skript model\_flair.py und den benötigten Trainingsdaten. Für das trainieren muss die Methode \textit{train()} angewandt werden. Hierbei können vier Parameter übergeben werden, das Verzeichnis, in dem die Daten liegen (standardmäßig \textit{data}), die mini batch size, learning rate und die Anzahl der Epochen.
 
-\begin{python}
-word_embeddings = [WordEmbeddings('glove'), FlairEmbeddings('news-forward-fast'),FlairEmbeddings('news-backward-fast')]
+Bevor das Training beginnt, wird wenn möglich ein bereits existierender Classifier geladen, der sich in dem Verzeichnis befindet, das beim Erstellen des Objektes angegeben wurde. Falls keiner existiert, wird ein neuer erstellt. Darüber hinaus wird immer ein Korpus erstellt. Dabei muss mindestens eine datei mit dem Namen \textit{train.csv} im Verzeichnis liegen, optional auch eine Datei \textit{dev.csv} und \textit{test.csv} - andere Namen können ohne weiteres \textbf{nicht} gewählt werden.
+\end{flushleft}
 
-document_embeddings = DocumentLSTMEmbeddings(word_embeddings, hidden_size=512,reproject_words=True,reproject_words_dimension=256)
-\end{python}
+\subsubsection{Satz predicten}
+Das Predicten wird in dem Skript flair\_disambiguation.py vollzogen. Um einen Satz zu predicten, muss lediglich ein \textit{String} in die Methode \textit{predict()} übergeben werden. Dabei muss die Präposition, die klassifiziert werden soll mit den html-Tags $<$head$>$ und $<$\textbackslash head$>$ umschlossen sein. Es kann nur eine Präposition predictet werden. Bei Missachtung können fehlerhafte Ergebnisse ausgegeben werden.
 
-Anschließend wenden wir Embeddings an. \textbf{\textcolor{red}{WIP}}
+In diesem Skript muss beim erstellen des Objekts der Pfad angegeben werden, in dem das Classifier-Model liegt. Ein dort befindlicher Classifier mit Namen \textbf{best-model.pt} wird dann geladen. Alternativ kann auch die Methode \textit{\_load\_classifier()} verwendet werden. Sofern bei einem Aufruf der predict-Methode kein Classifier geladen werden kann, wird abgebrochen.
 
-\begin{python}
-self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
-\end{python}
+Es wird die Sinnes-ID ausgegeben, keine Definition.
 
-Nachdem die Embeddings angewandt wurden, wird der classifier erstellt. \textbf{\textcolor{red}{WIP}}
-
-
-
-%----------------------
-
-
-\textbf{\textcolor{red}{WIP [old description]}}
-
-Nachdem der Korpus erzeugt wurde, werden die Embeddings erzeugt. Hierbei können mehrere Embeddings durch sog. \textit{pool-embeddings} zusammen genutzt werden. Wir haben uns (hier) für OneHotEmbeddings und WordEmbeddings (Typ \textit{glove)} entschieden\footnote{In anderen Dateien haben wir auch andere Embeddings getestet, aber mit diesen die besten Ergebnisse erzielt.}.
-
-Anschließend erstellen wir den Trainer auf Basis des zuvor erzeugten oder geladenen Classifier und Korpus und beginnen das Training. Hierbei können verschiedene Einstellungen vorgenommen werden. Zunächst wird das \textit{output-directory} angegeben., welches wir mit \textit{resources} angegeben haben. In diesem Verzeichnis werden dann logs und die Models abgespeichert. Die \textit{learning rate} haben wir auf dem Sdandartwert belassen, ebenso die beiden weiteren Parameter. Die \textit{patience} kann variabel angepasst werden. Sie verursacht, dass das Training bei zu vielen Epochen ohne Verbesserung \textbf{hintereinander} die Lernrate verringert oder das Training abgebrochen wird. Je höher die patience, desto mehr Epochen ohne Verbesserung können vorkommen. Der letzte Parameter ist die maximale Anzahl an Epochen. Wir haben einige Tausend Epochen trainiert. Dieses Training kann aber auch dauern; Auswirkungen auf die tRainingszeit haben u.a. auch die verwedeten Embeddings.
-
-\subsubsection{Aufbau des Trainings}
-
-
-\subsubsection{Aufbau des Predictors}
-Der Predictor dient dazu, die Fertige KI anzuwenden. Um einen Satz korrekt zu predicten, muss in diesem die Präposition markiert werden. Diese Markierung ist ein html-Tag, $<$head$>$, bzw. $<$\textbackslash head$>$ und wird mit Hilfe des zuvor beschriebenen Taggers eingefügt. Diese Sätze werden dann mit der vom \textit{flair-classifier} bereitgestellten Methode predictet.
-
-\newpage
+\subsection{TextImager Einbindung}
+\begin{flushleft}
+Blabla
+\end{flushleft}
 
 \newpage
 
 \section{Semi-supervised}
 \chapterauthor{Tobias}
 Tobias war zu faul und hat nichts gemacht.
+
+
+\begingroup
+\raggedright
+\sloppy
+\printbibliography
+\endgroup
 \end{document}

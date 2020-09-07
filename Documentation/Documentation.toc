@@ -1,21 +1,31 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {1}Einleitung}{1}{section.1}
+\defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {2}Datenbeschaffung und -bereinigung}{2}{section.2}
+\defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {3}Huggingface Transformes mit Bert}{3}{section.3}
+\defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {3.1}Trainer}{3}{subsection.3.1}
+\defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {3.2}Tagger und Einbindung}{4}{subsection.3.2}
+\defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {4}FlairNLP}{5}{section.4}
-\contentsline {subsection}{\numberline {4.1}Vorgehen [Training]}{5}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}Anwendung}{5}{subsection.4.2}
-\contentsline {subsubsection}{\numberline {4.2.1}Trainieren}{5}{subsubsection.4.2.1}
-\contentsline {subsubsection}{\numberline {4.2.2}Satz predicten}{5}{subsubsection.4.2.2}
-\contentsline {subsection}{\numberline {4.3}Sequence Tagger - Pr\IeC {\"a}positionen markieren}{5}{subsection.4.3}
-\contentsline {subsubsection}{\numberline {4.3.1}Anwendung}{6}{subsubsection.4.3.1}
-\contentsline {subsubsection}{\numberline {4.3.2}Funktionsweise}{6}{subsubsection.4.3.2}
-\contentsline {subsubsection}{\numberline {4.3.3}Programm}{6}{subsubsection.4.3.3}
-\contentsline {subsection}{\numberline {4.4}Projektaufbau}{6}{subsection.4.4}
-\contentsline {subsubsection}{\numberline {4.4.1}Aufbau des Classifiers und Korpus}{7}{subsubsection.4.4.1}
-\contentsline {paragraph}{Korpus}{7}{paragraph*.1}
-\contentsline {paragraph}{Classifier}{7}{paragraph*.2}
-\contentsline {subsubsection}{\numberline {4.4.2}Aufbau des Trainings}{8}{subsubsection.4.4.2}
-\contentsline {subsubsection}{\numberline {4.4.3}Aufbau des Predictors}{8}{subsubsection.4.4.3}
-\contentsline {section}{\numberline {5}Semi-supervised}{9}{section.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1}Trainer}{5}{subsection.4.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {4.1.1}Aufbau Korpus}{5}{subsubsection.4.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {4.1.2}Aufbau Classifier}{5}{subsubsection.4.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {4.1.3}Embeddings}{5}{subsubsection.4.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2}Anwendung}{6}{subsection.4.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {4.2.1}Trainieren}{6}{subsubsection.4.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {4.2.2}Satz predicten}{6}{subsubsection.4.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.3}TextImager Einbindung}{6}{subsection.4.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5}Semi-supervised}{7}{section.5}
