@@ -134,44 +134,125 @@ class BaseModel:
                       patience=5,
                       max_epochs=epochs)
 
-    def optimize(self):
+    def optimize(self, option=0):
         
         if self.__corpus is None:
             self.__create_corpus()
-        
-        #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        flair.device = torch.device('cuda:0')
 
-        #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        # define your search space
-        search_space = SearchSpace()
-        search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
-            [WordEmbeddings('en')],
-            [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')],
-            [WordEmbeddings('glove')],
-            [WordEmbeddings('glove'), OneHotEmbeddings(self.__corpus)],
-            [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward'), OneHotEmbeddings(self.__corpus)]
-        ])
-        search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
-        search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
-        search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
-        search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
-        search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[8, 16, 32])
+        if(option == 0):
+            # define your search space
+            search_space = SearchSpace()
+            search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
+                [WordEmbeddings('en')],
+                [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')],
+                [WordEmbeddings('glove')],
+                [WordEmbeddings('glove'), OneHotEmbeddings(self.__corpus)],
+                [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward'), OneHotEmbeddings(self.__corpus)]
+            ])
+            search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
+            search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
+            search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
+            search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
+            search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[8, 16, 32])
 
-        # create the parameter selector
-        param_selector = TextClassifierParamSelector(
-            self.__corpus,
-            False,
-            'optimization/results',
-            'lstm',
-            max_epochs=50,
-            training_runs=3,
-            optimization_value=OptimizationValue.DEV_SCORE
-        )
+            # create the parameter selector
+            param_selector = TextClassifierParamSelector(
+                self.__corpus,
+                False,
+                'optimization/results',
+                'lstm',
+                max_epochs=50,
+                training_runs=3,
+                optimization_value=OptimizationValue.DEV_SCORE
+            )
 
-        # start the optimization
-        param_selector.optimize(search_space, max_evals=100)
+            # start the optimization
+            param_selector.optimize(search_space, max_evals=100)
+
+        elif(option == 1):
+
+            # define your search space
+            search_space = SearchSpace()
+            search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
+                [WordEmbeddings('en')],
+                [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')]
+            ])
+            search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
+            search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
+            search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
+            search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
+            search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
+
+            # create the parameter selector
+            param_selector = TextClassifierParamSelector(
+                self.__corpus,
+                False,
+                'optimization/results'+str(option),
+                'lstm',
+                max_epochs=30,
+                training_runs=3,
+                optimization_value=OptimizationValue.DEV_SCORE
+            )
+
+            # start the optimization
+            param_selector.optimize(search_space, max_evals=40)
+
+        elif (option == 2):
+
+            # define your search space
+            search_space = SearchSpace()
+            search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
+                [WordEmbeddings('glove')],
+                [WordEmbeddings('glove'), OneHotEmbeddings(self.__corpus)]
+            ])
+            search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
+            search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
+            search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
+            search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
+            search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
+
+            # create the parameter selector
+            param_selector = TextClassifierParamSelector(
+                self.__corpus,
+                False,
+                'optimization/results' + str(option),
+                'lstm',
+                max_epochs=30,
+                training_runs=3,
+                optimization_value=OptimizationValue.DEV_SCORE
+            )
+
+            # start the optimization
+            param_selector.optimize(search_space, max_evals=40)
+
+        elif (option == 3):
+
+            # define your search space
+            search_space = SearchSpace()
+            search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
+                [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward'), OneHotEmbeddings(self.__corpus)]
+            ])
+            search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
+            search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
+            search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
+            search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
+            search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
+
+            # create the parameter selector
+            param_selector = TextClassifierParamSelector(
+                self.__corpus,
+                False,
+                'optimization/results' + str(option),
+                'lstm',
+                max_epochs=30,
+                training_runs=3,
+                optimization_value=OptimizationValue.DEV_SCORE
+            )
+
+            # start the optimization
+            param_selector.optimize(search_space, max_evals=40)
 
 
 def main():
