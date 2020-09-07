@@ -2,20 +2,13 @@ import flair
 import torch
 from flair.data import Corpus
 from flair.datasets import CSVClassificationCorpus
-from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings, StackedEmbeddings
-from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings, DocumentLSTMEmbeddings
-from flair.models import TextClassifier, SequenceTagger
-from flair.datasets import SentenceDataset
-from flair.models import SequenceTagger
-from flair.tokenization import SegtokTokenizer, SpacyTokenizer, SpaceTokenizer
+from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings
+from flair.embeddings import DocumentPoolEmbeddings
+from flair.models import TextClassifier
+from flair.tokenization import SpaceTokenizer
 
 from flair.trainers import ModelTrainer
-from flair.data import Sentence
-from re import sub, finditer
 import sys
-import csv
-import os
-from random import shuffle
 
 from hyperopt import hp
 from flair.hyperparameter.param_selection import SearchSpace, Parameter
@@ -27,19 +20,15 @@ class BaseModel:
 
     def __init__(self,
                  directory: str='resources/',
-                 mini_batch_size=32,
                  verbose: bool=False
     ):
         """Base model for flair classifier to predict sense of prepositions
 
         :param directory: base directory where files will be stored
-        :param use_tokenizer: bool variable to select if the sentecnes should be tokenized
-        :param mini_batch_size: mini batch size to use
         :param verbose: set to True to display a progress bar
         """
 
         self.__directory = directory
-        self.__mini_batch_size=mini_batch_size
         self.__verbose = verbose
 
         self.__classifier = None
@@ -109,8 +98,12 @@ class BaseModel:
     def train(self, data_dir="data/", mini_batch_size=32, learning_rate=0.1, epochs=10):
         """Train a model
            :param data dir: directory where training data is stored (optimal is train, test and dev file)
+           :param mini_batch_size: mini batch size to use
+           :param learning_rate: learning rate to use
+           :param epochs: number of epochs to train
         """
 
+        # Load classifier if none is yet loaded / create a new classifier if none can be loaded and create corpus
         if self.__classifier is None:
             self._load_classifier()
             if self.__classifier is None:
@@ -120,7 +113,7 @@ class BaseModel:
         elif self.__corpus is None:
             self.__create_corpus(data_dir=data_dir)
 
-
+        # Use GPU if available
         flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # Initialize the text classifier trainer
@@ -135,10 +128,15 @@ class BaseModel:
                       max_epochs=epochs)
 
     def optimize(self, option=0):
-        
+        """Optimize hyper parameters with flair hyperopt wrapper
+        :param option: Select embeddings choice (0=all, 1=Flair Embeddings, 2=GloVe Embeddings, 3=Flair + OneHot)
+        """
+
+        # Create corpus if none exists
         if self.__corpus is None:
             self.__create_corpus()
 
+        # Use GPU if available
         flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         if(option == 0):
@@ -259,7 +257,16 @@ class BaseModel:
 
 def main():
     model = BaseModel(directory="resources/")
-    model.optimize(int(sys.argv[1]))
+    if(len(sys.argv) > 1):
+        if(len(sys.argv) > 2):
+            try:
+                model.train(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]))
+            except:
+                model.train()
+        else:
+            model.optimize(int(sys.argv[1]))
+    else:
+        model.train()
 
 if __name__ == "__main__":
     main()
