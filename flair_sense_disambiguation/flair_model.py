@@ -22,7 +22,8 @@ class BaseModel:
                  directory: str='resources/',
                  verbose: bool=False
     ):
-        """Base model for flair classifier to predict sense of prepositions
+        """
+        Base model for flair classifier to predict sense of prepositions
 
         :param directory: base directory where files will be stored
         :param verbose: set to True to display a progress bar
@@ -42,9 +43,11 @@ class BaseModel:
         except:
             print("Unable to load classifier")
 
-    def _create_classifier(self, data_dir='data/'):
-        """Create a new classifier
-           :param data dir: directory where training data is stored (optimal is train, test and dev file)
+    def _create_classifier(self, data_dir: str = 'data/'):
+        """
+        Create a new classifier
+
+        :param data_dir: directory where training data is stored (optimal is train, test and dev file)
         """
 
         if self.__corpus is None:
@@ -81,9 +84,11 @@ class BaseModel:
         # Create the text classifier
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
 
-    def __create_corpus(self, data_dir="data/"):
-        """Create a new corpus
-           :param data dir: directory where training data is stored (optimal is train, test and dev file)
+    def __create_corpus(self, data_dir: str = "data/"):
+        """
+        Create a new corpus
+
+        :param data_dir: directory where training data is stored (optimal is train, test and dev file)
         """
 
         col_name_map = {0: "label", 1: "text"}
@@ -95,12 +100,18 @@ class BaseModel:
         print(Corpus)
 
 
-    def train(self, data_dir="data/", mini_batch_size=32, learning_rate=0.1, epochs=10):
-        """Train a model
-           :param data dir: directory where training data is stored (optimal is train, test and dev file)
-           :param mini_batch_size: mini batch size to use
-           :param learning_rate: learning rate to use
-           :param epochs: number of epochs to train
+    def train(self, data_dir: str = "data/",
+              mini_batch_size: int = 32,
+              learning_rate: float = 0.1,
+              epochs: int = 10
+        ):
+        """
+        Train a model
+
+        :param data_dir: directory where training data is stored (optimal is train, test and dev file)
+        :param mini_batch_size: mini batch size to use
+        :param learning_rate: learning rate to use
+        :param epochs: number of epochs to train
         """
 
         # Load classifier if none is yet loaded / create a new classifier if none can be loaded and create corpus
@@ -127,8 +138,10 @@ class BaseModel:
                       patience=5,
                       max_epochs=epochs)
 
-    def optimize(self, option=0):
-        """Optimize hyper parameters with flair hyperopt wrapper
+    def optimize(self, option: int = 0):
+        """
+        Optimize hyper parameters with flair hyperopt wrapper
+
         :param option: Select embeddings choice (0=all, 1=Flair Embeddings, 2=GloVe Embeddings, 3=Flair + OneHot)
         """
 
@@ -139,9 +152,10 @@ class BaseModel:
         # Use GPU if available
         flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+        search_space = SearchSpace()
+
         if(option == 0):
-            # define your search space
-            search_space = SearchSpace()
+            # Define search space
             search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
                 [WordEmbeddings('en')],
                 [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')],
@@ -155,24 +169,9 @@ class BaseModel:
             search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
             search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[8, 16, 32])
 
-            # create the parameter selector
-            param_selector = TextClassifierParamSelector(
-                self.__corpus,
-                False,
-                'optimization/results',
-                'lstm',
-                max_epochs=50,
-                training_runs=3,
-                optimization_value=OptimizationValue.DEV_SCORE
-            )
-
-            # start the optimization
-            param_selector.optimize(search_space, max_evals=100)
-
         elif(option == 1):
 
-            # define your search space
-            search_space = SearchSpace()
+            # Define search space
             search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
                 [WordEmbeddings('en')],
                 [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')]
@@ -183,24 +182,9 @@ class BaseModel:
             search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
             search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
 
-            # create the parameter selector
-            param_selector = TextClassifierParamSelector(
-                self.__corpus,
-                False,
-                'optimization/results'+str(option),
-                'lstm',
-                max_epochs=30,
-                training_runs=3,
-                optimization_value=OptimizationValue.DEV_SCORE
-            )
-
-            # start the optimization
-            param_selector.optimize(search_space, max_evals=40)
-
         elif (option == 2):
 
             # define your search space
-            search_space = SearchSpace()
             search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
                 [WordEmbeddings('glove')],
                 [WordEmbeddings('glove'), OneHotEmbeddings(self.__corpus)]
@@ -211,24 +195,9 @@ class BaseModel:
             search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
             search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
 
-            # create the parameter selector
-            param_selector = TextClassifierParamSelector(
-                self.__corpus,
-                False,
-                'optimization/results' + str(option),
-                'lstm',
-                max_epochs=30,
-                training_runs=3,
-                optimization_value=OptimizationValue.DEV_SCORE
-            )
-
-            # start the optimization
-            param_selector.optimize(search_space, max_evals=40)
-
         elif (option == 3):
 
             # define your search space
-            search_space = SearchSpace()
             search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
                 [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward'), OneHotEmbeddings(self.__corpus)]
             ])
@@ -238,29 +207,32 @@ class BaseModel:
             search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
             search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
 
-            # create the parameter selector
-            param_selector = TextClassifierParamSelector(
-                self.__corpus,
-                False,
-                'optimization/results' + str(option),
-                'lstm',
-                max_epochs=30,
-                training_runs=3,
-                optimization_value=OptimizationValue.DEV_SCORE
-            )
-
-            # start the optimization
-            param_selector.optimize(search_space, max_evals=40)
 
         else:
             print("Invalid prameter")
+            return
+
+        # Create the parameter selector
+        param_selector = TextClassifierParamSelector(
+            self.__corpus,
+            False,
+            base_path='optimization/results' + str(option),
+            document_embedding_type='lstm',
+            max_epochs=30,
+            training_runs=3,
+            optimization_value=OptimizationValue.DEV_SCORE
+        )
+
+        # Start the optimization
+        param_selector.optimize(search_space, max_evals=40)
+
 
 def main():
     model = BaseModel(directory="resources/")
     if(len(sys.argv) > 1):
         if(len(sys.argv) > 2):
             try:
-                model.train(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]))
+                model.train(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
             except:
                 model.train()
         else:

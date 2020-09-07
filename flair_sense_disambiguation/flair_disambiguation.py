@@ -11,7 +11,8 @@ class BaseModel:
                  mini_batch_size: int = 32,
                  verbose: bool = False
     ):
-        """Base model for flair classifier to predict sense of prepositions
+        """
+        Base model for flair classifier to predict sense of prepositions
 
         :param directory: directory where the model to use can be found
         :param mini_batch_size: mini batch size to use
@@ -29,7 +30,9 @@ class BaseModel:
         self.__verbose = verbose
 
     def _load_classifier(self, directory: str = 'resources/'):
-        """Loading a classifier from file
+        """
+        Loading a classifier from file
+
         :param directory: directory where the model to use can be found
         """
 
@@ -41,9 +44,11 @@ class BaseModel:
 
 
     def predict(self, sentence: str):
-        """Predict a sentences
-           :param sentence: sentence to predict
-           :return: sense id of the predicted preposition
+        """
+        Predict a sentences
+
+        :param sentence: sentence to predict
+        :return: sense id of the predicted preposition
         """
 
         # (Try to) load classifier if none has yet been loaded
