@@ -254,10 +254,12 @@ class BaseModel:
             # start the optimization
             param_selector.optimize(search_space, max_evals=40)
 
+        else:
+            print("Invalid prameter")
 
 def main():
     model = BaseModel(directory="resources/")
-    model.optimize()
+    model.optimize(int(sys.argv[1]))
 
 if __name__ == "__main__":
     main()
