@@ -57,7 +57,8 @@
       <file>standard.bbx</file>
       <file>authoryear.cbx</file>
       <file>biblatex.cfg</file>
-      <file>english.lbx</file>
+      <file>ngerman.lbx</file>
+      <file>german.lbx</file>
     </requires>
   </internal>
   <external package="biblatex" priority="5" active="0">

@@ -8,7 +8,7 @@ The flair model trainer is located in _flair\_model.py_ and the predictor is loc
 
 ### Data
 
-The Data to train a model has to correspond to the standard flair format in a csv file (\_\_label\_\_<label>, <text>). 
+The Data to train a model has to correspond to the standard flair format in a csv file (\_\_label\_\_\<label\>, \<text\>). 
 
 ### Trainer
 
@@ -24,4 +24,6 @@ This base model contains a methods to load an existing classifier, but when crea
 
 ### Directories
 
-The important parameter for this model are the directory for resources and data (standard is _resources/_ and _data/_). The directory for resources - necessary to save e.g. log files and the model itself - must be given when initialising a new model. The directory for data has to be given when starting a training run.
+The important parameter for the model training are the directory for resources and data (standard is _resources/_ and _data/_). The directory for resources - necessary to save e.g. log files and the model itself - must be given when initialising a new model for training. The directory for data has to be given when starting a training run.
+
+To do a prediction it is necessary to specify the trained model path. The standard model name is _final-model.pt_ located in _resources_.

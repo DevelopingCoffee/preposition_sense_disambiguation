@@ -1,5 +1,6 @@
 \documentclass[10pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{scrpage2}
 \usepackage{color}
@@ -113,6 +114,8 @@ Tobias Marzell \\ 123456789
 \section{Einleitung}
 In dem Praktikum \textit{Text2Sene} geht es darum, aus Textbeschreibungen Szenen zu erstellen. Dabei wurde die Arbeit unterteilt. Wir beschäftigen uns mit der Thematik der \textit{preposition sense disambiguation} (Sinneszuordnung und -erkennung von Präpositionen). Für diese Aufgabe haben wir verschiedene \textit{State-of-the-Art-Verfahren} begutachtet. Schlussendlich haben wir uns dafür entschieden, einerseits mit der FlairNLP library(Tim) und der Huggingface-transformers library(Dirk) jeweils ein supervised Modell umzusetzen und andererseits einen \textit{Semi-supervised} Ansatz(Tobias) zu verfolgen.
 
+\newpage
+
 \section{Datenbeschaffung und -bereinigung}
 \chapterauthor{Tim und Dirk}
 Die Aufage zur Disambigueren von Prepositionen war bereits 2007 eine Aufgabe in der SemEval\footnote{SemEval Aufgaben beschäftigen sich mit der Word Senses und Beziehungen von Wörten in Sätzen}. In mehreren Publikationen bezüglich preposition sense disambiguation wurde dieser Datensatz als Benchmark verwendet, obwohl er im Internet nur schwierig zu finden ist, deshalb ist dieser Abgabe auch der originale Datensatz mit angefügt (TPPCorpora.zip)
@@ -156,6 +159,7 @@ indicating the part(s) \\ of the body supporting the rest \\ of the body (e.g., 
 
 Die tsv Datei der bereinigten Sätze ist ebenfalls der Abgabe beigefügt (training\_data.tsv).
 
+\newpage
 
 \section{Huggingface Transformes mit Bert}
 \chapterauthor{Dirk}
@@ -257,6 +261,8 @@ Die Anwendungen Trainieren und Predicten sind in zwei Skripte getrennt. Letztere
 Das Trainieren geschieht mit dem Skript model\_flair.py und den benötigten Trainingsdaten. Für das trainieren muss die Methode \textit{train()} angewandt werden. Hierbei können vier Parameter übergeben werden, das Verzeichnis, in dem die Daten liegen (standardmäßig \textit{data}), die mini batch size, learning rate und die Anzahl der Epochen.
 
 Bevor das Training beginnt, wird wenn möglich ein bereits existierender Classifier geladen, der sich in dem Verzeichnis befindet, das beim Erstellen des Objektes angegeben wurde. Falls keiner existiert, wird ein neuer erstellt. Darüber hinaus wird immer ein Korpus erstellt. Dabei muss mindestens eine datei mit dem Namen \textit{train.csv} im Verzeichnis liegen, optional auch eine Datei \textit{dev.csv} und \textit{test.csv} - andere Namen können ohne weiteres \textbf{nicht} gewählt werden.
+
+Sofern kein anderes verzeichnis angegeben wurde, wird das trainierte Model, sowie log-Files in dem Verzeichnis \textit{resources} gespeichert. Das finale Model trägt den Namen \glqq\textit{final-model.pt}\grqq{}.
 \end{flushleft}
 
 \subsubsection{Satz predicten}
@@ -264,11 +270,17 @@ Das Predicten wird in dem Skript flair\_disambiguation.py vollzogen. Um einen Sa
 
 In diesem Skript muss beim erstellen des Objekts der Pfad angegeben werden, in dem das Classifier-Model liegt. Ein dort befindlicher Classifier mit Namen \textbf{best-model.pt} wird dann geladen. Alternativ kann auch die Methode \textit{\_load\_classifier()} verwendet werden. Sofern bei einem Aufruf der predict-Methode kein Classifier geladen werden kann, wird abgebrochen.
 
-Es wird die Sinnes-ID ausgegeben, keine Definition.
+Es wird die Sinnes-ID ausgegeben, keine Definition. Sofern an der Definition für die Sinnes-IDs besteht, kann die Map der LabelIDs genutzt werden, die mit Huggingface bereitgestellt wird.
 
-\subsection{TextImager Einbindung}
+\subsection{Integration TextImager}
 \begin{flushleft}
-Blabla
+In den TexTimager\footnote{Siehe: \url{https://github.com/texttechnologylab/textimager-uima}} wurde nur das Skript zum predicten, flair\_disambiguation.py, integriert. Das Trainieren muss mit dem entsprechenden Python-Skript erfolgen.
+
+Die Klasse \textbf{FlairDisambiguation} stellt dabei das Interface zum korrespondierenden Python-Skript dar. Es ist so aufgebaut, dass es mit einem \textit{AggregateBuilder} ausgeführt werden kann. Für diesen sind die Methoden \textit{initialize} und \textit{process} wichtig. In ersterer wird eine Python-Umgebung initalisiert und vorbereitet, sodass in der Prozessmethode lediglich predicted werden muss. Dabei wird jede Präposition einzeln predicted und die Sinnes-ID in das JCas hinter die Präposition eingefügt.
+
+Mit der Klasse \textbf{TestFlairDisambiguation} kann ein Test vorgenommen werden.
+
+Damit das Klassifizieren funktioniert, muss in dem Ordner \textit{resources} der Maven-Struktur das trainierte Model abgelegt und im Code der Pfad ggf. angepasst werden.
 \end{flushleft}
 
 \newpage
@@ -277,6 +289,7 @@ Blabla
 \chapterauthor{Tobias}
 Tobias war zu faul und hat nichts gemacht.
 
+\newpage
 
 \begingroup
 \raggedright
