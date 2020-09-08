@@ -1,54 +1,44 @@
 package org.hucompute.textimager.flairdisambiguation;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import org.apache.uima.UIMAException;
-import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
-import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.google.common.io.Files;
-
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
-
+import org.dkpro.core.corenlp.CoreNlpSegmenter;
+import org.hucompute.textimager.uima.util.XmlFormatter;
 import org.hucompute.textimager.flairdisambiguation.FlairDisambiguation;
 
+import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
+
+import org.apache.uima.UIMAException;
+
+/**
+ * <p>This class implements a test for the flair disambiguation interface class.</\p>
+ *
+ * @author Tim Rosenkranz
+ *
+ */
+
 public class TestFlairDisambiguation {
+    /**
+     * Initialized the python conda environment, temp Folder and the interface with the python script.
+     *
+     * @param args Standard main arguments
+     * @throws UIMAException if the Builder / Pipeline fails
+     */
+    public static void main(String[] args) throws UIMAException {
 
-    @BeforeClass
-    public static void setUpClass() throws ResourceInitializationException {
-    }
+        JCas cas = JCasFactory.createText("This is a test by Barrack Obama.","en");
 
-    @Test
-    public void test() throws UIMAException, IOException {
-        FlairDisambiguation flairDisambiguation = new FlairDisambiguation();
+        AggregateBuilder builder = new AggregateBuilder();
+        // Tokenizer
+        builder.add(createEngineDescription(CoreNlpSegmenter.class));
+        // Classifier
+        builder.add(createEngineDescription(FlairDisambiguation.class));
+        SimplePipeline.runPipeline(cas,builder.createAggregate());
 
-        String text = "hallo";
-        JCas jCas = JCasFactory.createText(text);
-
-        flairDisambiguation.process(jCas);
-
-        // String home = System.getenv("HOME");
-        /* String model_location = home + "/.textimager/models/PharmaCoNER-PCSE_mean-BPEmb-TF-w2v.pt";
-        if (!Paths.get(model_location).toFile().exists()) {
-            Files.copy(Paths.get(
-                    "/resources/public/stoeckel/projects/EsPharmaNER-REST/models/PharmaCoNER-PCSE_mean-BPEmb-TF-w2v.pt")
-                    .toFile(), Paths.get(model_location).toFile());
-        }
-        */
-
-        /*
-        JCasUtil.select(jCas, NamedEntity.class).forEach(ner -> {
-            System.out.println(ner.getCoveredText() + ": " + ner);
-        });
-        assert JCasUtil.select(jCas, NamedEntity.class).size() > 0;
-         */
+        System.out.println(XmlFormatter.getPrettyString(cas.getCas()));
 
     }
 }
