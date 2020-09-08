@@ -16,14 +16,14 @@ from flair.hyperparameter.param_selection import TextClassifierParamSelector, Op
 
 
 class BaseModel:
-    """Base Model for flair"""
+    """Train Model for flair"""
 
     def __init__(self,
-                 directory: str='resources/',
-                 verbose: bool=False
+                 directory: str = 'resources/',
+                 verbose: bool = False
     ):
         """
-        Base model for flair classifier to predict sense of prepositions
+        Train model for flair classifier to predict sense of prepositions
 
         :param directory: base directory where files will be stored
         :param verbose: set to True to display a progress bar
@@ -99,12 +99,12 @@ class BaseModel:
                                                         tokenizer=SpaceTokenizer())
         print(Corpus)
 
-
-    def train(self, data_dir: str = "data/",
+    def train(self,
+              data_dir: str = "data/",
               mini_batch_size: int = 32,
               learning_rate: float = 0.1,
               epochs: int = 10
-        ):
+    ):
         """
         Train a model
 
@@ -154,7 +154,7 @@ class BaseModel:
 
         search_space = SearchSpace()
 
-        if(option == 0):
+        if option == 0:
             # Define search space
             search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
                 [WordEmbeddings('en')],
@@ -169,7 +169,7 @@ class BaseModel:
             search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
             search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[8, 16, 32])
 
-        elif(option == 1):
+        elif option == 1:
 
             # Define search space
             search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
@@ -182,7 +182,7 @@ class BaseModel:
             search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
             search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
 
-        elif (option == 2):
+        elif option == 2:
 
             # define your search space
             search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
@@ -195,7 +195,7 @@ class BaseModel:
             search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
             search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
 
-        elif (option == 3):
+        elif option == 3:
 
             # define your search space
             search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
@@ -206,7 +206,6 @@ class BaseModel:
             search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
             search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
             search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
-
 
         else:
             print("Invalid prameter")
@@ -229,8 +228,8 @@ class BaseModel:
 
 def main():
     model = BaseModel(directory="resources/")
-    if(len(sys.argv) > 1):
-        if(len(sys.argv) > 2):
+    if len(sys.argv) > 1:
+        if len(sys.argv) > 2:
             try:
                 model.train(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
             except:
@@ -239,6 +238,7 @@ def main():
             model.optimize(int(sys.argv[1]))
     else:
         model.train()
+
 
 if __name__ == "__main__":
     main()
