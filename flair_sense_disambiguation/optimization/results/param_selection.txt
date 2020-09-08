@@ -97,3 +97,212 @@ score: 0.724388888888889
 variance: 1.0897037037037041e-05
 test_score: 0.2976
 ----------------------------------------------------------------------------------------------------
+evaluation run 10
+	dropout: 0.3489687459667413
+	embeddings: 0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 64
+	learning_rate: 0.2
+	mini_batch_size: 8
+	rnn_layers: 1
+score: 0.23415555555555556
+variance: 2.2677777777777604e-05
+test_score: 0.7622
+----------------------------------------------------------------------------------------------------
+evaluation run 11
+	dropout: 0.4611020418760938
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim,1-1-1-1-1-1-1-1-1-1-1-1-one-hot
+	hidden_size: 32
+	learning_rate: 0.1
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.06091111111111113
+variance: 2.6957777777777682e-05
+test_score: 0.9445
+----------------------------------------------------------------------------------------------------
+evaluation run 12
+	dropout: 0.3087806381223531
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 32
+	learning_rate: 0.2
+	mini_batch_size: 32
+	rnn_layers: 2
+score: 0.6998666666666667
+variance: 2.3257037037036965e-05
+test_score: 0.3561
+----------------------------------------------------------------------------------------------------
+evaluation run 13
+	dropout: 0.0027687909800497845
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim,1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-one-hot
+	hidden_size: 128
+	learning_rate: 0.1
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.0008000000000000107
+variance: 7.999999999999718e-08
+test_score: 0.9994
+----------------------------------------------------------------------------------------------------
+evaluation run 14
+	dropout: 0.44434487071540074
+	embeddings: 0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/en-fasttext-news-300d-1M
+	hidden_size: 64
+	learning_rate: 0.1
+	mini_batch_size: 8
+	rnn_layers: 2
+score: 0.48442222222222214
+variance: 2.0208148148148155e-05
+test_score: 0.5378
+----------------------------------------------------------------------------------------------------
+evaluation run 15
+	dropout: 0.002749473351999321
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 128
+	learning_rate: 0.05
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.000600000000000008
+variance: 0.0
+test_score: 0.9994
+----------------------------------------------------------------------------------------------------
+evaluation run 16
+	dropout: 0.2714283005291213
+	embeddings: 0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt,2-2-2-one-hot
+	hidden_size: 64
+	learning_rate: 0.05
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.02385555555555557
+variance: 3.9834074074074164e-05
+test_score: 0.9823
+----------------------------------------------------------------------------------------------------
+evaluation run 17
+	dropout: 0.038244577327022966
+	embeddings: 0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/en-fasttext-news-300d-1M
+	hidden_size: 64
+	learning_rate: 0.05
+	mini_batch_size: 8
+	rnn_layers: 1
+score: 0.19626666666666667
+variance: 3.817999999999996e-05
+test_score: 0.8268
+----------------------------------------------------------------------------------------------------
+evaluation run 18
+	dropout: 0.43050325730449424
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/en-fasttext-news-300d-1M
+	hidden_size: 128
+	learning_rate: 0.1
+	mini_batch_size: 8
+	rnn_layers: 1
+score: 0.37620000000000003
+variance: 6.742222222222217e-05
+test_score: 0.6762
+----------------------------------------------------------------------------------------------------
+evaluation run 19
+	dropout: 0.24301271137872876
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 32
+	learning_rate: 0.05
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.7290777777777778
+variance: 3.0062962962963087e-05
+test_score: 0.2988
+----------------------------------------------------------------------------------------------------
+evaluation run 20
+	dropout: 0.3123658900530504
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/en-fasttext-news-300d-1M
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.2522888888888889
+variance: 8.27948148148148e-05
+test_score: 0.8159
+----------------------------------------------------------------------------------------------------
+evaluation run 21
+	dropout: 0.09967316332375886
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 128
+	learning_rate: 0.05
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.0018111111111111088
+variance: 2.0451851851852273e-06
+test_score: 0.9982
+----------------------------------------------------------------------------------------------------
+evaluation run 22
+	dropout: 0.12148875893753247
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.0006666666666666795
+variance: 7.999999999999225e-08
+test_score: 1.0
+----------------------------------------------------------------------------------------------------
+evaluation run 23
+	dropout: 0.07740549714123893
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.00046666666666668927
+variance: 8.000000000000213e-08
+test_score: 1.0
+----------------------------------------------------------------------------------------------------
+evaluation run 24
+	dropout: 0.06976451542679689
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.00033333333333335826
+variance: 5.333333333334133e-08
+test_score: 0.9994
+----------------------------------------------------------------------------------------------------
+evaluation run 25
+	dropout: 0.07033126838403433
+	embeddings: 0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt,2-2-2-2-2-2-one-hot
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.0005333333333333486
+variance: 8.000000000000213e-08
+test_score: 1.0
+----------------------------------------------------------------------------------------------------
+evaluation run 26
+	dropout: 0.05112807442383906
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 32
+	rnn_layers: 2
+score: 0.0006666666666666918
+variance: 7.999999999999225e-08
+test_score: 1.0
+----------------------------------------------------------------------------------------------------
+evaluation run 27
+	dropout: 0.1900420726076229
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.00033333333333335826
+variance: 2.666666666667066e-08
+test_score: 0.9994
+----------------------------------------------------------------------------------------------------
+evaluation run 28
+	dropout: 0.19721699998944708
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/news-forward-0.4.1.pt,1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-/home/stud_homes/s6206220/.flair/embeddings/news-backward-0.4.1.pt
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.000600000000000008
+variance: 5.333333333332158e-08
+test_score: 1.0
+----------------------------------------------------------------------------------------------------

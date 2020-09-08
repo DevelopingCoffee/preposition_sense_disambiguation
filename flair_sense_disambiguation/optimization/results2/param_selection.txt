@@ -1,0 +1,132 @@
+evaluation run 1
+	dropout: 0.19949813338071648
+	embeddings: 0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim,1-1-1-one-hot
+	hidden_size: 64
+	learning_rate: 0.2
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.0319
+variance: 3.218444444444421e-05
+test_score: 0.9884
+----------------------------------------------------------------------------------------------------
+evaluation run 2
+	dropout: 0.16311057443486976
+	embeddings: 0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim,1-1-1-1-1-1-one-hot
+	hidden_size: 128
+	learning_rate: 0.05
+	mini_batch_size: 32
+	rnn_layers: 2
+score: 0.033744444444444424
+variance: 0.00010883333333333352
+test_score: 0.9762
+----------------------------------------------------------------------------------------------------
+evaluation run 3
+	dropout: 0.2116151386857133
+	embeddings: 0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 32
+	learning_rate: 0.2
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.7359
+variance: 3.884148148148155e-05
+test_score: 0.2902
+----------------------------------------------------------------------------------------------------
+evaluation run 4
+	dropout: 0.26116028876515934
+	embeddings: 0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 32
+	learning_rate: 0.2
+	mini_batch_size: 64
+	rnn_layers: 1
+score: 0.7966777777777777
+variance: 0.00014253851851851827
+test_score: 0.253
+----------------------------------------------------------------------------------------------------
+evaluation run 5
+	dropout: 0.43238940000635334
+	embeddings: 0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 128
+	learning_rate: 0.1
+	mini_batch_size: 16
+	rnn_layers: 2
+score: 0.5382111111111111
+variance: 1.2065925925925937e-05
+test_score: 0.497
+----------------------------------------------------------------------------------------------------
+evaluation run 6
+	dropout: 0.28895567194330696
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 32
+	learning_rate: 0.15
+	mini_batch_size: 64
+	rnn_layers: 1
+score: 0.8171333333333334
+variance: 5.187037037037031e-05
+test_score: 0.2177
+----------------------------------------------------------------------------------------------------
+evaluation run 7
+	dropout: 0.02222494871753289
+	embeddings: 0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim,1-1-1-1-1-1-1-1-1-one-hot
+	hidden_size: 32
+	learning_rate: 0.15
+	mini_batch_size: 64
+	rnn_layers: 1
+score: 0.12106666666666666
+variance: 0.00022701555555555586
+test_score: 0.8732
+----------------------------------------------------------------------------------------------------
+evaluation run 8
+	dropout: 0.1370780181624192
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 16
+	rnn_layers: 2
+score: 0.3014777777777778
+variance: 0.0002814748148148143
+test_score: 0.6159
+----------------------------------------------------------------------------------------------------
+evaluation run 9
+	dropout: 0.1882252893628013
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 32
+	learning_rate: 0.15
+	mini_batch_size: 64
+	rnn_layers: 1
+score: 0.7926333333333333
+variance: 4.9399259259259256e-05
+test_score: 0.2445
+----------------------------------------------------------------------------------------------------
+evaluation run 10
+	dropout: 0.3454466198339532
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim,1-1-1-1-1-1-1-1-1-1-1-1-one-hot
+	hidden_size: 32
+	learning_rate: 0.05
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.10134444444444445
+variance: 4.013703703703688e-05
+test_score: 0.9104
+----------------------------------------------------------------------------------------------------
+evaluation run 11
+	dropout: 0.4339938779889186
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 128
+	learning_rate: 0.1
+	mini_batch_size: 16
+	rnn_layers: 1
+score: 0.6113111111111111
+variance: 0.00021145703703703692
+test_score: 0.4122
+----------------------------------------------------------------------------------------------------
+evaluation run 12
+	dropout: 0.14926223438905406
+	embeddings: 0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-/home/stud_homes/s6206220/.flair/embeddings/glove.gensim
+	hidden_size: 128
+	learning_rate: 0.15
+	mini_batch_size: 32
+	rnn_layers: 1
+score: 0.40135555555555563
+variance: 0.00023222296296296254
+test_score: 0.6177
+----------------------------------------------------------------------------------------------------
