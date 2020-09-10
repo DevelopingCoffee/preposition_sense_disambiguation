@@ -3,7 +3,7 @@ import torch
 from flair.data import Corpus
 from flair.datasets import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings
-from flair.embeddings import DocumentPoolEmbeddings
+from flair.embeddings import DocumentRNNEmbeddings
 from flair.models import TextClassifier
 from flair.tokenization import SpaceTokenizer
 
@@ -56,30 +56,13 @@ class BaseModel:
         # Create the label dictionary
         label_dict = self.__corpus.make_label_dictionary()
 
-        #############################################################################
-        # Word Embeddings with pre-trained
-        # Make a list of word embeddings
-        # word_embeddings = [WordEmbeddings('glove')]
+        # Instantiate Embeddings: Flair + OneHot (self-learning Embeddings)
+        word_embeddings = [FlairEmbeddings('news-forward-fast'),
+                           FlairEmbeddings('news-backward-fast'),
+                           OneHotEmbeddings(self.__corpus)]
 
-        # Initialize document embedding by passing list of word embeddings
-        # Can choose between many RNN types (GRU by default, to change use rnn_type parameter)
-        # document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=256)
-        #############################################################################
-
-        # Instantiate one-hot encoded word embeddings with your corpus
-        hot_embedding = OneHotEmbeddings(self.__corpus)
-
-        # Init standard GloVe embedding
-        glove_embedding = WordEmbeddings('glove')
-
-        # Document pool embeddings
-        document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
-
-        # word_embeddings = [WordEmbeddings('glove'), FlairEmbeddings('news-forward-fast'),
-        #                    FlairEmbeddings('news-backward-fast')]
-        #
-        # document_embeddings = DocumentLSTMEmbeddings(word_embeddings, hidden_size=512, reproject_words=True,
-        #                                              reproject_words_dimension=256)
+        document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=128, reproject_words=True,
+                                                    reproject_words_dimension=64, rnn_layers=1)
 
         # Create the text classifier
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
@@ -102,7 +85,7 @@ class BaseModel:
     def train(self,
               data_dir: str = "data/",
               mini_batch_size: int = 32,
-              learning_rate: float = 0.1,
+              learning_rate: float = 0.15,
               epochs: int = 10
     ):
         """
@@ -138,11 +121,9 @@ class BaseModel:
                       patience=5,
                       max_epochs=epochs)
 
-    def optimize(self, option: int = 0):
+    def optimize(self):
         """
         Optimize hyper parameters with flair hyperopt wrapper
-
-        :param option: Select embeddings choice (0=all, 1=Flair Embeddings, 2=GloVe Embeddings, 3=Flair + OneHot)
         """
 
         # Create corpus if none exists
@@ -154,68 +135,26 @@ class BaseModel:
 
         search_space = SearchSpace()
 
-        if option == 0:
-            # Define search space
-            search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
-                [WordEmbeddings('en')],
-                [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')],
-                [WordEmbeddings('glove')],
-                [WordEmbeddings('glove'), OneHotEmbeddings(self.__corpus)],
-                [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward'), OneHotEmbeddings(self.__corpus)]
-            ])
-            search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
-            search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
-            search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
-            search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
-            search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[8, 16, 32])
+        # Define search space
+        search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
+            [WordEmbeddings('en')],
+            [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')],
+            [WordEmbeddings('glove')],
+            [WordEmbeddings('glove'), OneHotEmbeddings(self.__corpus)],
+            [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward'), OneHotEmbeddings(self.__corpus)]
+        ])
+        search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
+        search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
+        search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
+        search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
+        search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[8, 16, 32])
 
-        elif option == 1:
-
-            # Define search space
-            search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
-                [WordEmbeddings('en')],
-                [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')]
-            ])
-            search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
-            search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
-            search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
-            search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
-            search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
-
-        elif option == 2:
-
-            # define your search space
-            search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
-                [WordEmbeddings('glove')],
-                [WordEmbeddings('glove'), OneHotEmbeddings(self.__corpus)]
-            ])
-            search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
-            search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
-            search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
-            search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
-            search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
-
-        elif option == 3:
-
-            # define your search space
-            search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
-                [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward'), OneHotEmbeddings(self.__corpus)]
-            ])
-            search_space.add(Parameter.HIDDEN_SIZE, hp.choice, options=[32, 64, 128])
-            search_space.add(Parameter.RNN_LAYERS, hp.choice, options=[1, 2])
-            search_space.add(Parameter.DROPOUT, hp.uniform, low=0.0, high=0.5)
-            search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
-            search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[16, 32, 64])
-
-        else:
-            print("Invalid prameter")
-            return
 
         # Create the parameter selector
         param_selector = TextClassifierParamSelector(
             self.__corpus,
             False,
-            base_path='optimization/results' + str(option),
+            base_path='optimization/results',
             document_embedding_type='lstm',
             max_epochs=30,
             training_runs=3,
@@ -228,16 +167,7 @@ class BaseModel:
 
 def main():
     model = BaseModel(directory="resources/")
-    if len(sys.argv) > 1:
-        if len(sys.argv) > 2:
-            try:
-                model.train(sys.argv[1], int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
-            except:
-                model.train()
-        else:
-            model.optimize(int(sys.argv[1]))
-    else:
-        model.train()
+    model.train(epochs=50)
 
 
 if __name__ == "__main__":
