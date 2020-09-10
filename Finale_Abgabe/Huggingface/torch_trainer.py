@@ -12,21 +12,25 @@ import random
 import wandb
 
 
-wandb_apikey = "XYZ"
-path_data = "data/training_data.tsv"
-wandb.login(key=wandb_apikey)
 
-batch_size = 32  #8, 16, 32, 64, 128
-learning_rate = 3e-5 #  3e-4, 1e-4, 5e-5, 3e-5
+# Set your custom Parameter here:
 
+wandb_apikey = "ef94a92678c9a088899b27fb3eb2ca4b7c19642c" # your personal api-key from weights and bias
+path_data = "preposition_sense_disambiguation/huggingface_sense_disambiguation/torch-test/data/training_data.tsv" # where your input-data is
+label_prep_map_path = "preposition_sense_disambiguation/huggingface_sense_disambiguation/torch-test/label_prep_map.tsv" # location of label-prep-map (for error analysis)
 
+# choose parameter (for preposition disambiguation a batch-size of 16 and a learning rate of 1e-4 seems to be very good). The other parameters are also recommended by google
+batch_size = 16  #8, 16, 32, 64, 128
+learning_rate = 1e-4 #  3e-4, 1e-4, 5e-5, 3e-5
+
+# logging-settings
 wandb.init(project = 'Torch-Best-Model-Google-HO')
 wandb.config.epochs = 4
 wandb.config.batch_size = batch_size
 wandb.config.learning_rate = learning_rate
 
 
-
+# train on gpu if possible
 if torch.cuda.is_available():    
     device = torch.device("cuda")
     print('There are %d GPU(s) available.' % torch.cuda.device_count())
@@ -56,6 +60,7 @@ tokenizer = BertTokenizerFast.from_pretrained(pretrained_model_name_or_path = mo
 
 
 print("tokenize data...")
+# creating input-ids and attention-masks of the sentences
 x_train = tokenizer(
     text=data_train['sentence'].to_list(),
     add_special_tokens=True,
@@ -76,21 +81,23 @@ x_val = tokenizer(
     return_token_type_ids = False,
     verbose = True)
 
+# creating the target-label
 y_train = torch.tensor(data_train.training_label.values, dtype=torch.long)
 y_val = torch.tensor(data_val.training_label.values, dtype=torch.long)
+
+# bringing it into pytorch format
 train_dataset = TensorDataset(x_train['input_ids'], x_train['attention_mask'], y_train)
 val_dataset = TensorDataset(x_val['input_ids'], x_val['attention_mask'], y_val)
-
 train_dataloader = DataLoader(
-            train_dataset,  # The training samples.
-            sampler = RandomSampler(train_dataset), # Select batches randomly
-            batch_size = batch_size # Trains with this batch size.
+            train_dataset,  
+            sampler = RandomSampler(train_dataset), 
+            batch_size = batch_size 
         )
 
 validation_dataloader = DataLoader(
-            val_dataset, # The validation samples.
-            sampler = SequentialSampler(val_dataset), # Pull out batches sequentially.
-            batch_size = batch_size # Evaluate with this batch size.
+            val_dataset, 
+            sampler = SequentialSampler(val_dataset), 
+            batch_size = batch_size 
         )
 
 
@@ -98,6 +105,7 @@ print("---------------------------------")
 print("-------configure Bert------------")
 print("---------------------------------")
 
+# loading bert for classification from huggingface
 model = BertForSequenceClassification.from_pretrained(
     "bert-base-uncased", 
     num_labels = len(data_train.training_label.value_counts()), 
@@ -108,34 +116,28 @@ model = BertForSequenceClassification.from_pretrained(
 
 model.cuda()
 
+# print some general information about the layers and parameters:
 params = list(model.named_parameters())
-
 print('The BERT model has {:} different named parameters.\n'.format(len(params)))
-
 print('==== Embedding Layer ====\n')
-
 for p in params[0:5]:
     print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
-
 print('\n==== First Transformer ====\n')
-
 for p in params[5:21]:
     print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
-
 print('\n==== Output Layer ====\n')
-
 for p in params[-4:]:
     print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
 
 
 optimizer = AdamW(model.parameters(),
-                  lr = learning_rate, # args.learning_rate - default is 5e-5, our notebook had 2e-5
-                  eps = 1e-8 # args.adam_epsilon  - default is 1e-8.
+                  lr = learning_rate,
+                  eps = 1e-8 
                 )
 epochs = 4
 total_steps = len(train_dataloader) * epochs
 scheduler = get_linear_schedule_with_warmup(optimizer, 
-                                            num_warmup_steps = 0, # Default value in run_glue.py
+                                            num_warmup_steps = 0, 
                                             num_training_steps = total_steps)
 
 def flat_accuracy(preds, labels):
@@ -199,7 +201,6 @@ for epoch_i in range(0, epochs):
         scheduler.step()
 
     avg_train_loss = total_train_loss / len(train_dataloader)            
-    
     training_time = format_time(time.time() - t0)
 
     print("")
@@ -207,7 +208,8 @@ for epoch_i in range(0, epochs):
     print("  Training epcoh took: {:}".format(training_time))
     print("")
     print("Running Validation...")
-
+    
+    # validation
     t0 = time.time()
 
     model.eval()
@@ -243,7 +245,10 @@ for epoch_i in range(0, epochs):
     validation_time = format_time(time.time() - t0)
     print("  Validation Loss: {0:.2f}".format(avg_val_loss))
     print("  Validation took: {:}".format(validation_time))
+
+    # log results to wandb! :)
     wandb.log({'val_accuracy': avg_val_accuracy, 'epoch': epoch_i + 1, 'val_loss': avg_val_loss, 'train_loss': avg_train_loss})
+
     # Record all statistics from this epoch.
     training_stats.append(
         {
@@ -264,7 +269,8 @@ print("---------------------------------")
 print("----------saving model-----------")
 print("---------------------------------")
 
+# save trained model
 output_dir = './model_save/'
-model_to_save = model.module if hasattr(model, 'module') else model  # Take care of distributed/parallel training
+model_to_save = model.module if hasattr(model, 'module') else model 
 model_to_save.save_pretrained(output_dir)
 

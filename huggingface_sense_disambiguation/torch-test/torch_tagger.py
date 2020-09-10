@@ -41,14 +41,24 @@ class BertTagger:
 tagger = BertTagger()
 tagger.tag("I am <head>in</head> big trouble")
 tagger.tag("I am <head>in</head> a big airplane")
+tagger.tag("I am <head>in</head> New York")
+tagger.tag("<head>In</head> 2020 Donald Trump will be re-elected")
+tagger.tag("I always see you <head>in</head> my dreams.")
+tagger.tag("I am speaking <head>in</head> portuguese.")
+tagger.tag("Donald Trump appears <head>in</head> a weird manner.")
 
+tagger.tag("<head>By</head> 2021 I will have a bachelor degree.")
+tagger.tag("<head>By</head> the way, Joe Biden is actually better than is Opponent.")
+tagger.tag("The Crisis was handled <head>by</head> the best president ever - Donald Trump.")
+tagger.tag("He is leading the polls <head>by</head> far.")
 #tagger.tag("He is swimming <head>with</head> his hands.")
 #tagger.tag("He is <head>with</head> his parents.")
 #tagger.tag("She blinked <head>with</head>  confusion.") # Manner
 #tagger.tag("He combines professionalism <head>with</head>  humor.") # Accompanier
 #tagger.tag("He washed a small red teacup <head>with</head>  water.")  # Means
-
-#tagger.tag("The comments from the first Black and South Asian American woman <head>on</head> a major party presidential ticket come less than two months before the November election in an exclusive 'State of the Union' interview with CNN's Dana Bash on Sunday")
+#
 #tagger.tag("The shop is <head>on</head> the left.")
 #tagger.tag("My friend is <head>on</head> the way to Moscow.")
 #tagger.tag("When she was a little girl people saw unrealistic cowboy films <head>on</head> television")
+#tagger.tag("I am <head>on</head> my way to New York.")
+#tagger.tag("I am <head>on</head> massive pressure.")

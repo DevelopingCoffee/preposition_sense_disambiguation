@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
+from collections import defaultdict
 import torch
 import time
 import datetime
@@ -13,20 +14,24 @@ import wandb
 import csv
 
 
-wandb_apikey = "ef94a92678c9a088899b27fb3eb2ca4b7c19642c"
-path_data = "data/training_data.tsv"
-wandb.login(key=wandb_apikey)
+# Set your custom Parameter here:
 
+wandb_apikey = "ef94a92678c9a088899b27fb3eb2ca4b7c19642c" # your personal api-key from weights and bias
+path_data = "preposition_sense_disambiguation/huggingface_sense_disambiguation/torch-test/data/training_data.tsv" # where your input-data is
+label_prep_map_path = "preposition_sense_disambiguation/huggingface_sense_disambiguation/torch-test/label_prep_map.tsv" # location of label-prep-map (for error analysis)
+
+# choose parameter (for preposition disambiguation a batch-size of 16 and a learning rate of 1e-4 seems to be very good)
 batch_size = 16  #8, 16, 32, 64, 128
 learning_rate = 1e-4 #  3e-4, 1e-4, 5e-5, 3e-5
 
 
-wandb.init(project = 'Torch-Best-Model-Google-HO')
+
+
+wandb.login(key=wandb_apikey)
+wandb.init(project = 'Best')
 wandb.config.epochs = 4
 wandb.config.batch_size = batch_size
 wandb.config.learning_rate = learning_rate
-
-
 
 if torch.cuda.is_available():    
     device = torch.device("cuda")
@@ -53,7 +58,9 @@ data_train, data_val = train_test_split(data, test_size = 0.1, stratify = data[[
 print("loading pretrained bert/tokenizer...")
 model_name = 'bert-base-uncased'
 max_length = 100
-tokenizer = BertTokenizerFast.from_pretrained(pretrained_model_name_or_path = model_name, do_lower_case=True)
+config = BertConfig.from_pretrained(model_name)
+config.output_hidden_states = False
+tokenizer = BertTokenizerFast.from_pretrained(pretrained_model_name_or_path = model_name, config = config)
 
 
 print("tokenize data...")
@@ -160,7 +167,7 @@ torch.cuda.manual_seed_all(seed_val)
 training_stats = []
 total_t0 = time.time()
 
-for epoch_i in range(0, epochs):
+for epoch_i in range(4):
     print("")
     print('======== Epoch {:} / {:} ========'.format(epoch_i + 1, epochs))
     print('Training...')
@@ -276,6 +283,8 @@ print("---------------------------------")
 print("--------Error Analysis-----------")
 print("---------------------------------")
 
+cpu_pred = model.cpu()
+
 total_occurence = defaultdict(int)
 miss_predictions = defaultdict(int)
 total_senses = defaultdict(int)
@@ -283,7 +292,7 @@ target = data_val.training_label.values
 sentences = data_val['sentence'].to_list()
 target = data_val['training_label'].to_list()
 
-with open('label_prep_map.tsv') as csv_file:
+with open(label_prep_map_path) as csv_file:
     reader = csv.reader(csv_file, delimiter='\t')
     label_prep_map = dict(reader) # label -> prep
 
@@ -301,7 +310,7 @@ for i in range(len(sentences)):
         return_token_type_ids = False,
         verbose = True)
     y_val = target[i]
-    logits = model(x_val['input_ids'], token_type_ids=None, attention_mask=x_val['attention_mask'])[0].detach().numpy()
+    logits = cpu_pred(x_val['input_ids'], token_type_ids=None, attention_mask=x_val['attention_mask'])[0].detach().numpy()
     index_prediction = np.argmax(logits)
     if index_prediction != target[i]:
         miss_predictions[label_prep_map[str(target[i])]] += 1
