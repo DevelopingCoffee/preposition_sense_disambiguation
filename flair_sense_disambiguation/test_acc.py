@@ -18,7 +18,7 @@ if(do_test):
     testing()
 else:
 
-    classifier = TextClassifier.load('resources/best-model.pt')
+    classifier = TextClassifier.load('resources/final-model.pt')
 
     # create example sentence
     if(len(sys.argv) < 2):
