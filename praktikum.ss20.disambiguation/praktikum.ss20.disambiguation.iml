@@ -37,7 +37,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: xalan:xalan:2.7.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: xalan:serializer:2.7.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: joda-time:joda-time:2.9.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.googlecode.efficient-java-matrix-library:ejml:0.23" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.glassfish:javax.json:1.0.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.protobuf:protobuf-java:3.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: javax.activation:javax.activation-api:1.2.0" level="project" />
@@ -62,6 +61,15 @@
     <orderEntry type="module" module-name="textimager-uima-base-annotators" />
     <orderEntry type="library" name="Maven: black.ninia:jep:3.9.0" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20180130" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.dkpro.core:dkpro-core-stanfordnlp-gpl:1.12.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.googlecode.efficient-java-matrix-library:ejml:0.23" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.dkpro.core:dkpro-core-api-io-asl:1.12.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.ant:ant:1.10.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.ant:ant-launcher:1.10.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: it.unimi.dsi:fastutil:8.2.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.dkpro.core:dkpro-core-api-featurepath-asl:1.12.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.dkpro.core:dkpro-core-api-transform-asl:1.12.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.dkpro.core:dkpro-core-api-sentiment-asl:1.12.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.uima:uimaj-core:2.10.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.uima:uimafit-core:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />

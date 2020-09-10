@@ -37,8 +37,6 @@ class BaseModel:
         except:
             print("No classifier '" + model_path + "' found", flush=True)
 
-
-
     def predict(self, sentence: str, model_path: str = ''):
         """
         Predict a sentences

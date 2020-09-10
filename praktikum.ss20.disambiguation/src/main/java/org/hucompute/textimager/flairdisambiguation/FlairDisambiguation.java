@@ -7,6 +7,7 @@ import jep.JepException;
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.fit.descriptor.TypeCapability;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -18,9 +19,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -31,14 +30,15 @@ import java.util.Objects;
  *
  */
 
+@TypeCapability(
+        inputs = {"de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token", "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence", "de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS"},
+        outputs = {"de.tudarmstadt.ukp.dkpro.core.api.semantics.type.WordSense"}
+)
 public class FlairDisambiguation extends JepAnnotator {
 
     // Python scripts
     private final String[] resourceFiles = new String[] { "flair_disambiguation.py" };
     private Path tempFolder;
-    // HashSet of prepositions that can be classified
-    private HashSet<String> prepositions = new HashSet<>(Arrays.asList("on", "for", "around", "by", "into", "from", "like", "towards", "beside", "after", "over", "above", "of",
-            "with", "along", "down", "beneath", "onto2", "to", "in", "off", "against", "about", "round", "between", "through", "across", "as", "during", "behind", "among", "inside", "before", "at"));
     // Path to classifier model (should be located in src/main/resources)
     private Path modelPath = Paths.get("praktikum.ss20.disambiguation/src/main/resources/final-model.pt");
 
@@ -140,7 +140,7 @@ public class FlairDisambiguation extends JepAnnotator {
                 String tokenText = t.getText();
                 // Check token for preposition
                 // Every preposition in a sentence will be predicted separately
-                if(this.prepositions.contains(tokenText)) {
+                if (t.getPos().getPosValue().equals("IN")) {
                     int tokenBegin = t.getBegin() - sentence.getBegin();
                     int tokenEnd = t.getEnd() - sentence.getBegin();
 
@@ -150,8 +150,8 @@ public class FlairDisambiguation extends JepAnnotator {
 
                     try {
                         // Predict the sentence with marked preposition
-                        String labelId = interpreter.getValue("model.predict(sentence='" + adjustedSentence +"')", String.class);
-                        // Convert the output (sense ID) to type WordSense
+                        String labelId = interpreter.getValue("model.predict(sentence='" + adjustedSentence + "')", String.class);
+                        // Convert the output (sense ID) to type WordSense and include in JCas
                         WordSense wordSense = new WordSense(jCas, tokenBegin, tokenEnd);
                         wordSense.setValue(labelId);
                         wordSense.addToIndexes();

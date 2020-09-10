@@ -28,6 +28,11 @@
             <version>0.3.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.dkpro.core</groupId>
+            <artifactId>dkpro-core-stanfordnlp-gpl</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 

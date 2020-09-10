@@ -4,10 +4,9 @@ import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.resource.ResourceInitializationException;
+import org.dkpro.core.stanfordnlp.StanfordPosTagger;
 import org.dkpro.core.corenlp.CoreNlpSegmenter;
 import org.hucompute.textimager.uima.util.XmlFormatter;
-import org.hucompute.textimager.flairdisambiguation.FlairDisambiguation;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngineDescription;
 
@@ -32,8 +31,10 @@ public class TestFlairDisambiguation {
         JCas cas = JCasFactory.createText("This is a test by Barrack Obama.","en");
 
         AggregateBuilder builder = new AggregateBuilder();
-        // Tokenizer
+        // Tokenizer - tokenize the input
         builder.add(createEngineDescription(CoreNlpSegmenter.class));
+        // Part-Of-Speech Tagger - tag the tokens for their type
+        builder.add(createEngineDescription(StanfordPosTagger.class));
         // Classifier
         builder.add(createEngineDescription(FlairDisambiguation.class));
         SimplePipeline.runPipeline(cas,builder.createAggregate());
