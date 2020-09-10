@@ -2,20 +2,13 @@ import flair
 import torch
 from flair.data import Corpus
 from flair.datasets import CSVClassificationCorpus
-from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings, StackedEmbeddings
-from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings, DocumentLSTMEmbeddings
-from flair.models import TextClassifier, SequenceTagger
-from flair.datasets import SentenceDataset
-from flair.models import SequenceTagger
-from flair.tokenization import SegtokTokenizer, SpacyTokenizer, SpaceTokenizer
+from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings
+from flair.embeddings import DocumentRNNEmbeddings
+from flair.models import TextClassifier
+from flair.tokenization import SpaceTokenizer
 
 from flair.trainers import ModelTrainer
-from flair.data import Sentence
-from re import sub, finditer
 import sys
-import csv
-import os
-from random import shuffle
 
 from hyperopt import hp
 from flair.hyperparameter.param_selection import SearchSpace, Parameter
@@ -23,23 +16,20 @@ from flair.hyperparameter.param_selection import TextClassifierParamSelector, Op
 
 
 class BaseModel:
-    """Base Model for flair"""
+    """Train Model for flair"""
 
     def __init__(self,
-                 directory: str='resources/',
-                 mini_batch_size=32,
-                 verbose: bool=False
+                 directory: str = 'resources/',
+                 verbose: bool = False
     ):
-        """Base model for flair classifier to predict sense of prepositions
+        """
+        Train model for flair classifier to predict sense of prepositions
 
         :param directory: base directory where files will be stored
-        :param use_tokenizer: bool variable to select if the sentecnes should be tokenized
-        :param mini_batch_size: mini batch size to use
         :param verbose: set to True to display a progress bar
         """
 
         self.__directory = directory
-        self.__mini_batch_size=mini_batch_size
         self.__verbose = verbose
 
         self.__classifier = None
@@ -53,9 +43,11 @@ class BaseModel:
         except:
             print("Unable to load classifier")
 
-    def _create_classifier(self, data_dir='data/'):
-        """Create a new classifier
-           :param data dir: directory where training data is stored (optimal is train, test and dev file)
+    def _create_classifier(self, data_dir: str = 'data/'):
+        """
+        Create a new classifier
+
+        :param data_dir: directory where training data is stored (optimal is train, test and dev file)
         """
 
         if self.__corpus is None:
@@ -64,37 +56,22 @@ class BaseModel:
         # Create the label dictionary
         label_dict = self.__corpus.make_label_dictionary()
 
-        #############################################################################
-        # Word Embeddings with pre-trained
-        # Make a list of word embeddings
-        # word_embeddings = [WordEmbeddings('glove')]
+        # Instantiate Embeddings: Flair + OneHot (self-learning Embeddings)
+        word_embeddings = [FlairEmbeddings('news-forward-fast'),
+                           FlairEmbeddings('news-backward-fast'),
+                           OneHotEmbeddings(self.__corpus)]
 
-        # Initialize document embedding by passing list of word embeddings
-        # Can choose between many RNN types (GRU by default, to change use rnn_type parameter)
-        # document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=256)
-        #############################################################################
-
-        # Instantiate one-hot encoded word embeddings with your corpus
-        hot_embedding = OneHotEmbeddings(self.__corpus)
-
-        # Init standard GloVe embedding
-        glove_embedding = WordEmbeddings('glove')
-
-        # Document pool embeddings
-        document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
-
-        # word_embeddings = [WordEmbeddings('glove'), FlairEmbeddings('news-forward-fast'),
-        #                    FlairEmbeddings('news-backward-fast')]
-        #
-        # document_embeddings = DocumentLSTMEmbeddings(word_embeddings, hidden_size=512, reproject_words=True,
-        #                                              reproject_words_dimension=256)
+        document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=128, reproject_words=True,
+                                                    reproject_words_dimension=64, rnn_layers=1)
 
         # Create the text classifier
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
 
-    def __create_corpus(self, data_dir="data/"):
-        """Create a new corpus
-           :param data dir: directory where training data is stored (optimal is train, test and dev file)
+    def __create_corpus(self, data_dir: str = "data/"):
+        """
+        Create a new corpus
+
+        :param data_dir: directory where training data is stored (optimal is train, test and dev file)
         """
 
         col_name_map = {0: "label", 1: "text"}
@@ -105,12 +82,22 @@ class BaseModel:
                                                         tokenizer=SpaceTokenizer())
         print(Corpus)
 
+    def train(self,
+              data_dir: str = "data/",
+              mini_batch_size: int = 32,
+              learning_rate: float = 0.15,
+              epochs: int = 10
+    ):
+        """
+        Train a model
 
-    def train(self, data_dir="data/", mini_batch_size=32, learning_rate=0.1, epochs=10):
-        """Train a model
-           :param data dir: directory where training data is stored (optimal is train, test and dev file)
+        :param data_dir: directory where training data is stored (optimal is train, test and dev file)
+        :param mini_batch_size: mini batch size to use
+        :param learning_rate: learning rate to use
+        :param epochs: number of epochs to train
         """
 
+        # Load classifier if none is yet loaded / create a new classifier if none can be loaded and create corpus
         if self.__classifier is None:
             self._load_classifier()
             if self.__classifier is None:
@@ -120,7 +107,7 @@ class BaseModel:
         elif self.__corpus is None:
             self.__create_corpus(data_dir=data_dir)
 
-
+        # Use GPU if available
         flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # Initialize the text classifier trainer
@@ -135,17 +122,20 @@ class BaseModel:
                       max_epochs=epochs)
 
     def optimize(self):
-        
+        """
+        Optimize hyper parameters with flair hyperopt wrapper
+        """
+
+        # Create corpus if none exists
         if self.__corpus is None:
             self.__create_corpus()
-        
-        #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        flair.device = torch.device('cuda:0')
 
-        #flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # Use GPU if available
+        flair.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        # define your search space
         search_space = SearchSpace()
+
+        # Define search space
         search_space.add(Parameter.EMBEDDINGS, hp.choice, options=[
             [WordEmbeddings('en')],
             [FlairEmbeddings('news-forward'), FlairEmbeddings('news-backward')],
@@ -159,24 +149,26 @@ class BaseModel:
         search_space.add(Parameter.LEARNING_RATE, hp.choice, options=[0.05, 0.1, 0.15, 0.2])
         search_space.add(Parameter.MINI_BATCH_SIZE, hp.choice, options=[8, 16, 32])
 
-        # create the parameter selector
+
+        # Create the parameter selector
         param_selector = TextClassifierParamSelector(
             self.__corpus,
             False,
-            'optimization/results',
-            'lstm',
-            max_epochs=50,
+            base_path='optimization/results',
+            document_embedding_type='lstm',
+            max_epochs=30,
             training_runs=3,
             optimization_value=OptimizationValue.DEV_SCORE
         )
 
-        # start the optimization
-        param_selector.optimize(search_space, max_evals=100)
+        # Start the optimization
+        param_selector.optimize(search_space, max_evals=40)
 
 
 def main():
     model = BaseModel(directory="resources/")
-    model.optimize()
+    model.train(epochs=50)
+
 
 if __name__ == "__main__":
     main()

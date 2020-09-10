@@ -85,9 +85,11 @@ def version2():
 
     allPrep = []
 
+    # Open tsv data
     with open(rootdir+'training_data.tsv') as tsv_file:
         reader = csv.reader(tsv_file, delimiter='\t')
         for line in reader:
+            # Extract and format text and sense id
             allPrep.append(["__label__"+line[2],line[1]])
 
     random.shuffle(allPrep)
