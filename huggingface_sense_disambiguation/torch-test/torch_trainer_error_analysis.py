@@ -10,9 +10,10 @@ import time
 import datetime
 import random
 import wandb
+import csv
 
 
-wandb_apikey = "XYZ"
+wandb_apikey = "ef94a92678c9a088899b27fb3eb2ca4b7c19642c"
 path_data = "data/training_data.tsv"
 wandb.login(key=wandb_apikey)
 
@@ -260,6 +261,7 @@ print("")
 print("Training complete!")
 
 print("Total training took {:} (h:mm:ss)".format(format_time(time.time()-total_t0)))
+
 print("---------------------------------")
 print("----------saving model-----------")
 print("---------------------------------")
@@ -268,4 +270,54 @@ print("---------------------------------")
 output_dir = './model_save/'
 model_to_save = model.module if hasattr(model, 'module') else model  # Take care of distributed/parallel training
 model_to_save.save_pretrained(output_dir)
+
+
+print("---------------------------------")
+print("--------Error Analysis-----------")
+print("---------------------------------")
+
+total_occurence = defaultdict(int)
+miss_predictions = defaultdict(int)
+total_senses = defaultdict(int)
+target = data_val.training_label.values
+sentences = data_val['sentence'].to_list()
+target = data_val['training_label'].to_list()
+
+with open('label_prep_map.tsv') as csv_file:
+    reader = csv.reader(csv_file, delimiter='\t')
+    label_prep_map = dict(reader) # label -> prep
+
+for i in range(len(sentences)):
+    if i % 10 == 0:
+        print("progression: {} / {}".format(str(i), str(len(sentences))))
+
+    x_val = tokenizer(
+        text=sentences[i],
+        add_special_tokens=True,
+        max_length=max_length,
+        truncation=True,
+        padding='max_length', 
+        return_tensors='pt',
+        return_token_type_ids = False,
+        verbose = True)
+    y_val = target[i]
+    logits = model(x_val['input_ids'], token_type_ids=None, attention_mask=x_val['attention_mask'])[0].detach().numpy()
+    index_prediction = np.argmax(logits)
+    if index_prediction != target[i]:
+        miss_predictions[label_prep_map[str(target[i])]] += 1
+    total_occurence[label_prep_map[str(target[i])]] += 1
+    if index_prediction != target[i]:
+        print("The target was {}, but {} was predicted".format(str(index_prediction), str(target[i])))
+count_senses = defaultdict(int)
+for label, prep in label_prep_map.items():
+    count_senses[prep] +=1
+
+for key in total_occurence:
+    print("{}: {} Accuracy, {} total in test-data, {} different senses".format(key, str((total_occurence[key] - miss_predictions[key])/ total_occurence[key]), str(total_occurence[key]), str(count_senses[key])))
+
+with open('evaluation_statistics.tsv', 'w') as tsv_file:  
+    writer = csv.writer(tsv_file, delimiter='\t')
+    writer.writerow(["preposition", "accuracy", "occurence in test-data", "different senses"])
+    for key in total_occurence:
+       writer.writerow([key, str((total_occurence[key] - miss_predictions[key])/ total_occurence[key]), str(total_occurence[key]), str(count_senses[key])])
 
