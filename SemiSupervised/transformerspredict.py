@@ -6,6 +6,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformerstransfer import Seq2Seq, Encoder, Decoder
 
+class Model:
+    def __init__(self):
+        self.model = get_model()
+
+    def predict(self, sent):
+        x,y = get_sentence_tensor(sent)
+        pred = self(x,y)
+        return pred
+
 def get_sentence_tensor(sent):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     MAX_SENT_LEN = 10
@@ -39,8 +48,7 @@ def get_model():
     seq2seq.eval()
     return seq2seq
 
-def predict(sent):
-    model = get_model()
+def predict(model, sent):
     x,y = get_sentence_tensor(sent)
     pred = model(x,y)
     return pred
