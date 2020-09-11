@@ -43,7 +43,7 @@
 \and 
 Tim Rosenkranz
 \and 
-Tobias KA}
+Tobias Marzell}
 \institute[ode]{Prof. Dr. Alexander Mehler, Alexander Henlein}
 %\date{\today}
 \AtBeginSection[]{
@@ -246,10 +246,36 @@ Definitionen:
 \end{itemize}
 \end{frame}
 
-\section{semi-supervised\\(Tobias)}
-\begin{frame}[t]{Semi-Supervised}\vspace{10pt}
+\section{Semi-Supervised\\(Tobias)}
+\begin{frame}[t]{Datenbeschaffung}\vspace{10pt}
 \begin{itemize}
-\item Bert transfer learning
+\item European Parliament Proceedings Parallel Corpus 1996-2011 (http://www.statmt.org/europarl/)
+\item CDEC Word Aligner (https://github.com/redpony/cdec)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Daten Vorbereitung}\vspace{10pt}
+\begin{itemize}
+\item Tokenizen der Daten
+\item Alle Tokens in lower-case überführen
+\item Zusammenführen der beiden Corpora (special format)
+\item Entfernen von unvollständigen Zeilen
+\item Wörter alignen
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Verfolgte Ansätze}\vspace{10pt}
+\begin{itemize}
+\item Bidirectional LSTM selbst trainieren
+\item Transformers Model transfer learning
+\item Bert Transfer Learning
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Ausblick}\vspace{10pt}
+\begin{itemize}
+\item Verschiedene Sprachen ausprobieren
+\item Output in die anderen Classifier einbinden
 \end{itemize}
 \end{frame}
 

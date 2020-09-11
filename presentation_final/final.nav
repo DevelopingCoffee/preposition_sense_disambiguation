@@ -119,7 +119,7 @@
 \defcounter {refsection}{0}\relax 
 \headcommand {\beamer@subsectionpages {22}{24}}
 \defcounter {refsection}{0}\relax 
-\headcommand {\sectionentry {5}{semi-supervised\\(Tobias)}{25}{semi-supervised\\(Tobias)}{0}}
+\headcommand {\sectionentry {5}{Semi-Supervised\\(Tobias)}{25}{Semi-Supervised\\(Tobias)}{0}}
 \defcounter {refsection}{0}\relax 
 \headcommand {\slideentry {5}{0}{1}{25/25}{}{0}}
 \defcounter {refsection}{0}\relax 
@@ -129,27 +129,39 @@
 \defcounter {refsection}{0}\relax 
 \headcommand {\beamer@framepages {26}{26}}
 \defcounter {refsection}{0}\relax 
-\headcommand {\beamer@sectionpages {25}{26}}
-\defcounter {refsection}{0}\relax 
-\headcommand {\beamer@subsectionpages {25}{26}}
-\defcounter {refsection}{0}\relax 
-\headcommand {\sectionentry {6}{Quellen}{27}{Quellen}{0}}
-\defcounter {refsection}{0}\relax 
-\headcommand {\slideentry {6}{0}{1}{27/27}{}{0}}
+\headcommand {\slideentry {5}{0}{3}{27/27}{}{0}}
 \defcounter {refsection}{0}\relax 
 \headcommand {\beamer@framepages {27}{27}}
 \defcounter {refsection}{0}\relax 
-\headcommand {\beamer@sectionpages {27}{27}}
-\defcounter {refsection}{0}\relax 
-\headcommand {\beamer@subsectionpages {27}{27}}
-\defcounter {refsection}{0}\relax 
-\headcommand {\sectionentry {7}{Literatur}{28}{Literatur}{0}}
-\defcounter {refsection}{0}\relax 
-\headcommand {\slideentry {7}{0}{0}{28/28}{}{0}}
+\headcommand {\slideentry {5}{0}{4}{28/28}{}{0}}
 \defcounter {refsection}{0}\relax 
 \headcommand {\beamer@framepages {28}{28}}
-\headcommand {\beamer@partpages {1}{28}}
-\headcommand {\beamer@subsectionpages {27}{28}}
-\headcommand {\beamer@sectionpages {27}{28}}
-\headcommand {\beamer@documentpages {28}}
-\headcommand {\gdef \inserttotalframenumber {27}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {5}{0}{5}{29/29}{}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {29}{29}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@sectionpages {25}{29}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {25}{29}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\sectionentry {6}{Quellen}{30}{Quellen}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {6}{0}{1}{30/30}{}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {30}{30}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@sectionpages {30}{30}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@subsectionpages {30}{30}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\sectionentry {7}{Literatur}{31}{Literatur}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\slideentry {7}{0}{0}{31/31}{}{0}}
+\defcounter {refsection}{0}\relax 
+\headcommand {\beamer@framepages {31}{31}}
+\headcommand {\beamer@partpages {1}{31}}
+\headcommand {\beamer@subsectionpages {30}{31}}
+\headcommand {\beamer@sectionpages {30}{31}}
+\headcommand {\beamer@documentpages {31}}
+\headcommand {\gdef \inserttotalframenumber {30}}
