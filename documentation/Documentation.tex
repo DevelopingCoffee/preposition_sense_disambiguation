@@ -118,10 +118,9 @@ In dem Praktikum \textit{Text2Sene} geht es darum, aus Textbeschreibungen Szenen
 
 \section{Datenbeschaffung und -bereinigung}
 \chapterauthor{Tim und Dirk}
-Die Aufage zur Disambigueren von Prepositionen war bereits 2007 eine Aufgabe in der SemEval\footnote{SemEval Aufgaben beschäftigen sich mit der Word Senses und Beziehungen von Wörten in Sätzen}. In mehreren Publikationen bezüglich preposition sense disambiguation wurde dieser Datensatz als Benchmark verwendet, obwohl er im Internet nur schwierig zu finden ist, deshalb ist dieser Abgabe auch der originale Datensatz mit angefügt (TPPCorpora.zip)
-Der Datensatz liegt in mehreren xml Datein vor. Für Jede Preposition gibt es einerseits eine xml Datei mit Trainingsätzen und eine xml Datei mit den verschiedenen Sinn-Bedeutungen der Präposition.
+Die Aufage zur Disambigueren von Prepositionen war bereits 2007 eine Aufgabe in der SemEval\footnote{SemEval Aufgaben beschäftigen sich mit der Word Senses und Beziehungen von Wörten in Sätzen}. In mehreren Publikationen bezüglich preposition sense disambiguation wurde dieser Datensatz als Benchmark verwendet, obwohl er im Internet nur schwierig zu finden ist. Deshalb ist dieser Abgabe auch der originale Datensatz mit angefügt (TPPCorpora.zip). Der Datensatz liegt in mehreren xml Datein vor. Für Jede Preposition gibt es einerseits eine xml Datei mit Trainingsätzen und eine xml Datei mit den verschiedenen Sinn-Bedeutungen der Präposition.
 
-Hier ein Beispiel der Präposition "with": 
+Hier ein Beispiel der Präposition 'with'. Das $<$head$>$ $<$/head$>$ umschließt dabei immer die Präposition die disambiguiert werden soll: 
 
 \begin{lstlisting}[language=xml]
   <instance id="with.p.fn.338359" docsrc="FN">
@@ -132,7 +131,7 @@ Hier ein Beispiel der Präposition "with":
   </instance>
 \end{lstlisting}
 
-Der Sinn hinter diesem spezifischen "with" ist mit der Senseid 7(5) deklariert worden. In der Definition xml steht dazu folgendes:
+Der Sinn hinter diesem spezifischen 'with' ist mit der Senseid 7(5) deklariert worden. In der Definition xml für diese Präposition steht dazu folgendes:
 
 \begin{lstlisting}[language=xml]
   <sense id="6">
@@ -166,7 +165,7 @@ Die tsv Datei der bereinigten Sätze ist ebenfalls der Abgabe beigefügt (traini
 Die Huggingface transformers library stellen einheitliche und allgemeine state-of-the-Art Architekturen bereit. Die unterstützen Modelle sind äußerst gut vortrainiert und gehören im NLU Bereich zu den besten. Z.B. bert, ein von google trainiertes Modell, knackt gleich in mehreren Bereichen die state-of-the-Art. Zum Disambiguieren haben wir uns deshalb für bert entschieden. Da die Aufgabe darin besteht einer Präposition \textbf{eine} der mehr als 200 Sinnklassen zuzuordnen, wurde BertForSequenceClassification gewählt. Ein Modell, welches man nur noch mitgeben muss wieviele Klassen es und man erhält dirket vortrainertes Modell samt gewichten und bereits korrekter Layer - Archtiektur. \footnote{Offiziele Dokumentation: https://huggingface.co/transformers/} \footnote{Offizielles Repository: https://github.com/huggingface/transformers}
 
 \subsection{Trainer}
-Zum Trainieren des Taggers wurde ein Skript hftrainer.py entwickelt, welches auf PyTorch aufbaut.
+Zum Trainieren des Taggers wurde ein Skript torch\_trainer.py entwickelt, welches auf PyTorch aufbaut.
 
 \vspace{0.25cm}
 \textbf{Das Skript hat insgesamt 3 Phasen:}
@@ -197,7 +196,7 @@ Zum Trainieren des Taggers wurde ein Skript hftrainer.py entwickelt, welches auf
 		Das beste Ergebnis wurde mit einer batch-size von 16 und einer learning-rate von 1e-4 erzielt. Die Val-Accurcy konnte mit diesen Parametern insgesamgt 0.9084 erreichen.
 \end{itemize}
 
-Zum Selber trainieren müssen die Packages torch, transformers und wandb installiert sein und die \textbf{training\_data.tsv} in einem Ordner namens data eingefügt werden. Da wandb zum loggen und displayen der metrics verwendet wird, muss vor dem Start noch \textbf{wandb login} im Terminal aufgerufen werden (falls nicht vorhanden noch ein Account vorher erstellt werden). Als default Werte wurde eine batch-size von 16 und eine learning-rate von 1e-4 gewählt, da diese in der Hyperparameter-Optimierung am Besten abgeschnitten hatten. Am Ende des Trainings erhält man einen einen Ordner names model\_save, welche die Gewichte und die Config in Pytorch Format enthält. Möchte man zu einem spätern Zeitpunkt nochmal retrainen, kann in der torch\_trainer.py Datei das Modell statt von den pretrained Gewichten, von unseren Gewichten geladen werden:
+Zum Selber trainieren müssen die Packages torch, transformers und wandb installiert sein und die \textbf{training\_data.tsv} in einem Ordner namens data eingefügt werden. Da wandb zum loggen und displayen der metrics verwendet wird, muss vor dem Start noch am Anfang des Skiptes ein Api-key angegeben werden(falls nicht vorhanden noch ein Account vorher erstellt werden). Genauso müssen Werte für batch-size und learning-rate zu Beginn des Skriptes gesetzt werden. Als default Werte wurde eine batch-size von 16 und eine learning-rate von 1e-4 gewählt, da diese in der Hyperparameter-Optimierung am Besten abgeschnitten hatten. Am Ende des Trainings erhält man einen einen Ordner names model\_save, welche die Gewichte und die Config in Pytorch Format enthält. Möchte man zu einem spätern Zeitpunkt nochmal retrainen, kann in der torch\_trainer.py Datei das Modell statt von den pretrained Gewichten, von unseren Gewichten geladen werden:
 
 Also der folgende Teil:
 \begin{python}
@@ -215,7 +214,7 @@ model = BertForSequenceClassification.from_pretrained("model_save")
 
 
 \subsection{Tagger und Einbindung}
-Der beigefügter hftagger.py ist sehr einfach aufgebaut. In der \textbf{init-Methode} wird das Modell aus dem Ordner model\_save geladen und in der \textbf{tag-Methode} wird für ein mitgegebener Satz eine LabelId returned, die das Modell predicted. In der Einbindung in den \textbf{Text-Imager} wird für jedes Preposition-Token ein \textbf{WordSense} mit dieser LabelId beigefügt. Zum benutzen fehlt noch das trainierete Model. Dazu legt man in resources/model\_save die .bin und die .config Datei ab. Der Abgabe wurde ebenfalls eine Datei Names definitions.tsv beigefügt, welche eine Map der LabelIds auf ihre Definitionen enthält (falls Interesse daran besteht).
+Der beigefügter tagger ist sehr einfach aufgebaut. In der \textbf{init-Methode} wird das Modell aus dem Ordner model\_save geladen und in der \textbf{tag-Methode} wird für ein mitgegebener Satz eine LabelId returned, die das Modell predicted. In der Einbindung in den \textbf{Text-Imager} wird für jedes Preposition-Token ein \textbf{WordSense} mit dieser LabelId beigefügt. Zum benutzen fehlt noch das trainierete Model. Dazu legt man in resources/model\_save die .bin und die .config Datei ab. Der Abgabe wurde ebenfalls eine Datei Names definitions.tsv beigefügt, welche eine Map der LabelIds auf ihre Definitionen enthält (falls Interesse daran besteht).
 
 \newpage
 
