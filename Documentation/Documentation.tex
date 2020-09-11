@@ -215,7 +215,7 @@ model = BertForSequenceClassification.from_pretrained("model_save")
 
 
 \subsection{Tagger und Einbindung}
-Der beigefügter hftagger.py ist sehr einfach aufgebaut. In der \textbf{init-Methode} wird das Modell aus dem Ordner model\_save geladen und in der \textbf{tag-Methode} wird für ein mitgegebener Satz eine LabelId returned, die das Modell predicted. In der Einbindung in den \textbf{Text-Imager} wird für jedes Preposition-Token ein \textbf{WordSense} mit dieser LabelId beigefügt. Der Abgabe wurde ebenfalls eine Datei Names definitions.tsv beigefügt, welche eine Map der LabelIds auf ihre Definitionen enthält (falls Interesse daran besteht).
+Der beigefügter hftagger.py ist sehr einfach aufgebaut. In der \textbf{init-Methode} wird das Modell aus dem Ordner model\_save geladen und in der \textbf{tag-Methode} wird für ein mitgegebener Satz eine LabelId returned, die das Modell predicted. In der Einbindung in den \textbf{Text-Imager} wird für jedes Preposition-Token ein \textbf{WordSense} mit dieser LabelId beigefügt. Zum benutzen fehlt noch das trainierete Model. Dazu legt man in resources/model\_save die .bin und die .config Datei ab. Der Abgabe wurde ebenfalls eine Datei Names definitions.tsv beigefügt, welche eine Map der LabelIds auf ihre Definitionen enthält (falls Interesse daran besteht).
 
 \newpage
 
