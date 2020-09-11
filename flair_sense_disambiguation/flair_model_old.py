@@ -5,7 +5,7 @@ from flair.datasets import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings
 from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings
 from flair.models import TextClassifier
-from flair.tokenization import SpaceTokenizer
+from flair.tokenization import SpaceTokenizer, SegtokTokenizer
 
 from flair.trainers import ModelTrainer
 import sys
@@ -57,21 +57,14 @@ class BaseModel:
         label_dict = self.__corpus.make_label_dictionary()
 
         # Instantiate Embeddings: Flair + OneHot (self-learning Embeddings)
-        #word_embeddings = [FlairEmbeddings('news-forward-fast'),
-        #                   FlairEmbeddings('news-backward-fast'),
-        #                   OneHotEmbeddings(self.__corpus)]
         
-        #word_embeddings = [WordEmbeddings('en')]
+        hot_embedding = OneHotEmbeddings(self.__corpus)
 
-        #document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=128, reproject_words=True,
-        #                                            reproject_words_dimension=64, rnn_layers=2)
+        glove_embedding = WordEmbeddings('glove')
 
-        # Create the text classifier
-        
-        word_embeddings = [FlairEmbeddings('en-forward'), FlairEmbeddings('en-backward')]
+        document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
 
-        document_embeddings = DocumentPoolEmbeddings(word_embeddings, fine_tune_mode='none')
-        
+        # Create the text classifier        
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
 
     def __create_corpus(self, data_dir: str = "data/"):
@@ -86,7 +79,7 @@ class BaseModel:
         # Create the corpus
         self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
                                                         column_name_map=col_name_map,
-                                                        tokenizer=SpaceTokenizer())
+                                                        tokenizer=SegtokTokenizer())
         print(Corpus)
 
     def train(self,
@@ -173,8 +166,8 @@ class BaseModel:
 
 
 def main():
-    model = BaseModel(directory="resources2/")
-    model.train(epochs=50)
+    model = BaseModel(directory="resources_old/")
+    model.train(epochs=200)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,54 @@
+2020-09-10 17:14:51,702 ----------------------------------------------------------------------------------------------------
+2020-09-10 17:14:51,703 Model: "TextClassifier(
+  (document_embeddings): DocumentRNNEmbeddings(
+    (embeddings): StackedEmbeddings(
+      (list_embedding_0): FlairEmbeddings(
+        (lm): LanguageModel(
+          (drop): Dropout(p=0.05, inplace=False)
+          (encoder): Embedding(300, 100)
+          (rnn): LSTM(100, 2048)
+          (decoder): Linear(in_features=2048, out_features=300, bias=True)
+        )
+      )
+      (list_embedding_1): FlairEmbeddings(
+        (lm): LanguageModel(
+          (drop): Dropout(p=0.05, inplace=False)
+          (encoder): Embedding(300, 100)
+          (rnn): LSTM(100, 2048)
+          (decoder): Linear(in_features=2048, out_features=300, bias=True)
+        )
+      )
+    )
+    (word_reprojection_map): Linear(in_features=4096, out_features=4096, bias=True)
+    (rnn): GRU(4096, 128, num_layers=2, batch_first=True)
+    (dropout): Dropout(p=0.3637196868890623, inplace=False)
+  )
+  (decoder): Linear(in_features=128, out_features=238, bias=True)
+  (loss_function): CrossEntropyLoss()
+  (beta): 1.0
+  (weights): None
+  (weight_tensor) None
+)"
+2020-09-10 17:14:51,703 ----------------------------------------------------------------------------------------------------
+2020-09-10 17:14:51,703 Corpus: "Corpus: 16397 train + 1640 dev + 1640 test sentences"
+2020-09-10 17:14:51,703 ----------------------------------------------------------------------------------------------------
+2020-09-10 17:14:51,703 Parameters:
+2020-09-10 17:14:51,703  - learning_rate: "0.2"
+2020-09-10 17:14:51,703  - mini_batch_size: "16"
+2020-09-10 17:14:51,703  - patience: "3"
+2020-09-10 17:14:51,703  - anneal_factor: "0.5"
+2020-09-10 17:14:51,703  - max_epochs: "30"
+2020-09-10 17:14:51,703  - shuffle: "True"
+2020-09-10 17:14:51,703  - train_with_dev: "False"
+2020-09-10 17:14:51,703  - batch_growth_annealing: "False"
+2020-09-10 17:14:51,703 ----------------------------------------------------------------------------------------------------
+2020-09-10 17:14:51,703 Model training base path: "optimization/results1"
+2020-09-10 17:14:51,703 ----------------------------------------------------------------------------------------------------
+2020-09-10 17:14:51,703 Device: cuda:1
+2020-09-10 17:14:51,703 ----------------------------------------------------------------------------------------------------
+2020-09-10 17:14:51,703 Embeddings storage mode: cpu
+2020-09-10 17:14:51,716 ----------------------------------------------------------------------------------------------------
+2020-09-10 17:15:26,227 ----------------------------------------------------------------------------------------------------
+2020-09-10 17:15:26,227 Exiting from training early.
+2020-09-10 17:15:26,227 ----------------------------------------------------------------------------------------------------
+2020-09-10 17:15:26,227 Testing using best model ...

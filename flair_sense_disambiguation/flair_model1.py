@@ -65,13 +65,15 @@ class BaseModel:
 
         #document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=128, reproject_words=True,
         #                                            reproject_words_dimension=64, rnn_layers=2)
+        
+        word_embeddings = WordEmbeddings('glove')
+
+        hot_embeddings = OneHotEmbeddings(self.__corpus)
+
+        document_embeddings = DocumentPoolEmbeddings([word_embeddings, hot_embeddings], fine_tune_mode='none')
+
 
         # Create the text classifier
-        
-        word_embeddings = [FlairEmbeddings('en-forward'), FlairEmbeddings('en-backward')]
-
-        document_embeddings = DocumentPoolEmbeddings(word_embeddings, fine_tune_mode='none')
-        
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
 
     def __create_corpus(self, data_dir: str = "data/"):
@@ -173,8 +175,8 @@ class BaseModel:
 
 
 def main():
-    model = BaseModel(directory="resources2/")
-    model.train(epochs=50)
+    model = BaseModel(directory="resources1/")
+    model.train(epochs=500)
 
 
 if __name__ == "__main__":
