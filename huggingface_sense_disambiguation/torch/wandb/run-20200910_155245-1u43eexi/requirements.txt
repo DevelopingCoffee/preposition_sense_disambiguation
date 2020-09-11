@@ -67,7 +67,7 @@ greenlet==0.4.15
 grpcio==1.27.2
 h5py==2.10.0
 html5lib==0.999999999
-httplib2==0.9.2
+httplib2==0.18.0
 hyperopt==0.2.4
 idna==2.10
 iexfinance==0.4.3
