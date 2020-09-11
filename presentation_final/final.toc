@@ -1,0 +1,14 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\babel@toc {ngerman}{}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {1}{Aufgabe}{3}{0}{1}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {2}{Datenbeschaffung und -bereinigung\\(Tim und Dirk)}{7}{0}{2}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {3}{Huggingface-Bert\\(Dirk)}{11}{0}{3}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {4}{FairNLP\\(Tim)}{22}{0}{4}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {5}{Semi-Supervised\\(Tobias)}{25}{0}{5}
+\defcounter {refsection}{0}\relax 
+\beamer@sectionintoc {6}{Quellen}{30}{0}{6}
