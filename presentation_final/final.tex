@@ -17,6 +17,7 @@
 %\usepackage{esvect}
 \usepackage{multicol}%for enumerates in several columns
 \usepackage{datetime}
+\usepackage{subcaption}
 \usepackage[ngerman]{babel}
 
 \usepackage[style=authoryear, backend=biber]{biblatex}
@@ -241,10 +242,46 @@ Definitionen:
 \item Mindestens train.csv, optional dev.csv und test.csv
 \item dev und test werden ggf. von flair erstellt
 \end{itemize}
+\end{itemize}
+\textbf{Optimisierung:}
+\begin{itemize}
+\item Optimisierung mit Hyperopt-Wrapper
+\item Mehrere Embeddings, Lernraten, etc. eingestellt
+\item Unbekannte Fehler
+\item log files im repository
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Flair Optimisierung}\vspace{10pt}
+\begin{figure}
+	\begin{subfigure}{.4\textwidth}
+		\includegraphics[scale=.3]{flair_results_training1.png}
+		\includegraphics[scale=.3]{flair_acc_opt.png}
+		\subcaption*{Ergebnisse des Trainings mit optimierten hyperparameter}
+	\end{subfigure}%
+	\begin{subfigure}{.3\textwidth}
+		\includegraphics[scale=.25]{flair_results_by_class.png}
+		\subcaption*{Ergebnisse je Klasse}
+	\end{subfigure}%
+	\begin{subfigure}{.3\textwidth}
+		\includegraphics[scale=.3]{flair_best_try.png}
+		\subcaption*{Einstellungen der Hyperparameter für gutes Ergebnis}
+	\end{subfigure}%
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Flair Trainer}\vspace{10pt}
+\begin{itemize}
+\item Daten im CSV-Format in Korpus laden
+\begin{itemize}
+\item Mindestens train.csv, optional dev.csv und test.csv
+\item dev und test werden ggf. von flair erstellt
+\end{itemize}
 \item Embeddings: FlairEmbeddings + DocumentRNNEmbeddings
 \item Mindestens rund 100 Epochen Training
 \end{itemize}
 \end{frame}
+
 
 \section{Semi-Supervised\\(Tobias)}
 \begin{frame}[t]{Datenbeschaffung}\vspace{10pt}
