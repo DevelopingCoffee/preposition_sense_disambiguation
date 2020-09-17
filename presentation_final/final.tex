@@ -231,6 +231,7 @@ Definitionen:
 \begin{itemize}
 \item Aktuell, spezialisiert für NLP-Aufgaben [\cite{flair}]
 \item Einfaches Framework
+\item Easy-to-use
 \item Basiert auf PyTorch
 \end{itemize}
 \end{frame}
@@ -270,15 +271,17 @@ Definitionen:
 \end{figure}
 \end{frame}
 
-\begin{frame}[t]{Flair Trainer}\vspace{10pt}
+\begin{frame}[t]{Flair Ergebnis}\vspace{10pt}
 \begin{itemize}
-\item Daten im CSV-Format in Korpus laden
-\begin{itemize}
-\item Mindestens train.csv, optional dev.csv und test.csv
-\item dev und test werden ggf. von flair erstellt
+\item Hyperopt-Wrapper nicht gerade zuverlässig
+\item FlairEmbeddings anscheinend Problematisch
+\item Selbstlernende OneHotEmbeddings mit GloVe-WordEmbeddings = gute accuracy
+\item Optimum womöglich noch nicht gefunden
 \end{itemize}
-\item Embeddings: FlairEmbeddings + DocumentRNNEmbeddings
-\item Mindestens rund 100 Epochen Training
+\textbf{TextImager}
+\begin{itemize}
+\item TextImager Einbindung funktioniert problemlos
+\item Model in 'resources' Folder legen und/oder Pfad im Code anpassen
 \end{itemize}
 \end{frame}
 

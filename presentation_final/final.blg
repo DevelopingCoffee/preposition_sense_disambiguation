@@ -1,15 +1,15 @@
 [0] Config.pm:302> INFO - This is Biber 2.9
 [0] Config.pm:305> INFO - Logfile is 'final.blg'
-[33] biber:313> INFO - === Fr Sep 11, 2020, 23:58:43
-[61] Biber.pm:371> INFO - Reading 'final.bcf'
-[143] Biber.pm:857> INFO - Found 1 citekeys in bib section 0
-[161] Biber.pm:3981> INFO - Processing section 0
-[175] Biber.pm:4154> INFO - Looking for bibtex format file 'bibliography.bib' for section 0
-[176] bibtex.pm:1468> INFO - LaTeX decoding ...
-[181] bibtex.pm:1294> INFO - Found BibTeX data source 'bibliography.bib'
-[204] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'variable = shifted' with 'variable = non-ignorable'
-[204] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[204] Biber.pm:3809> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'de-DE'
-[204] Biber.pm:3815> INFO - No sort tailoring available for locale 'de-DE'
-[207] bbl.pm:617> INFO - Writing 'final.bbl' with encoding 'UTF-8'
-[208] bbl.pm:720> INFO - Output to final.bbl
+[23] biber:313> INFO - === Do Sep 17, 2020, 22:44:15
+[41] Biber.pm:371> INFO - Reading 'final.bcf'
+[95] Biber.pm:857> INFO - Found 1 citekeys in bib section 0
+[106] Biber.pm:3981> INFO - Processing section 0
+[114] Biber.pm:4154> INFO - Looking for bibtex format file 'bibliography.bib' for section 0
+[115] bibtex.pm:1468> INFO - LaTeX decoding ...
+[118] bibtex.pm:1294> INFO - Found BibTeX data source 'bibliography.bib'
+[132] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'variable = shifted' with 'variable = non-ignorable'
+[132] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[132] Biber.pm:3809> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'de-DE'
+[132] Biber.pm:3815> INFO - No sort tailoring available for locale 'de-DE'
+[134] bbl.pm:617> INFO - Writing 'final.bbl' with encoding 'UTF-8'
+[135] bbl.pm:720> INFO - Output to final.bbl
