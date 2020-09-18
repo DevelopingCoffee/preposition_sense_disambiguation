@@ -79,7 +79,7 @@ class BaseModel:
         # Create the corpus
         self.__corpus: Corpus = CSVClassificationCorpus(data_folder=data_dir,
                                                         column_name_map=col_name_map,
-                                                        tokenizer=SegtokTokenizer())
+                                                        tokenizer=SpaceTokenizer())
         print(Corpus)
 
     def train(self,
@@ -167,7 +167,7 @@ class BaseModel:
 
 def main():
     model = BaseModel(directory="resources_old/")
-    model.train(epochs=200)
+    model.train(epochs=500)
 
 
 if __name__ == "__main__":

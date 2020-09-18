@@ -17,12 +17,7 @@ def testing():
 if(do_test):
     testing()
 else:
-
-<<<<<<< HEAD
-    classifier = TextClassifier.load('resources1/final-model.pt')
-=======
-    classifier = TextClassifier.load('resources/final-model.pt')
->>>>>>> 51d4db26e1d16eb425c7d36f55fe3f11aecd142a
+    classifier = TextClassifier.load('resources_old/final-model.pt')
 
     # create example sentence
     if(len(sys.argv) < 2):
