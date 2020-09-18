@@ -3,7 +3,7 @@ import torch
 from flair.data import Corpus
 from flair.datasets import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings
-from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings
+from flair.embeddings import DocumentRNNEmbeddings
 from flair.models import TextClassifier
 from flair.tokenization import SpaceTokenizer
 
@@ -19,7 +19,7 @@ class BaseModel:
     """Train Model for flair"""
 
     def __init__(self,
-                 directory: str = 'resources/',
+                 directory: str = 'resources_alt/',
                  verbose: bool = False
     ):
         """
@@ -57,21 +57,12 @@ class BaseModel:
         label_dict = self.__corpus.make_label_dictionary()
 
         # Instantiate Embeddings: Flair + OneHot (self-learning Embeddings)
-        #word_embeddings = [FlairEmbeddings('news-forward-fast'),
-        #                   FlairEmbeddings('news-backward-fast'),
-        #                   OneHotEmbeddings(self.__corpus)]
-        
-        #word_embeddings = [WordEmbeddings('en')]
+        word_embeddings = [FlairEmbeddings('news-forward-fast'),
+                           FlairEmbeddings('news-backward-fast'),
+                           OneHotEmbeddings(self.__corpus)]
 
-        #document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=128, reproject_words=True,
-        #                                            reproject_words_dimension=64, rnn_layers=2)
-        
-        word_embeddings = WordEmbeddings('glove')
-
-        hot_embeddings = OneHotEmbeddings(self.__corpus)
-
-        document_embeddings = DocumentPoolEmbeddings([word_embeddings, hot_embeddings], fine_tune_mode='none')
-
+        document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=128, reproject_words=True,
+                                                    reproject_words_dimension=64, rnn_layers=1)
 
         # Create the text classifier
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
@@ -93,8 +84,8 @@ class BaseModel:
 
     def train(self,
               data_dir: str = "data/",
-              mini_batch_size: int = 16,
-              learning_rate: float = 0.1,
+              mini_batch_size: int = 32,
+              learning_rate: float = 0.15,
               epochs: int = 10
     ):
         """
@@ -175,8 +166,8 @@ class BaseModel:
 
 
 def main():
-    model = BaseModel(directory="resources1/")
-    model.train(epochs=500)
+    model = BaseModel(directory="resources_alt/")
+    model.train(epochs=50)
 
 
 if __name__ == "__main__":
