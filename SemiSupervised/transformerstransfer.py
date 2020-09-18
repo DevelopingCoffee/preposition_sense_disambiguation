@@ -6,6 +6,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pickle
 
+def accuracy(predictions, labels):
+    classes = torch.argmax(predictions, dim=2)
+    return torch.mean((classes == labels).float())
+
 def main():
     """ The data """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -40,11 +44,11 @@ def main():
     #val_data = batchify(val_set, batch_size)
     from tqdm import tqdm
     from torch.utils.data.sampler import SubsetRandomSampler
-    with open("../../data/training.datahead") as f:
+    with open("../../data/training.data") as f:
         sentences = f.readlines()
     print(len(sentences))
 
-    NUM_INSTANCES = 50
+    NUM_INSTANCES = 50000
     MAX_SENT_LEN = 10
     eng_sentences, deu_sentences = [], []
     eng_words, deu_words = set(), set()
@@ -122,10 +126,10 @@ def main():
 
     loss_trace = []
     for epoch in tqdm(range(NUM_EPOCHS)):
+        print('\n\n\nEpoch:', epoch)
         current_loss = 0
+        running_accuracy = 0
         for i, (x, y) in enumerate(train_loader):
-            print(x)
-            quit()
             x, y  = x.to(DEVICE), y.to(DEVICE)
             outputs = seq2seq(x, y)
             loss = criterion(outputs.resize(outputs.size(0) * outputs.size(1), outputs.size(-1)), y.resize(y.size(0) * y.size(1)))
@@ -133,8 +137,23 @@ def main():
             loss.backward()
             optimizer.step()
             current_loss += loss.item()
+            running_accuracy += accuracy(outputs, y)
         loss_trace.append(current_loss)
-        print(current_loss)
+        print("Loss:", current_loss)
+        print("Accuracy:", float(running_accuracy / len(train_loader)))
+
+        with torch.no_grad():
+            current_loss = 0
+            running_accuracy = 0
+            for i, (x, y) in enumerate(test_loader):
+                x, y  = x.to(DEVICE), y.to(DEVICE)
+                outputs = seq2seq(x, y)
+                loss = criterion(outputs.resize(outputs.size(0) * outputs.size(1), outputs.size(-1)), y.resize(y.size(0) * y.size(1)))
+                current_loss += loss.item()
+                running_accuracy += accuracy(outputs, y)
+            loss_trace.append(current_loss)
+            print("Validation loss:", current_loss)
+            print("Validation accuracy:", float(running_accuracy / len(train_loader)))
 
     torch.save(seq2seq.state_dict(), 'seq2seq.pt')
     torch.save(encoder.state_dict(), 'encoder.pt')

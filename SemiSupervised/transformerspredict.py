@@ -54,4 +54,5 @@ def predict(model, sent):
     return pred
 
 if __name__ == "__main__":
-    print(predict("This is a test sentence."))
+    model = get_model()
+    print(predict(model, "The plate is the table."))
