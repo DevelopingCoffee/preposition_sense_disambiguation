@@ -19,6 +19,45 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global}
+    \entry{pool-embed}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{uniquename=0,uniquepart=base,hash=afae69b0a220438dc67cfd8fb3380223}{%
+           family={Akbik},
+           familyi={A\bibinitperiod},
+           given={Alan},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=a4afb1c46bcd7987109f086eada44f69}{%
+           family={Bergmann},
+           familyi={B\bibinitperiod},
+           given={Tanja},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=626b3b250f5889797be5d59aab9e0ac5}{%
+           family={Vollgraf},
+           familyi={V\bibinitperiod},
+           given={Roland},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{e30efa3c63122ead51306f3504760fcf}
+      \strng{fullhash}{e30efa3c63122ead51306f3504760fcf}
+      \strng{bibnamehash}{e30efa3c63122ead51306f3504760fcf}
+      \strng{authorbibnamehash}{e30efa3c63122ead51306f3504760fcf}
+      \strng{authornamehash}{e30efa3c63122ead51306f3504760fcf}
+      \strng{authorfullhash}{e30efa3c63122ead51306f3504760fcf}
+      \field{sortinit}{A}
+      \field{sortinithash}{d77c7cdd82ff690d4c3ef13216f92f0b}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{{NAACL} 2019, 2019 Annual Conference of the North American Chapter of the Association for Computational Linguistics}
+      \field{title}{Pooled Contextualized Embeddings for Named Entity Recognition}
+      \field{year}{2019}
+      \field{pages}{724\bibrangedash 728}
+      \range{pages}{5}
+    \endentry
     \entry{flair}{inproceedings}{}
       \name{author}{3}{}{%
         {{uniquename=0,uniquepart=base,hash=afae69b0a220438dc67cfd8fb3380223}{%

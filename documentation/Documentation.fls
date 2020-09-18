@@ -1,4 +1,4 @@
-PWD /home/dirk/Documents/preposition_sense_disambiguation/Documentation
+PWD /home/dirk/Documents/preposition_sense_disambiguation/documentation
 INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
@@ -209,6 +209,7 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex9.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti8.tfm
 INPUT Documentation.aux
 INPUT ./Documentation.out
 INPUT ./Documentation.out
@@ -228,6 +229,7 @@ INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/txfonts/t1xbtt.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/txfonts/t1xtt.pfb
