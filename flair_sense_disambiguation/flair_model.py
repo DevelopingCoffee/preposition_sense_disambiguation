@@ -3,9 +3,9 @@ import torch
 from flair.data import Corpus
 from flair.datasets import CSVClassificationCorpus
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, OneHotEmbeddings
-from flair.embeddings import DocumentRNNEmbeddings
+from flair.embeddings import DocumentRNNEmbeddings, DocumentPoolEmbeddings
 from flair.models import TextClassifier
-from flair.tokenization import SpaceTokenizer
+from flair.tokenization import SpaceTokenizer, SegtokTokenizer
 
 from flair.trainers import ModelTrainer
 import sys
@@ -57,14 +57,14 @@ class BaseModel:
         label_dict = self.__corpus.make_label_dictionary()
 
         # Instantiate Embeddings: Flair + OneHot (self-learning Embeddings)
-        word_embeddings = [FlairEmbeddings('news-forward-fast'),
-                           FlairEmbeddings('news-backward-fast'),
-                           OneHotEmbeddings(self.__corpus)]
+        
+        hot_embedding = OneHotEmbeddings(self.__corpus)
 
-        document_embeddings = DocumentRNNEmbeddings(word_embeddings, hidden_size=128, reproject_words=True,
-                                                    reproject_words_dimension=64, rnn_layers=1)
+        glove_embedding = WordEmbeddings('glove')
 
-        # Create the text classifier
+        document_embeddings = DocumentPoolEmbeddings([hot_embedding, glove_embedding], fine_tune_mode='none')
+
+        # Create the text classifier        
         self.__classifier = TextClassifier(document_embeddings, label_dictionary=label_dict, multi_label=False)
 
     def __create_corpus(self, data_dir: str = "data/"):
@@ -84,8 +84,8 @@ class BaseModel:
 
     def train(self,
               data_dir: str = "data/",
-              mini_batch_size: int = 32,
-              learning_rate: float = 0.15,
+              mini_batch_size: int = 16,
+              learning_rate: float = 0.1,
               epochs: int = 10
     ):
         """
@@ -167,7 +167,7 @@ class BaseModel:
 
 def main():
     model = BaseModel(directory="resources/")
-    model.train(epochs=50)
+    model.train(epochs=500)
 
 
 if __name__ == "__main__":
