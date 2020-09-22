@@ -9,6 +9,10 @@
 \usepackage{ulem, contour}
 \usepackage{hyperref}
 \usepackage{listings}
+\usepackage{xcolor}
+
+\hypersetup{colorlinks=true,linkbordercolor=blue,linkcolor=blue,pdfborderstyle={/S/U/W 1}}
+
 
 \usepackage[style=authoryear, backend=biber]{biblatex}
 \addbibresource{bibliography.bib}
@@ -315,7 +319,35 @@ Damit das Klassifizieren funktioniert, muss in dem Ordner \textit{resources} der
 
 \section{Semi-supervised}
 \chapterauthor{Tobias}
+\subsection{Daten}
+\begin{flushleft}
+Die Daten die für das Training verwendet wurden befinden sich auf der Seite: \url{http://www.statmt.org/europarl/}. Ich habe den Deutsch-Englisch Korpus verwendet, prinzipiell sollte aber jeder funktionieren.
+\end{flushleft}
 
+\subsubsection{Datenaufberteitung}
+\begin{flushleft}
+Um die Daten in ein trainierbares Format zu bekommen, wird in dem originialen Paper (\url{https://arxiv.org/abs/1611.08813}) der \href{https://github.com/redpony/cdec}{CDEC Word-Aligner} benutzt. Zunächst sollte man die Sätze der jeweiligen Sprachen jeweils in eine eigene Zeile aufteilen. Dazu kann das Script \emph{split-sentences.perl} von den Europarl tools verwendet werden. Danach sollten die einzelnen Sätze tokenized werden. Dazu kann der \emph{tokenizer.perl} ebenfalls aus den Europarl tools verwendet werden.
+Danach sollten die Skripts aus dem Ordner "Corpus" \ von CDEC verwendet werden. Die Reihenfolge der Skripts ist prinzipiell egal. Nach der Ausführung der einzelnen Skripts kann es passieren, dass einige der Sätze einer Sprache in der anderen nicht vorkommen. Um das Problem zu beheben, habe ich mich dafür entschieden ein Python Skript zu schreiben, dass alle Sätze entfernt, die nur in einer Sprache vorkommen. Das Skript heißt \emph{clean.py}. Das Skript liest aus dem \emph{stdin} und schreibt in den {stdout}. Demnach bietet es sich an mit Bash Redirects einen File als Input zu redirecten und in einen File zu speichern. Beispielsweise über den Aufruf \newline
+\emph{python3 clean.py $<$ input.txt $>$ output.txt}. \newline
+Danach sollten die Daten in folgendem Format sein:
+
+tokenized english sentence . \textbar \textbar \textbar \  dazu passender tokenizeder deutscher satz .
+
+Mit diesem Format kann der Word-aligner von CDEC ausgeführt werden. Ich habe dazu das \emph{fast-align} Programm benutzt.
+
+Mit dem resultierenden File kann nun das von mir geschriebene Python Skript \emph{preparedata.py} ausgeführt werden. Dazu muss aber in dem Skript selbst der Pfad zu den Daten angepasst werden. Der erste geöffnete File sollte ein File sein in dem eine einzeilige, headerlose csv Datei sein, in der pro Zeile jeweils eine englische Preposition steht, der zweite geöffnete File muss der File zu den parallelen Textdaten sein und der dritte File muss der File zu den Alignment Daten sein. Nach der Ausführung des Skripts befindet sich nun der File \emph{training.data} in dem Ornder in dem das Skript ausgeführt wurde. Die Daten sind nun so aufgebaut, dass die Tokens der linken Sprache ohne Präposition stehen, gefolgt von einem Tab Symbol, gefolgt von der Präposition in der anderen Sprache. Mit diesen Daten sind die Trainingsskripts auszuführen.
+\end{flushleft}
+
+\subsubsection{Training}
+\begin{flushleft}
+Beigefügt sind die Skripts \emph{train.py}, \emph{transferbert.py} und \emph{gru.py}. Zum Training empfiehlt es sich ein \href{https://docs.python.org/3/tutorial/venv.html}{Virtualenv} anzulegen und die \emph{requirements.txt} zu installieren.
+\end{flushleft}
+
+\subsubsection{Ergebnisse}
+\begin{flushleft}
+Die besten Ergebnisse erzielte gru.py. \newline
+Nach 97 Epochs besteht eine (Validation) Accuracy von (38,8\%) 90,7\%.
+\end{flushleft}
 \newpage
 
 \begingroup

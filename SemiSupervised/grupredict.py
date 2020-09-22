@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformerstransfer import Seq2Seq, Encoder, Decoder
+from gru import Seq2Seq, Encoder, Decoder
 
 class Model:
     def __init__(self):
