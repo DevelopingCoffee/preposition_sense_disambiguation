@@ -48,7 +48,7 @@ def main():
         sentences = f.readlines()
     print(len(sentences))
 
-    NUM_INSTANCES = 50000
+    NUM_INSTANCES = 100000
     MAX_SENT_LEN = 10
     eng_sentences, deu_sentences = [], []
     eng_words, deu_words = set(), set()
@@ -94,7 +94,7 @@ def main():
 
     ENG_VOCAB_SIZE = len(eng_words)
     DEU_VOCAB_SIZE = len(deu_words)
-    NUM_EPOCHS = 10
+    NUM_EPOCHS = 100
     HIDDEN_SIZE = 128
     EMBEDDING_DIM = 30
     BATCH_SIZE = 128

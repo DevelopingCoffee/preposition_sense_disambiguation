@@ -5,8 +5,8 @@ with open(os.listdir()[1], 'r') as f:
     for l in f:
         prepositions.append(l[:-1])
 textdata = []
-with open('europarl-v7.de-en.cleanpendetl', 'r') as e:
-    with open('europarl-v7.de-en.gdfa', 'r') as g:
+with open('europarl-v7.de-en.cleanpendetl', 'r') as e: # the text file
+    with open('europarl-v7.de-en.gdfa', 'r') as g: # the alignment info file
         for a, b in zip(e,g):
             a = a.replace(' ||| ', '\t')
             textdata.append((a[:-1],b[:-1]))
