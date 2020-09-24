@@ -3,7 +3,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {1}Einleitung}{1}{section.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {2}Datenbeschaffung und -bereinigung}{3}{section.2}%
+\contentsline {section}{\numberline {2}Datenbeschaffung und -bereinigung}{2}{section.2}%
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {3}Huggingface Transformes mit Bert}{4}{section.3}%
 \defcounter {refsection}{0}\relax 
