@@ -1,6 +1,6 @@
 [0] Config.pm:304> INFO - This is Biber 2.14 (beta)
 [0] Config.pm:307> INFO - Logfile is 'Documentation.blg'
-[51] biber:322> INFO - === Di Sep 22, 2020, 14:15:50
+[50] biber:322> INFO - === Do Sep 24, 2020, 17:21:41
 [60] Biber.pm:415> INFO - Reading 'Documentation.bcf'
 [104] Biber.pm:943> INFO - Found 2 citekeys in bib section 0
 [113] Biber.pm:4256> INFO - Processing section 0
@@ -11,7 +11,7 @@
 [123] bibtex.pm:1471> INFO - Found BibTeX data source 'bibliography.bib'
 [148] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'variable = shifted' with 'variable = non-ignorable'
 [148] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[149] Biber.pm:4084> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'de-DE'
-[149] Biber.pm:4090> INFO - No sort tailoring available for locale 'de-DE'
+[148] Biber.pm:4084> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'de-DE'
+[148] Biber.pm:4090> INFO - No sort tailoring available for locale 'de-DE'
 [150] bbl.pm:652> INFO - Writing 'Documentation.bbl' with encoding 'UTF-8'
 [152] bbl.pm:755> INFO - Output to Documentation.bbl
