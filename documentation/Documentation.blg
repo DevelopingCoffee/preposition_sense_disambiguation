@@ -1,17 +1,15 @@
-[0] Config.pm:304> INFO - This is Biber 2.14 (beta)
-[0] Config.pm:307> INFO - Logfile is 'Documentation.blg'
-[50] biber:322> INFO - === Do Sep 24, 2020, 17:23:50
-[59] Biber.pm:415> INFO - Reading 'Documentation.bcf'
-[104] Biber.pm:943> INFO - Found 2 citekeys in bib section 0
-[113] Biber.pm:4256> INFO - Processing section 0
-[113] Utils.pm:75> INFO - Globbing data source 'bibliography.bib'
-[113] Utils.pm:91> INFO - Globbed data source 'bibliography.bib' to bibliography.bib
-[119] Biber.pm:4455> INFO - Looking for bibtex format file 'bibliography.bib' for section 0
-[120] bibtex.pm:1653> INFO - LaTeX decoding ...
-[122] bibtex.pm:1471> INFO - Found BibTeX data source 'bibliography.bib'
-[148] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'variable = shifted' with 'variable = non-ignorable'
-[148] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[148] Biber.pm:4084> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'de-DE'
-[148] Biber.pm:4090> INFO - No sort tailoring available for locale 'de-DE'
-[150] bbl.pm:652> INFO - Writing 'Documentation.bbl' with encoding 'UTF-8'
-[152] bbl.pm:755> INFO - Output to Documentation.bbl
+[0] Config.pm:302> INFO - This is Biber 2.11
+[1] Config.pm:305> INFO - Logfile is 'Documentation.blg'
+[52] biber-darwin:313> INFO - === Sun Oct 18, 2020, 22:26:44
+[77] Biber.pm:371> INFO - Reading 'Documentation.bcf'
+[189] Biber.pm:857> INFO - Found 2 citekeys in bib section 0
+[204] Biber.pm:3976> INFO - Processing section 0
+[216] Biber.pm:4136> INFO - Looking for bibtex format file 'bibliography.bib' for section 0
+[218] bibtex.pm:1500> INFO - LaTeX decoding ...
+[223] bibtex.pm:1316> INFO - Found BibTeX data source 'bibliography.bib'
+[250] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[250] UCollate.pm:68> INFO - Overriding locale 'de-DE' defaults 'variable = shifted' with 'variable = non-ignorable'
+[250] Biber.pm:3804> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'de-DE'
+[250] Biber.pm:3810> INFO - No sort tailoring available for locale 'de-DE'
+[255] bbl.pm:617> INFO - Writing 'Documentation.bbl' with encoding 'UTF-8'
+[257] bbl.pm:720> INFO - Output to Documentation.bbl

@@ -316,6 +316,11 @@ Damit das Klassifizieren funktioniert, muss in dem Ordner \textit{resources} der
 
 \section{Semi-supervised}
 \chapterauthor{Tobias}
+\subsection{Ansatz}
+\begin{flushleft}
+Die Idee des Semi-Supervised Ansatzes ist es, durch eine Kombination von 2 Models die Accuracy der Prediction zu verbessern. Dabei ergibt sich die Bezeichnung Semi-Supervised dadurch, dass man sowohl ein Unsupervised und ein Supervised Neural Network trainiert. Das unsupervised Model erhält dabei Sätze, die in mindestens eine weitere Sprache übersetzt wurden. Hierbei ist es wichtig, dass die Übersetzung möglichst wörtlich ist und die ursprüngliche Bedeutugn des Satzes nicht verfälscht. Damit wird nun dem Model zum Training als Input der Satz einer Sprache ohne die Präposition gegeben und als Output soll die weggelassene Proposition in der anderen Sprache predicted werden. Die Idee dabei ist die, dass beispielsweise in dem Satz 'A person sits on the chair.' das 'on' mit 'auf' übersetzt werden muss und in dem Satz 'A person sits on the plane.' das 'on' mit 'in' übersetzt werden muss. Dadurch soll dem Model die verschiedenen Bedeutungen von 'on' beigebracht werden. Anschließend trainiert man ein klassisches Supervised Model, wie die beiden anderen vorherig beschriebenen Models zusammen mit einem Vektor der Prediction des Unsupervied Models. Um genau zu sein, wird nicht die Prediction verwendet, sondern der Output des vorletzten Layers. Dieser besitzt dann die abstrakten Informationen des Models über die Prediction bezüglich der Präposition. Es ist wichtig, dass man zunächst einmal ein gutes Unsupervised Model trainiert hat, bevor man dieses für das Supervised Model verwendet. An Hand der abstrakten Informationen des Unsupervised Models sollte das Supervised Model nun in der Lage sein viel besser einzurodnen in welchem Kontext die Präposition in dem Satz auftritt und dadurch eine Steigerung der Accuracy der Prediction zu erreichen. In dem originalen Paper (\url{https://arxiv.org/abs/1611.08813}) wird für das Unsupervised Model ein Bidirectional LSTM verwendet. Unter einem Bidirectional LSTM versteht man ein LSTM Model, dass als Input eine Sequenz an Daten bekommt und die Sequenz sowohl in die originale, als auch umgekehrte Richtung verwendet, um dadurch mehr Informationen über die Sequenz zu gewinnen.
+\end{flushleft}
+
 \subsection{Daten}
 \begin{flushleft}
 Die Daten die für das Training verwendet wurden befinden sich auf der Seite: \url{http://www.statmt.org/europarl/}. Ich habe den Deutsch-Englisch Korpus verwendet, prinzipiell sollte aber jeder funktionieren.
@@ -335,15 +340,36 @@ Mit diesem Format kann der Word-aligner von CDEC ausgeführt werden. Ich habe da
 Mit dem resultierenden File kann nun das von mir geschriebene Python Skript \emph{preparedata.py} ausgeführt werden. Dazu muss aber in dem Skript selbst der Pfad zu den Daten angepasst werden. Der erste geöffnete File sollte ein File sein in dem eine einzeilige, headerlose csv Datei sein, in der pro Zeile jeweils eine englische Preposition steht, der zweite geöffnete File muss der File zu den parallelen Textdaten sein und der dritte File muss der File zu den Alignment Daten sein. Nach der Ausführung des Skripts befindet sich nun der File \emph{training.data} in dem Ornder in dem das Skript ausgeführt wurde. Die Daten sind nun so aufgebaut, dass die Tokens der linken Sprache ohne Präposition stehen, gefolgt von einem Tab Symbol, gefolgt von der Präposition in der anderen Sprache. Mit diesen Daten sind die Trainingsskripts auszuführen.
 \end{flushleft}
 
-\subsubsection{Training}
+\subsection{Training}
 \begin{flushleft}
 Beigefügt sind die Skripts \emph{train.py}, \emph{transferbert.py} und \emph{gru.py}. Zum Training empfiehlt es sich ein \href{https://docs.python.org/3/tutorial/venv.html}{Virtualenv} anzulegen und die \emph{requirements.txt} zu installieren.
+Prinzipiell handelt es sich bei den Models entweder um Sequence2Sequence Models oder um classification Models. Dabei sind Sequence2Sequence Models im allgemeinen komplexer und benötigen somit mehr Daten um trainiert zu werden. Wichtig ist es mindestens einen hidden Layer zu verwenden, dessen Output später als Input für das Supervised Model verwendet werden sollte.
 \end{flushleft}
 
-\subsubsection{Ergebnisse}
+\subsubsection{Ergebnis}
 \begin{flushleft}
 Die besten Ergebnisse erzielte gru.py. \newline
 Nach 97 Epochs besteht eine (Validation) Accuracy von (38,8\%) 90,7\%.
+\end{flushleft}
+
+\subsection{Nächste Schritte}
+\subsubsection{Unsupervised Model Optimierung}
+\begin{flushleft}
+Die bisherigen Modelle performen noch nicht optimal. Hierfür könnte man nochmals eie Hyperparameter Optimisierung durchführen, auch wenn das für mich wenig Erfolg hatte. 
+Eine weitere Möglichkeit wäre komplexere Modelle zu erstellen.
+Mögliche Ansätze dafür wären zum Einen die Anzahl der Layer und Neuronen zu erhöhen um über die gewonnene Komplexität bessere Modelle zu erhalten. Zum Anderen könnte man für jede Preposition ein eigenes Model trainieren, um somit spezialisierte Modelle zu erhalten, die im Idealfall eine bessere Prediction erzielen, als ein Model für alle Predictions. Außerdem könnte man auch ein Model trainieren, dass mehr als zwei Sprachen als Input erhält um somit nochmehr Informationen über die Präposition zu extrahieren. Nachteil dieses Ansatzes wäre es aber, dass man dadurch weniger Trainingsdaten haben könnte, da man nun die Sätze stets in allen verwendeten Sprachen benötigen würde.
+\end{flushleft}
+
+\subsubsection{Einbindung in das Supervised Model}
+\begin{flushleft}
+Für die Einbindung des Unsupervised Models, muss man das Training des Supervised Models in zwei Teile aufteilen. Zum Einen muss die Preposition für die der Sinn bestimmt werden soll, aus dem Satz entfernt werden. Dann setzt man das Unsupervised Model vor das Supervised Model, friert alle Parameter des Unsupervised Models ein, sodass die gewichte nicht verändert werden und schneidet den Prediciton Layer des Model ab, um den abstrakten Informationsvektor zu erhalten. Dann gibt man dem Supervised Model neben dem normalen Input auch die Prediction des angehängten Unsupervised Models für die Prediction des Supervised Models mit.
+Möglicherweise könnte es Sinn manchen für das Finetuning des Gesamtmodels die Layer des Unsupervised Models wieder auf trainierbar zu stellen.
+\end{flushleft}
+
+\subsubsection{Einbindung in den Text-Imager}
+\begin{flushleft}
+Für die Einbindung in den Text-Imager gibt es zwei Möglichkeiten. Die eine wäre es, das Gesamtmodel als ganzes zu nehmen und aus dem Text-Imager die Inputs richtig vorzubereiten (Präpositionen zu entfernen). Und die Prediction des Gesamtmodels zu verwenden. Oder Andererseits könnte man das Gesamtmodel wieder in zwei Teilmodelle aufteilen und diese seperat mit Daten zu versorgen und dann den Output des einen Teilmodels mit als Input des Anderen gibt. Dies könnte eventuelle Performance Vorteile haben.
+Ansonsten wäre aber mit dem Output genau so zu handhaben, wie mit den klassischen Modellen aus dem oberen Teil der Dokumentation.
 \end{flushleft}
 \newpage
 
